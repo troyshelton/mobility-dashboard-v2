@@ -692,6 +692,50 @@ body {
   animation: spin 1s linear infinite;
 }
 
+/* ========================================== */
+/* Date Navigator Styles (Issue #1) */
+/* ========================================== */
+
+.date-nav-btn {
+  padding: 6px 12px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  font-family: system-ui;
+}
+
+.date-nav-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #0066cc;
+  color: #0066cc;
+}
+
+.date-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.date-nav-btn i {
+  font-size: 12px;
+}
+
+#date-navigator {
+  opacity: 0;  /* Hidden by default, shown after page loads */
+}
+
+body.loaded #date-navigator {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
 /* iOS-Style Toggle Switch */
 .toggle-switch {
   position: relative;

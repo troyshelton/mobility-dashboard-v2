@@ -1,0 +1,113 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Feature: Date Navigator for Temporal Mobility Data (Issue #1)",
+        "description": "Add date navigation controls to filter mobility data by specific date, allowing users to review historical assessments and interventions.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Implement date navigator between header and table with Previous/Today/Next controls. Format: 'Monday, December 14, 2025'. Server-side CCL filtering with date parameter (midnight to 23:59:59). Files: index.html, styles.css, main.js, PatientListService.js, mob_get_pdata_01.prg (NEW), XMLCclRequestSimulator.js",
+        "testStrategy": "Test UI display, backward/forward navigation, Today button, CCL date parameter, mock data with different dates",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add date navigator HTML and CSS",
+            "description": "Add date navigator div between header and main. Include Previous/Today/Next buttons, date display span. Add CSS styling for buttons.",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 2,
+            "title": "Add date state management to main.js",
+            "description": "Add selectedDate and isToday to app state. Create setSelectedDate(), formatDateDisplay(), updateDateDisplay(), updateDateNavButtons() functions.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 3,
+            "title": "Add date navigation event handlers",
+            "description": "Wire up Previous button (subtract 1 day), Today button (jump to current), Next button (add 1 day). Create reloadCurrentData() function.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 4,
+            "title": "🛑 VALIDATION: Test date navigator UI in browser",
+            "description": "Verify date navigator displays correctly, buttons work, date format correct, Today indicator shows. STOP and get approval before proceeding to CCL.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 5,
+            "title": "Create mobility CCL program with date filtering",
+            "description": "Create 1_cust_mp_mob_get_pdata_01.prg from gen_get_pdata.prg. Add SELECTED_DATE parameter, date range logic (midnight to 23:59:59), mobility data queries.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 6,
+            "title": "Update services to pass date parameter to CCL",
+            "description": "Modify PatientListService.js to call mob_get_pdata_01 with date parameter. Format date for CCL. Handle CURDATE default for today.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 7,
+            "title": "Add date-aware mock data to simulator",
+            "description": "Create getMockMobilityData() in XMLCclRequestSimulator. Generate different data based on date parameter. Test date navigation with mock data.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 8,
+            "title": "🛑 VALIDATION: Test complete date navigation flow",
+            "description": "Test all scenarios: initial load (today), backward navigation, Today button, forward navigation. Verify data changes per date. STOP and get approval.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 9,
+            "title": "Update documentation",
+            "description": "Update README.md with date navigator feature. Update CHANGELOG.md with v1.1.0 entry. Document date filtering approach.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 10,
+            "title": "🛑 VALIDATION: Create Pull Request for code review",
+            "description": "Create PR with description, reference Issue #1. Show code changes for review. STOP and wait for PR approval before merging.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-12-15T04:58:52.861Z",
+      "updated": "2025-12-15T05:01:39.802Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
