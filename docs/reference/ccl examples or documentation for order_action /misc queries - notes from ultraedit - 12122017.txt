@@ -1,0 +1,777 @@
+Misc ccl queries used in the past:
+
+/*********************************************************************************************************************************************************************************************/
+
+"Determine the dcp_forms_ref_id for the PowerForm. In CCL:
+Select * from dcp_forms_ref where description = “XXXXX” go
+XXXX is the description of the form. (For example: Admission Database) Make a note of the dcp_forms_ref_id and replace NNNN with it in the select below:
+select
+from dcp_forms_ref dfr ,dcp_forms_def dfd ,dcp_section_ref dsr ,dcp_input_ref dir ,name_value_prefs nvp ,discrete_task_assay dta
+plan dfr where dfr.dcp_forms_ref_id = NNNN and dfr.active_ind = 1
+join dfd where dfd.dcp_form_instance_id = dfr.dcp_form_instance_id and dfd.active_ind = 1"
+
+/*********************************************************************************************************************************************************************************************/
+
+select ;into $1 ; "nl:"
+  pedf.pat_ed_doc_followup_id
+  ,physician_name1 = trim(p.name_full_formatted)
+  ,physician_name2 = trim(pedf.provider_name)
+  ,address = trim(addr.long_text)
+  ,comment = trim(cmmt.long_text)
+  ,followup_in = pedf.fol_within_days
+  ,followup_by = format(pedf.fol_within_dt_tm, "MM/DD/YYYY HH:MM")
+  ,followup_within = trim(pedf.fol_within_range,3)
+  ,specialty = pg.prsnl_group_name
+  ,pedf.*
+from 
+  pat_ed_document ped         ; Lead Table for the Depart Process
+  ,pat_ed_doc_followup pedf   ; Table with the Follow Up information
+  ,prsnl p
+  ,long_text addr             ; Address gets stored here
+  ,long_text cmmt             ; Comment stored also in the Long Text Table
+  ,prsnl_group_reltn pgr
+  ,prsnl_group pg
+plan ped
+  where ped.encntr_id = 79397646  ; tmp->encntr_id 
+join pedf
+  where pedf.pat_ed_doc_id = ped.pat_ed_document_id
+  and pedf.active_ind = 1
+  and pedf.pat_ed_doc_followup_id > 0.00
+join p
+  where p.person_id = outerjoin(pedf.provider_id)
+join addr
+  where addr.long_text_id = outerjoin(pedf.add_long_text_id)
+join cmmt
+  where cmmt.long_text_id = outerjoin(pedf.cmt_long_text_id)
+join pgr
+  where pgr.person_id = outerjoin(p.person_id)
+  and pgr.active_ind = outerjoin(1)
+join pg
+  where pg.prsnl_group_id = outerjoin(pgr.prsnl_group_id)
+  and pg.prsnl_group_class_cd = outerjoin(678635)
+  and pg.active_ind = outerjoin(1)
+with time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+select ;into "nl:"
+ 	ce.clinical_event_id
+  , cb.event_id
+  , cb.blob_seq_num
+  , cb.blob_length
+  , cb.valid_from_dt_tm
+  , cb.valid_until_dt_tm
+  , evt = uar_get_code_display(ce.event_cd)
+  , ce.encntr_id
+
+from
+    clinical_event ce,
+    ce_blob  cb
+plan ce 
+;where ce.encntr_id =  132423356     ; tmp->encntr_id
+where ce.person_id = 5613807.0
+	and ce.event_cd =   270821373.00   ; Care Management Discharge Planning Note
+;	and ce.event_id = 10991386750.0
+	and ce.valid_until_dt_tm > SYSDATE
+	and ce.view_level = 0 ; child level, signified by the DOC Event Class, is what is resulted
+
+join cb 
+	where cb.event_id = ce.event_id
+ 	;the old rows will have a valid_until_dt_tm before the current date/time
+  ;the following qualification gets only the valid rows
+  and cb.VALID_FROM_DT_TM < cnvtdatetime(curdate,curtime3)
+  and cb.VALID_UNTIL_DT_TM > cnvtdatetime(curdate,curtime3)
+ 
+order by
+  cb.event_id
+  , cb.blob_seq_num
+  
+with time = 60 go  
+
+/*********************************************************************************************************************************************************************************************/
+
+select distinct  
+  facility = uar_get_code_display(e.loc_facility_cd)  
+  , FLOOR = uar_get_code_display(e.loc_nurse_unit_cd)  
+  , pt_name = p.name_full_formatted  
+  , MRN = ea.alias  
+  /*, no_known_home_meds = oc.no_known_home_meds_ind*/  
+  /*, unable_to_obtain = oc.unable_to_obtain_ind*/  
+  , order_type = evaluate2(  
+  IF(o.orig_ord_as_flag = 1) "Prescription"  
+  elseif(o.orig_ord_as_flag = 2) "Meds by Hx"  
+  endif)  
+  , o.orig_order_dt_tm "mm/dd/yyyy hh:mm:ss"  
+  , o.order_id  
+  , synonym_op = o.ordered_as_mnemonic  
+  , o.clinical_display_line  
+  , status = evaluate2(  
+  if(oc.encntr_compliance_status_flag = 0) "Med history complete"  
+  elseif(oc.encntr_compliance_status_flag = 1) "Marked as incomplete"  
+  else "Error"  
+  endif)  
+  , ocd.compliance_capture_dt_tm "mm/dd/yyyy hh:mm:ss"  
+  , compliance_prsnl = p2.name_full_formatted  
+  , compliance_status = uar_get_code_display(ocd.compliance_status_cd)  
+  , information_source = uar_get_code_display(ocd.information_source_cd)  
+  , last_taken = ocd.last_occurred_dt_tm "mm/dd/yyyy hh:mm:ss"  
+  , compliance_comments = lt.long_text  
+  
+FROM orders o  
+  , order_compliance oc  
+  , order_compliance_detail ocd  
+  , encounter e  
+  , person p  
+  , prsnl p2  
+  , long_text lt  
+  , encntr_alias ea  
+  , dummyt d1  
+  
+plan o 
+
+where o.person_id = 13668228.0
+  and o.encntr_id = 131586006.0
+
+;WHERE  
+  /* Add date range here in the format of MMDDYY */  
+  ;and o.orig_order_dt_tm BETWEEN cnvtdatetime(cnvtdate(010115),0)  
+  ;AND cnvtdatetime(cnvtdate(010215),0)  
+;  AND o.product_id = 0  
+;  AND o.activity_type_cd = 705  
+;  AND o.order_status_cd IN (  
+;        2552.00, /* Suspended */  
+;        2547.00, /* Incomplete */  
+;        2545.00, /* Discontinued */  
+;        2546.00, /* Future */  
+;        2550.00, /* Ordered */  
+;        2543.00) /* Completed */  
+  
+JOIN ocd WHERE  
+  outerjoin(o.order_id) = ocd.order_nbr  
+  AND ocd.updt_dt_tm =   
+  (SELECT MAX(ocd2.updt_dt_tm)  
+  FROM order_compliance_detail ocd2  
+  WHERE ocd2.order_nbr = ocd.order_nbr)  
+  /*Nested SELECT to get the most recently updated compliance detail information*/  
+JOIN oc WHERE  
+  outerjoin(ocd.order_compliance_id) = oc.order_compliance_id  
+JOIN e WHERE  
+  o.encntr_id = e.encntr_id  
+JOIN p WHERE  
+  e.person_id = p.person_id  
+  AND p.name_last_key NOT LIKE '*ZTEST*'  
+JOIN p2 WHERE  
+  p2.person_id = outerjoin(ocd.updt_id)  
+JOIN lt WHERE  
+  lt.long_text_id = outerjoin(ocd.long_text_id)  
+JOIN ea WHERE  
+  ea.encntr_id = e.encntr_id  
+  AND ea.active_ind = 1  
+  AND ea.encntr_alias_type_cd = 1079  
+  /* 1079 = MRN */  
+JOIN d1  
+  /* SELECT DISTINCT cannot be performed on a CLOB/BLOB type  
+  Joining a DummyT table at the end gets around the Oracle limitation by not including the DISTINCT  
+  in the query passed to Oracle, but instead applying DISTINCT at the Discern Explorer level after non-distinct  
+  data is returned from Oracle. */  
+ORDER BY p.name_full_formatted, o.order_id  
+
+with time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+select 
+ce.encntr_id
+from
+  clinical_event ce
+;  , encounter e
+;  , person_alias pa
+;  , prsnl ps
+;  , prsnl_alias psa
+plan ce
+  ;where ce.clinsig_updt_dt_tm between cnvtdatetime(dtBeg) and cnvtdatetime(dtEnd)
+  where ce.updt_dt_tm between cnvtdatetime("01-FEB-2017 00:00:00") and cnvtdatetime("15-FEB-2017 23:59:59")
+  ;and ce.event_cd = value(UAR_GET_CODE_BY("DISPLAYKEY", 72, "BODYMASSINDEXDOSING"))
+  ;and ce.event_cd = value(UAR_GET_CODE_BY("DISPLAY", 72, "Smoking Status"))
+  and ce.event_cd = value(UAR_GET_CODE_BY("DISPLAYKEY", 72, "DEPRESSIONSCREENINGPOSITIVE"))
+  ;AND CE.encntr_id = 131705072                
+  and ce.valid_until_dt_tm > sysdate
+  and ce.result_status_cd in (25.0, 34.0, 35.0) ; auth, modified, modified
+  and ce.event_tag != "Date\Time Correction"
+;join e
+;  where e.encntr_id = ce.encntr_id
+;join pa
+;  where pa.person_id = e.person_id
+;join ps
+;  where ps.person_id = outerjoin(ce.performed_prsnl_id)
+;join psa
+;  where psa.person_id = outerjoin(ps.person_id)
+;  and psa.active_ind = outerjoin(1)
+order ce.event_id
+with nocounter, orahintcbo("INDEX(CE XIE12CLINICAL_EVENT)"), time = 1600
+
+/*********************************************************************************************************************************************************************************************/
+
+select *
+from
+  clinical_event ce
+;  , encounter e
+;  , person_alias pa
+;  , prsnl ps
+;  , prsnl_alias psa
+plan ce
+  ;where ce.clinsig_updt_dt_tm between cnvtdatetime(dtBeg) and cnvtdatetime(dtEnd)
+  where ce.updt_dt_tm between cnvtdatetime("01-AUG-2017 00:00:00") and cnvtdatetime("01-AUG-2017 23:59:59")
+  and ce.event_cd = value(UAR_GET_CODE_BY("DISPLAYKEY", 72, "INITIALDEPRESSIONSCREENSCORE"))
+  and ce.valid_until_dt_tm > sysdate
+  and ce.result_status_cd in (25.0, 34.0, 35.0) ; auth, modified, modified
+  and ce.event_tag != "Date\Time Correction"
+order ce.event_id
+with time = 60, maxrec = 100 go
+
+/*********************************************************************************************************************************************************************************************/
+
+select * from prsnl p plan p where p.name_full_formatted = "Joel PH McAlduff" and p.active_ind = 1 go
+
+select from prsnl p plan p where p.name_full_formatted = "Peter Basch, MD" and p.active_ind = 1 detail log_misc1 = build2(p.person_id, char(6), trim(p.name_full_formatted,3), ',', uar_get_code_display(p.position_cd)) log_message = log_misc1 eksdata->bldMsg_paramInd = 1 with time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+select 
+    dfr.dcp_forms_ref_id,
+    form_definition = dfr.definition,
+    form_description = dfr.description,
+    section_definition = dsr.definition,
+    section_description = dsr.description,
+    input_type = evaluate(dir.input_type, 1, 'Label Control', 2, 'Numeric Control', 3, 'FlexUnit Control', 4, 'List Control',
+                          5, 'MAGrid Control', 6, 'FreeText Control', 7, 'Calculation Control', 8, 'StaticUnit Control', 
+                          9, 'AlphaCombo Control', 10, 'DateTime Control', 11, 'Allergy Control', 12, 'ImageHolder Control', 
+                          13, 'RTFEditor Control', 14, 'Discrete Grid', 15, 'RAlpha Grid', 16, 'Comment Control', 17, 'Power Grid',
+                          18, 'Provider Control', 19, 'Ultra Grid', 20, 'Tracking Control1', 21, 'Conversion Control', 
+                          22, 'Numeric Control2', 23, 'Nomenclature Control', 'Unknown Type'),
+    label = lbl.pvc_value,
+    dta.task_assay_cd,
+    dta_mnemonic = dta.mnemonic,
+    dta.event_cd,
+    event_code_display = uar_get_code_display(dta.event_cd),
+    dta_result_type = uar_get_code_display(dta.default_result_type_cd)
+    
+from dcp_forms_ref dfr, 
+     dcp_forms_def dfd,
+     dcp_section_ref dsr,
+     dcp_input_ref dir,
+     name_value_prefs lbl,
+     name_value_prefs ndt,
+     discrete_task_assay dta
+
+plan dfr where dfr.beg_effective_dt_tm <= cnvtdatetime(curdate, curtime3) 
+           and dfr.end_effective_dt_tm >= cnvtdatetime(curdate, curtime3)
+           and dfr.active_ind = 1 
+           and dfr.description = 'Transitional Care*'
+
+join dfd where dfd.dcp_form_instance_id = dfr.dcp_form_instance_id
+           and dfd.active_ind = 1
+
+join dsr where dsr.dcp_section_ref_id = dfd.dcp_section_ref_id
+           and dsr.end_effective_dt_tm >= cnvtdatetime(curdate, curtime3)           
+           and dsr.active_ind = 1 
+
+join dir where dir.dcp_section_instance_id = dsr.dcp_section_instance_id
+           and dir.active_ind = 1
+
+;Get the labels
+join lbl where lbl.parent_entity_id = outerjoin(dir.dcp_input_ref_id)
+           and lbl.parent_entity_name = outerjoin('DCP_INPUT_REF')
+           and lbl.pvc_name = outerjoin('caption')
+           and lbl.active_ind = outerjoin(1)
+
+;Get the DTAs
+join ndt where ndt.parent_entity_id = outerjoin(dir.dcp_input_ref_id)
+           and ndt.parent_entity_name = outerjoin('DCP_INPUT_REF')
+           and ndt.pvc_name = outerjoin('discrete_task_assay')
+           and ndt.merge_name = outerjoin('DISCRETE_TASK_ASSAY')
+join dta where dta.task_assay_cd = outerjoin(ndt.merge_id)
+           and dta.active_ind = outerjoin(1)
+
+order dfr.description, dfd.section_seq, dir.input_ref_seq
+
+with nocounter go
+
+/*********************************************************************************************************************************************************************************************/
+
+select
+root_display= c1.short_description,
+root_name = c1.long_description,
+c1.alt_sel_category_id,
+folder_display = c2.short_description,
+folder_name = c2.long_description,
+ot.task_description,
+form_description = dcp.description,
+task_active = ot.active_ind
+from
+alt_sel_cat c1,
+alt_sel_list l1,
+alt_sel_cat c2,
+alt_sel_list l2,
+order_task ot,
+dcp_forms_ref dcp,
+dummyt d
+plan c1 where
+c1.adhoc_ind = 1
+join l1 where
+l1.alt_sel_category_id = c1.alt_sel_category_id and
+l1.list_type = 1 and
+l1.child_alt_sel_cat_id > 0
+join c2 where
+c2.alt_sel_category_id = l1.child_alt_sel_cat_id
+join l2 where
+l2.alt_sel_category_id = c2.alt_sel_category_id and
+l2.list_type = 4 and
+l2.reference_task_id > 0
+join ot where
+ot.reference_task_id = l2.reference_task_id
+join d
+join dcp where
+dcp.dcp_forms_ref_id = ot.dcp_forms_ref_id and
+dcp.active_ind = 1
+order root_name, folder_name, l2.sequence
+with dontcare = dcp, time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+SELECT *
+FROM order_action   oa
+where oa.order_id = 8031177607
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, FORMAT(DATE, ";;Q")
+
+/*********************************************************************************************************************************************************************************************/
+
+select * from encntr_loc_hist elh
+where elh.encntr_id = 132679468.0
+WITH time = 60, format(date,";;Q") go
+
+/*********************************************************************************************************************************************************************************************/
+
+drop program fnrpt_forms_report_grids:dba go
+create program fnrpt_forms_report_grids:dba
+
+select distinct ;into null
+       ;eff_date = dfr.end_effective_dt_tm,
+       form_name = dfr.description""###############################"",
+       ;forms_def = dfd.dcp_forms_def_id""########"",
+       ;forms_ref = dfd.dcp_forms_ref_id""########"",
+       ;section_ref = dsr.dcp_section_ref_id""########"",
+  ;in_ref_id = dir.dcp_input_ref_id""########"",
+       seq = build(dfd.section_seq,"".... "",dsr.description),
+       ;instance = dfd.dcp_form_instance_id""########"",
+       ;sec_name = dsr.description""###############################"",
+       label_name   = dir.description""###########################"", 
+       event_cd = dta.event_cd""########"",
+       dta   = dta.task_assay_cd""########"",
+       mnemonic = dta.mnemonic""####################################"",
+ secseq= nvf.sequence ,
+ grid_cd = dta.event_cd
+       ;responses = ar.description 
+       ;cv_desc  = dta.description""##############################""
+from dcp_forms_ref dfr , dcp_forms_def dfd , dcp_section_ref dsr,
+     dcp_input_ref dir , name_value_prefs nvf , discrete_task_assay dta ;,
+     ;reference_range_factor rrf, alpha_responses ar
+    
+plan dfr
+where dfr.end_effective_dt_tm = cnvtdatetime(""31-dec-2100"")
+/*
+where dfr.dcp_forms_ref_id IN  (12342,3997521)
+  and dfr.end_effective_dt_tm = cnvtdatetime(""31-dec-2100"")
+*/
+join dfd
+where dfr.dcp_forms_ref_id = dfd.dcp_forms_ref_id 
+  and dfr.dcp_form_instance_id = dfd.dcp_form_instance_id 
+  and dfd.active_ind = 1
+join dsr
+where dfd.dcp_section_ref_id = dsr.dcp_section_ref_id
+  and dsr.active_ind = 1
+join dir
+where dsr.dcp_section_ref_id = dir.dcp_section_ref_id
+  and dsr.dcp_section_instance_id = dir.dcp_section_instance_id
+  and dir.description in (""Power Grid"", ""Ultra Grid"")
+  and dir.active_ind = 1
+join nvf
+where dir.dcp_input_ref_id = nvf.parent_entity_id
+  and nvf.active_ind = 1 
+join dta
+where nvf.merge_id = dta.task_assay_cd
+  and dta.active_ind = 1
+/*
+join rrf
+where dta.task_assay_cd = rrf.task_assay_cd
+  and rrf.active_ind = 1
+join ar
+where rrf.reference_range_factor_id = ar.reference_range_factor_id
+  and ar.active_ind = 1
+*/
+order by form_name,seq    ,label_name   ,mnemonic
+
+HEAD REPORT
+ line = fillstring(90,"" "")
+head page
+ call center (""UMMS FORMS REPORT"",0,89)
+ col 0 ""Date Printed : "" 
+ col 17 curdate ""MM/DD/YY;;d""
+ col 75 ""Page""
+ col 80 CURPAGE ""####""
+ row +1 line
+ col 0 ""Time Printed : ""
+ col 17 curtime ""hh:mm;;m""
+      row + 2
+head form_name
+ row + 1
+   col 3 ""Form Name :  ""
+      col 17 form_name
+      row + 2
+head seq
+ row + 1
+ col 3 ""Section Name :  ""
+      col 20 seq""############################################""
+ row + 2
+  col 2 ""Label Name""
+ col 31 ""Event Code""
+ col 44 ""DTA""
+ col 52 ""Mnemonic Name""
+ ;col 93 ""nomenclature descrition""
+      row +2
+detail
+      if (row > 55)
+     break
+  endif 
+ col 1  label_name
+ col 31 event_cd 
+ col 42 dta
+ col 52 mnemonic
+ col 85 grid_cd""########""
+ col 94 secseq""###""
+ ;col 89 responses""#####################################""
+ row +1
+
+with counter
+end
+go
+
+/*********************************************************************************************************************************************************************************************/
+
+SELECT ;INTO "nl:"
+ 	CE.CLINICAL_EVENT_ID
+,cb.*
+ 
+ 
+ 
+from
+    CLINICAL_EVENT CE
+    ,ce_blob  cb
+PLAN CE WHERE CE.ENCNTR_ID =  130901045.0
+
+and ce.event_cd =   270821373.00   ; Care Management Discharge Planning Note
+
+;and ce.event_id = 10991386750.0
+
+and ce.valid_until_dt_tm > SYSDATE
+
+and ce.view_level = 0 ; child level, signified by the DOC Event Class, is what is resulted
+
+JOIN CB where  CB.event_id = CE.EVENT_ID
+		;AND CB.EVENT_ID = 10995031490.00
+ 	;the old rows will have a valid_until_dt_tm before the current date/time
+    ;the following qualification gets only the valid rows
+    and  cb.VALID_FROM_DT_TM < cnvtdatetime(curdate,curtime3)
+    and  cb.VALID_UNTIL_DT_TM > cnvtdatetime(curdate,curtime3)
+ 
+order by
+    cb.event_id,
+    cb.blob_seq_num
+
+with time = 60 go
+
+SELECT *
+FROM CLINICAL_EVENT   CE
+
+PLAN CE WHERE CE.ENCNTR_ID =  130901045.0
+
+and ce.event_cd =   270821373.00   ; Care Management Discharge Planning Note
+
+;and ce.event_id = 10991386750.0
+
+and ce.valid_until_dt_tm > SYSDATE
+
+WITH time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+select distinct ;into "nl:"
+o.template_order_flag, o.order_id, o.hna_order_mnemonic,o.order_mnemonic
+from ;order_action oa
+  ;, 
+  orders o
+  ;, prsnl pr
+;plan oa 
+;  where oa.updt_dt_tm between cnvtdatetime(dtBeg) and cnvtdatetime(dtEnd)      ; xie7order_action
+plan o
+  ;where o.order_id = oa.order_id
+  
+  where o.person_id = 13668228.0
+  and o.encntr_id = 131586006.0
+  
+  and o.catalog_type_cd = 2516.00	; Pharmacy
+  ;and o.template_order_flag in (0,1,5)
+  ;and o.order_status_cd > 0.00                   ; get all statuses
+;join pr
+;  where pr.person_id = oa.order_provider_id
+  ;and pr.active_ind = 1   ; provider may not be working at cabell any longer - historical data load
+
+order by o.template_order_flag, o.hna_order_mnemonic
+with time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+SELECT *
+FROM
+     PRIV_LOC_RELTN PL
+     , PRIVILEGE P
+     , PRIVILEGE_EXCEPTION PE
+PLAN PL 
+	WHERE PL.POSITION_CD =   101750722.00	;RN/Charge Nurse ;441.00	;DBA ;> 0 
+		AND PL.PERSON_ID = 0 
+		AND PL.LOCATION_CD = 0
+JOIN P 
+	WHERE P.PRIV_LOC_RELTN_ID = PL.PRIV_LOC_RELTN_ID
+JOIN PE 
+	WHERE PE.PRIVILEGE_ID = P.PRIVILEGE_ID
+with time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+SELECT DISTINCT
+	POSITION = UAR_GET_CODE_DISPLAY(PLR.POSITION_CD)
+	, PRIVILEGE_NAME = UAR_GET_CODE_DISPLAY(P.PRIVILEGE_CD)
+	, PRIVILEGE_VALUE = UAR_GET_CODE_DISPLAY(P.PRIV_VALUE_CD)
+	, EXCEPTION_TYPE = UAR_GET_CODE_DISPLAY(E.EXCEPTION_TYPE_CD)
+	, PRIVILEGE_EXCEPTIONS = UAR_GET_CODE_DISPLAY(E.EXCEPTION_ID)
+FROM
+	CODE_VALUE   C
+	, PRIV_LOC_RELTN   PLR
+	, PRIVILEGE   P
+	, PRIVILEGE_EXCEPTION   E
+	, CODE_VALUE   CV1
+PLAN C 
+	WHERE C.CODE_SET = 88
+		AND C.ACTIVE_IND = 1
+JOIN PLR 
+	WHERE PLR.POSITION_CD = outerjoin(C.CODE_VALUE)
+JOIN P 
+	WHERE P.PRIV_LOC_RELTN_ID = outerjoin(PLR.PRIV_LOC_RELTN_ID)
+JOIN E 
+	WHERE E.PRIVILEGE_ID = outerjoin(P.PRIVILEGE_ID)
+JOIN CV1 
+	WHERE CV1.CODE_VALUE = outerjoin(PLR.POSITION_CD)
+		AND CV1.ACTIVE_IND = outerjoin(1)
+ORDER BY
+	POSITION
+	, PRIVILEGE_NAME
+	, PRIVILEGE_VALUE
+	, PRIVILEGE_EXCEPTIONS
+WITH MAXREC = 10000, TIME = 120
+
+/*********************************************************************************************************************************************************************************************/
+
+select distinct
+      position = uar_get_code_display(plr.position_cd)
+      , privilege_name = uar_get_code_display(p.privilege_cd)
+      , privilege_value = uar_get_code_display(p.priv_value_cd)
+      , exception_type = uar_get_code_display(e.exception_type_cd)
+      , privilege_exceptions = uar_get_code_display(e.exception_id)
+from
+      code_value   c
+      , priv_loc_reltn   plr
+      , privilege   p
+      , privilege_exception   e
+      , code_value   cv1
+plan c
+      where c.code_set = 88
+      and c.active_ind = 1
+join plr
+      where plr.position_cd = outerjoin(c.code_value)
+join p
+      where p.priv_loc_reltn_id = outerjoin(plr.priv_loc_reltn_id)
+join e
+      where e.privilege_id = outerjoin(p.privilege_id)
+join cv1
+      where cv1.code_value = outerjoin(plr.position_cd)
+      and cv1.active_ind = outerjoin(1)
+order by
+      position
+      , privilege_name
+      , privilege_value
+      , privilege_exceptions
+with maxrec = 10000, time = 120
+
+/*********************************************************************************************************************************************************************************************/
+
+SELECT INTO "nl:"
+    FROM (encounter e ),
+     (encounter e1 )
+    PLAN (e
+     WHERE ((e.person_id + 0 ) = person_id )
+     AND (e.encntr_id = encntr_id )
+     AND (e.encntr_status_cd = encntr_status_cd ) )
+     JOIN (e1
+     WHERE (e1.person_id = e.person_id )
+     AND (e1.active_ind = 1 )
+     AND (((datetimeadd (e.reg_dt_tm ,- (30 ) ) <= e1.disch_dt_tm ) ) OR ((((datetimeadd (e
+      .arrive_dt_tm ,- (30 ) ) <= e1.disch_dt_tm ) ) OR ((((datetimeadd (e.inpatient_admit_dt_tm ,- (
+      30 ) ) <= e1.disch_dt_tm ) ) OR ((((datetimeadd (e.reg_dt_tm ,- (30 ) ) <= e1.depart_dt_tm ) )
+     OR ((((datetimeadd (e.arrive_dt_tm ,- (30 ) ) <= e1.depart_dt_tm ) ) OR ((datetimeadd (e
+      .inpatient_admit_dt_tm ,- (30 ) ) <= e1.depart_dt_tm ) )) )) )) )) ))
+     AND (((e1.reg_dt_tm < e.reg_dt_tm ) ) OR ((((e1.arrive_dt_tm < e.reg_dt_tm ) ) OR ((((e1
+     .reg_dt_tm < e.arrive_dt_tm ) ) OR ((e1.arrive_dt_tm < e.arrive_dt_tm ) )) )) )) )
+     
+with time = 60 go
+
+
+
+select *
+from encounter e, encounter e1
+plan e
+where e.person_id = 1765587.0    
+and e.encntr_id = 132679468.0
+and e.encntr_status_cd =         854.00	;Active
+join e1
+where e1.person_id = e.person_id
+and e1.active_ind = 1
+and (
+			datetimeadd(e.reg_dt_tm,-30) <= e1.disch_dt_tm
+			or datetimeadd(e.arrive_dt_tm,-30) <= e1.disch_dt_tm
+			or datetimeadd(e.inpatient_admit_dt_tm,-30) <=e1.disch_dt_tm
+			or datetimeadd(e.reg_dt_tm,-30) <= e1.depart_dt_tm
+			or datetimeadd(e.arrive_dt_tm,-30) <= e1.depart_dt_tm
+			or datetimeadd(e.inpatient_admit_dt_tm,-30) <= e1.depart_dt_tm
+			or e1.reg_dt_tm < e.reg_dt_tm
+			or e1.arrive_dt_tm < e.reg_dt_tm
+			or e1.reg_dt_tm < e.arrive_dt_tm
+			or e1.arrive_dt_tm < e.arrive_dt_tm
+)
+with time = 60 go
+
+/*********************************************************************************************************************************************************************************************/
+
+; Find the sections, DTAs and nomenclatures for a specific powerform
+SELECT DISTINCT
+        F.DESCRIPTION,
+        FORM_DEFINITION=SUBSTRING(1,50,F.DEFINITION),
+        SECTION_DEFINITION=SUBSTRING(1,50,S.DEFINITION),
+        DTA_DESC=DTA.DESCRIPTION,
+        DTA_MNEM=DTA.MNEMONIC,
+        EVCODE_DISPLAY=SUBSTRING(1,40,V5C.EVENT_CD_DISP),
+ EVSET_NAME=SUBSTRING(1,40,V5C.EVENT_SET_NAME),
+        ALPHA_RESPONSE=SUBSTRING(1,50,A.DESCRIPTION),
+        NOMEN_MNEM=N.MNEMONIC,
+        NOMEN_STSTRING=N.SHORT_STRING,
+        NOMEN_SOURCESRG=N.SOURCE_STRING,
+        ALPHA_NOMEN_ID=A.NOMENCLATURE_ID 
+FROM    DCP_FORMS_DEF D,
+        DCP_FORMS_REF F,
+        DCP_SECTION_REF S,
+        DCP_INPUT_REF I,
+        NAME_VALUE_PREFS PRF,
+        DISCRETE_TASK_ASSAY DTA,
+        V500_EVENT_CODE V5C,
+ REFERENCE_RANGE_FACTOR R,
+        ALPHA_RESPONSES A,
+        (DUMMYT D1 WITH SEQ=1),
+        NOMENCLATURE N,
+        DUMMYT D2
+PLAN F
+WHERE F.ACTIVE_IND=1 AND F.DESCRIPTION = "Admission History Behavioral Health P2" ;Place form name here
+JOIN D WHERE F.DCP_FORM_INSTANCE_ID = D.DCP_FORM_INSTANCE_ID
+AND D.ACTIVE_IND=1
+JOIN S WHERE S.DCP_SECTION_REF_ID = D.DCP_SECTION_REF_ID
+AND S.ACTIVE_IND=1
+JOIN I WHERE I.DCP_SECTION_INSTANCE_ID = S.DCP_SECTION_INSTANCE_ID
+AND I.ACTIVE_IND=1
+JOIN PRF WHERE I.DCP_INPUT_REF_ID = PRF.PARENT_ENTITY_ID
+AND PRF.ACTIVE_IND=1
+JOIN dta WHERE PRF.MERGE_ID = DTA.TASK_ASSAY_CD
+AND DTA.ACTIVE_IND=1
+JOIN D1
+JOIN V5C WHERE DTA.EVENT_CD = V5C.EVENT_CD
+JOIN R WHERE DTA.TASK_ASSAY_CD = R.TASK_ASSAY_CD
+;AND R.ACTIVE_IND = 1 ; commented out to see all alpha responses
+JOIN D2
+JOIN A WHERE R.REFERENCE_RANGE_FACTOR_ID = A.REFERENCE_RANGE_FACTOR_ID
+JOIN N WHERE A.NOMENCLATURE_ID = N.NOMENCLATURE_ID
+ORDER BY F.DESCRIPTION, S.DESCRIPTION, DTA.DESCRIPTION, V5C.EVENT_SET_NAME,
+A.DESCRIPTION
+WITH OUTERJOIN=D1,OUTERJOIN=D2, COUNTER, time = 60 
+
+/*********************************************************************************************************************************************************************************************/
+
+select 
+    dfr.dcp_forms_ref_id,
+    form_definition = dfr.definition,
+    form_description = dfr.description,
+    section_definition = dsr.definition,
+    section_description = dsr.description,
+    input_type = evaluate(dir.input_type, 1, 'Label Control', 2, 'Numeric Control', 3, 'FlexUnit Control', 4, 'List Control',
+                          5, 'MAGrid Control', 6, 'FreeText Control', 7, 'Calculation Control', 8, 'StaticUnit Control', 
+                          9, 'AlphaCombo Control', 10, 'DateTime Control', 11, 'Allergy Control', 12, 'ImageHolder Control', 
+                          13, 'RTFEditor Control', 14, 'Discrete Grid', 15, 'RAlpha Grid', 16, 'Comment Control', 17, 'Power Grid',
+                          18, 'Provider Control', 19, 'Ultra Grid', 20, 'Tracking Control1', 21, 'Conversion Control', 
+                          22, 'Numeric Control2', 23, 'Nomenclature Control', 'Unknown Type'),
+    label = lbl.pvc_value,
+    dta.task_assay_cd,
+    dta_mnemonic = dta.mnemonic,
+    dta.event_cd,
+    event_code_display = uar_get_code_display(dta.event_cd),
+    dta_result_type = uar_get_code_display(dta.default_result_type_cd)
+    
+from dcp_forms_ref dfr, 
+     dcp_forms_def dfd,
+     dcp_section_ref dsr,
+     dcp_input_ref dir,
+     name_value_prefs lbl,
+     name_value_prefs ndt,
+     discrete_task_assay dta
+
+plan dfr where dfr.beg_effective_dt_tm <= cnvtdatetime(curdate, curtime3) 
+           and dfr.end_effective_dt_tm >= cnvtdatetime(curdate, curtime3)
+           and dfr.active_ind = 1 
+           and dfr.description = '*Database*'
+
+join dfd where dfd.dcp_form_instance_id = dfr.dcp_form_instance_id
+           and dfd.active_ind = 1
+
+join dsr where dsr.dcp_section_ref_id = dfd.dcp_section_ref_id
+           and dsr.end_effective_dt_tm >= cnvtdatetime(curdate, curtime3)           
+           and dsr.active_ind = 1 
+
+join dir where dir.dcp_section_instance_id = dsr.dcp_section_instance_id
+           and dir.active_ind = 1
+
+;Get the labels
+join lbl where lbl.parent_entity_id = outerjoin(dir.dcp_input_ref_id)
+           and lbl.parent_entity_name = outerjoin('DCP_INPUT_REF')
+           and lbl.pvc_name = outerjoin('caption')
+           and lbl.active_ind = outerjoin(1)
+
+;Get the DTAs
+join ndt where ndt.parent_entity_id = outerjoin(dir.dcp_input_ref_id)
+           and ndt.parent_entity_name = outerjoin('DCP_INPUT_REF')
+           and ndt.pvc_name = outerjoin('discrete_task_assay')
+           and ndt.merge_name = outerjoin('DISCRETE_TASK_ASSAY')
+join dta where dta.task_assay_cd = outerjoin(ndt.merge_id)
+           and dta.active_ind = outerjoin(1)
+
+order dfr.description, dfd.section_seq, dir.input_ref_seq
+
+with nocounter go
+
+/*********************************************************************************************************************************************************************************************/
+
+/*********************************************************************************************************************************************************************************************/

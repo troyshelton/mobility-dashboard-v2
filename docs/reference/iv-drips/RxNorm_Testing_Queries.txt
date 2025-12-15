@@ -1,0 +1,83 @@
+;SYNONYM LEVEL QUERY
+SELECT
+	RXCUI = TRIM(substring(8, 25, CCM2.concept_cki))
+	, RX_NORM_DESC = substring(1, 200, cc2.concept_name)
+
+FROM
+	order_catalog_synonym   o
+	, order_catalog   oc
+    , mltm_order_catalog_load moc2
+    , cmt_cross_map ccm2
+    , cmt_concept cc2
+
+PLAN o 
+	WHERE o.mnemonic_key_cap = "*LOTEMAX*";CONVERT TO UPPER
+JOIN oc
+	WHERE oc.catalog_cd = o.catalog_cd
+JOIN moc2
+	WHERE moc2.mnemonic = o.mnemonic
+JOIN ccm2
+	WHERE moc2.synonym_concept_cki = outerjoin(ccm2.target_concept_cki)
+JOIN cc2
+	WHERE cc2.concept_cki = OUTERJOIN(ccm2.target_concept_cki)
+	
+	
+;PRIMARY LEVEL QUERY
+SELECT
+	 PRIMARY_RXCUI = TRIM(substring(8, 25, CCM.concept_cki))
+	, PRIMARY_RX_NORM_DESC = substring(1, 200, cc.concept_name)
+	, O.mnemonic
+
+FROM
+	order_catalog_synonym   o
+	, order_catalog   oc
+	, mltm_order_catalog_load moc
+    , cmt_cross_map ccm
+    , cmt_concept cc
+PLAN o 
+	WHERE o.mnemonic_key_cap = "*LACTOBACILLUS*";CONVERT TO UPPER
+JOIN oc
+	WHERE oc.catalog_cd = o.catalog_cd
+JOIN moc
+	WHERE moc.mnemonic_key_cap = cnvtupper(oc.primary_mnemonic)
+JOIN ccm
+	WHERE moc.synonym_concept_cki = outerjoin(ccm.target_concept_cki)
+	AND ccm.map_type_cd = 97133269.00
+JOIN cc
+	WHERE ccm.target_concept_cki = outerjoin(cc.concept_cki)
+
+
+;ADDITIVE LEVEL QUERY
+SELECT
+	o.order_mnemonic
+	;moc.mnemonic
+	, PRIMARY_RXCUI = TRIM(substring(8, 25, CCM.concept_cki))
+	, PRIMARY_RX_NORM_DESC = substring(1, 200, cc.concept_name)
+
+FROM
+	orders   o
+	, ORDER_INGREDIENT   OIR
+	, order_catalog oc
+	, mltm_order_catalog_load moc
+    , cmt_cross_map ccm
+    , cmt_concept cc
+
+plan o
+where o.order_id = 397584599
+join oir
+where oir.order_id = o.order_id
+and oir.ingredient_type_flag = 3.00
+and oir.action_sequence = 
+	(select max(oi.action_sequence) 
+	from order_ingredient oi 
+	where oi.order_id = 397584599
+	and oi.ingredient_type_flag = 3.00)
+JOIN oc
+	WHERE oc.catalog_cd = oir.catalog_cd
+JOIN moc
+	WHERE moc.mnemonic_key_cap = cnvtupper(oc.primary_mnemonic)
+JOIN ccm
+	WHERE moc.synonym_concept_cki = outerjoin(ccm.target_concept_cki)
+	AND ccm.map_type_cd = 97133269.00
+JOIN cc
+	WHERE ccm.target_concept_cki = outerjoin(cc.concept_cki)

@@ -1,0 +1,122 @@
+select o.order_id from orders o, order_ingredient oi, med_admin_event m plan o where o.person_id = trigger_personid and o.catalog_type_cd = value(uar_get_code_by("DISPLAYKEY",6000,"PHARMACY")) and o.activity_type_cd = value(uar_get_code_by("DISPLAYKEY",106,"PHARMACY")) and o.orig_order_dt_tm between cnvtlookbehind("1,Y",cnvtdatetime(curdate,0)) and cnvtdatetime(curdate,235959) and o.order_status_cd != value(uar_get_code_by("DISPLAYKEY",6004,"VOIDED")) and o.iv_ind = 1 and o.template_order_id = 0.00 join oi where oi.order_id = o.order_id and oi.catalog_cd =  value(uar_get_code_by("DISPLAYKEY",200,"EPOPROSTENOL")) and oi.ingredient_type_flag = 3.00 and oi.action_sequence = (select max(oi2.action_sequence) from order_ingredient oi2 where oi2.order_id = o.order_id and oi2.ingredient_type_flag = 3.00) join m where m.order_id = o.order_id and m.event_type_cd = value(uar_get_code_by("DISPLAYKEY",4000040,"ADMINISTERED")) order by o.order_id head report log_message = "ORDER NOT FOUND" log_misc1 = cnvtstring(0) is_found = 0 head o.order_id if(is_found = 0) log_message = "ORDER FOUND" log_misc1 = cnvtstring(o.order_id) endif is_found = 1 with nocounter, time = 60, nullreport go
+
+
+
+;
+
+select into "nl:" 
+from problem p, nomenclature n 
+plan p 
+where p.person_id = trigger_personid 
+and p.life_cycle_status_cd = value(uar_get_code_by("DISPLAYKEY", 12030, "ACTIVE")) 
+and p.classification_cd = value(uar_get_code_by("DISPLAYKEY", 12033, "INFECTIONPREVENTION")) 
+and p.end_effective_dt_tm > SYSDATE 
+and p.active_ind = 1 
+join n 
+where n.nomenclature_id = p.nomenclature_id 
+and n.source_vocabulary_cd = value(uar_get_code_by("DISPLAYKEY", 400, "SNOMEDCT")) 
+and n.source_identifier_keycap in (
+  "2915421017"  /* Acinetobacter calcoaceticus-Acinetobacter baumannii complex */
+, "3286559017"  /* Candida auris */
+, "2882877013"  /* Carbapenem resistant Acinetobacter */
+, "3083600011"  /* Carbapenem resistant Entererobacteriaceae */
+, "2882854013"  /* Carbapenem resistant Klebsiella pneumoniae */
+/* Carbapenem-resistant bacterial carrier	- placeholder - missing SNOMED */
+, "2471531012"  /* ESBL */
+, "2471532017"  /* ESBL Escherichia coli */
+, "2471533010"  /* ESBL Klebsiella pneumonia */
+, "176116017"   /* MRSA (VRSA and MRSA not together) */
+, "2882788010"  /* Multiple drug resistant Acinetobacter infection */
+, "2470393015"  /* Vancomycin resistant Staphylococcus */
+, "188335012"   /* VRE */
+, "3044205017"  /* Pseudomonas aeruginosa */
+, "151794011"   /* Achromobacter */
+, "265188017"   /* Mycotic Infection Screening */
+) 
+and n.active_ind = 1 
+order by n.source_string_keycap 
+head report 
+log_misc1 = "Problem(s) Not Found" 
+cnt = 0 
+detail 
+cnt = cnt + 1 
+if(cnt = 1) 
+log_misc1 = trim(n.source_string,3) 
+else 
+log_misc1 = concat(log_misc1, ", ",trim(n.source_string,3)) 
+endif 
+with nocounter, nullreport go
+
+/*  17 */
+
+select into "nl:" 
+from problem p, nomenclature n 
+plan p 
+where p.person_id = trigger_personid 
+and p.life_cycle_status_cd = value(uar_get_code_by("DISPLAYKEY", 12030, "ACTIVE")) 
+and p.classification_cd = value(uar_get_code_by("DISPLAYKEY", 12033, "INFECTIONPREVENTION")) 
+and p.end_effective_dt_tm > SYSDATE 
+and p.active_ind = 1 
+join n 
+where n.nomenclature_id = p.nomenclature_id 
+and n.source_vocabulary_cd = value(uar_get_code_by("DISPLAYKEY", 400, "SNOMEDCT")) 
+and n.source_identifier_keycap in (
+  "2915421017"  /* Acinetobacter calcoaceticus-Acinetobacter baumannii complex */
+, "3286559017"  /* Candida auris */
+, "2882877013"  /* Carbapenem resistant Acinetobacter */
+, "3083600011"  /* Carbapenem resistant Entererobacteriaceae */
+, "2882854013"  /* Carbapenem resistant Klebsiella pneumoniae */
+, "2471531012"  /* ESBL */
+, "2471532017"  /* ESBL Escherichia coli */
+, "2471533010"  /* ESBL Klebsiella pneumonia */
+, "176116017"   /* MRSA (VRSA and MRSA not together) */
+, "2882788010"  /* Multiple drug resistant Acinetobacter infection */
+, "2470393015"  /* Vancomycin resistant Staphylococcus */
+, "188335012"   /* VRE */
+, "3044305017"  /* Multidrug Resistant Pseudomonas aeruginosa */
+, "151794011"   /* Achromobacter */
+, "265188017"   /* Mycotic Infection Screening */
+, "2471528011"  /* Infection due to resistant Bacteria */
+, "1210857011"  /* Infection due to Resistant Organism */
+) 
+and n.active_ind = 1 
+order by n.source_string_keycap 
+head report 
+log_misc1 = "Problem(s) Not Found" 
+cnt = 0 
+detail 
+cnt = cnt + 1 
+if(cnt = 1) 
+log_misc1 = trim(n.source_string,3) 
+else 
+log_misc1 = concat(log_misc1, ", ",trim(n.source_string,3)) 
+endif 
+with nocounter, nullreport go
+
+;------------------------------------------------
+; Active pregnancy
+;------------------------------------------------
+
+select from pregnancy_instance pi where pi.person_id = trigger_personid and pi.active_ind = 1 and pi.preg_end_dt_tm > SYSDATE
+
+head report
+
+   log_misc1 = "ACTIVE PREGNANCY NOT FOUND"
+
+   log_retval = 0
+
+   log_message = "No ACTIVE PREGNANCY was found"
+
+detail
+
+   log_misc1 = "ACTIVE PREGNANCY FOUND"
+
+   log_retval = 100
+
+   log_message = "ACTIVE PREGNANCY was found"
+
+with nocounter, time = 60, nullreport go
+
+;------------------------------------------------
+; ABC
+;------------------------------------------------

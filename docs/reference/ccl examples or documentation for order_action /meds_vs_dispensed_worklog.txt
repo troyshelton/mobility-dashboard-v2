@@ -1,0 +1,166 @@
+and dh.disp_event_type_cd+0 in (
+19031442 ;;Device Dispense
+;,19185 ;;Initial Doses    ;;MOD004 REMOVE
+;,19183 ;;Extra Dose ;;MOD004 REMOVE
+,19031443.00 ;;	Device Return
+)
+
+638938.00 device dispense
+638939.00 device return
+2346.00	Initial Doses
+2344.00	Extra Dose
+
+
+-----
+
+
+AND MOED.DISPENSE_CATEGORY_CD NOT IN (34262592,   34261193 );;MOD006 NOT LVP OR BULK
+
+
+LVP =      318431.00
+BULK =      318426.00
+
+
+------
+
+and ea.active_status_cd = 4216 ;;active
+
+Active =         188.00   (Sharp)
+
+
+----
+
+and ea.alias_pool_cd =       12650.00	;;;LHS Account Number
+
+683992.00	FIN  (Sharp)
+
+
+
+-----
+
+IF (E.ENCNTR_STATUS_CD=19097.00);;DISCHARGED PATIENT
+
+Sharp =         856.00	Discharged
+
+
+----
+
+ED.ENCNTR_DOMAIN_TYPE_CD=        1139.00;  ;cdf_meaning = "CENSUS" SHARP 1139.00
+ AND ED.LOC_FACILITY_CD = 633867; $FAC   ; DEBUG SMH 633867
+
+-----
+
+H.LOC_NURSE_UNIT_CD = 4386950; $N_UNIT ;SMH 5S 4386950
+
+
+----
+
+AND TA.TASK_STATUS_CD IN (
+        419.00) ;,	;;Complete (ONLY LOOK AT ACTUAL CHARTED EVENTS) ;; SHARP         419.00
+
+
+------
+
+AND TA.TASK_TYPE_CD =        2668.00 ;MEDICATION @ SHARP = 2668.00
+
+
+
+------
+
+
+and o.active_status_cd =         188.00 ;;active'  ;; sharp         188.00
+
+
+
+-----
+
+and (CE.RESULT_STATUS_CD not in (         28.00))  ;IN ERROR  ;;sharp          28.00
+
+
+
+-----
+
+ELSEIF (CE.RESULT_STATUS_CD =          36.00);;not done/not given   ; not given Sharp          36.00
+
+
+------
+
+
+and o.catalog_cd not in
+   (   34249010.00,  ;;sodium cloride
+      34227082.00,	;;bupivacaine
+      34233683.00,	;;EPHEDrine
+      34248215.00,	;;rocuronium
+      34247384.00,	;;propofol
+      34248262.00,	;;ropivacaine
+      37551373.00,	;;fentanyl-ropivacaine  excluded since its an IV
+      34236183.00,	;;glycopyrrolate
+       38769215.00 ) ;;Tray General Ana
+
+Sharp:
+2768925	sodium chloride
+2751679	bupivacaine
+2757109	ephedrine
+2768289	rocuronium
+2767660	propofol
+2768324	ropivacaine
+3830305	fentanyl-ropivacaine
+2759143	glycopyrrolate
+
+Unable to "Tray General Ana" and "sodium cloride", but found 2768925	sodium chloride
+- need to let Diane know.
+
+
+----
+ORDER_DETAIL / ORDERS Model                                                                                                         
+                              Table used to store all the order details captured about an order.                                    
+                                                                                                                                    
+                                                                                                                                    
+ACTION_SEQUENCE               The sequence of the action placed on the order.                                                       
+DETAIL_SEQUENCE               The sequence of the order details.                                                                    
+OE_FIELD_DISPLAY_VALUE        The display value of the order detail.                                                                
+OE_FIELD_DT_TM_VALUE          The date and time value of the field if of type date/tim.                                             
+OE_FIELD_ID                   SEQUENCE NAME:REFERENCE_SEQ                                                                           
+                              The id of the field.                                                                                  
+OE_FIELD_MEANING              The meaning of the field.                                                                             
+OE_FIELD_MEANING_ID           The Cerner controlled value that id's the meaning of the field.                                       
+OE_FIELD_TZ                   Time zone associated with the corresponding DT_TM column.                                             
+OE_FIELD_VALUE                The value of the field if a numeric or coded value.                                                   
+ORDER_ID                      SEQUENCE NAME:ORDER_SEQ                                                                               
+                              The id of the order.                                                                                  
+PARENT_ACTION_SEQUENCE        The action sequence of the parent order.                                                              
+UPDT_APPLCTX                  The application context number from the record info block.                                            
+UPDT_CNT                      Set to 0 on insert.  Incremented by 1 on update.  Used to recognize update conflict where             
+                              data in a row updated by one application is at risk of being lost by a second application             
+                              attempting to update the row.                                                                         
+UPDT_DT_TM                    The date and time the row was last inserted or updated.                                               
+UPDT_ID                       The person_id of the person from the personnel table (prsnl) that caused the last insert              
+                              or update of the row in the table.                                                                    
+UPDT_TASK                     The registered (assigned) task number for the process that inserted or updated the row.    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

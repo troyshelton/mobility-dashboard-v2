@@ -1,0 +1,207 @@
+/*******************************************************************************
+* Test Query: Blood Culture Timing - clinical_event vs order_action Comparison
+*
+* Purpose: Test BOTH approaches to see which gives us complete timing data
+*
+* Test with same blood culture order_id in both queries to compare results
+*******************************************************************************/
+
+; TEST A: clinical_event Approach (like lactates)
+; ========================================================
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , order_time = format(o.orig_order_dt_tm, "mm/dd/yy hh:mm;;q")
+  , ce.event_id
+  , ce.event_cd
+  , event_type = uar_get_code_display(ce.event_cd)
+  , ce.event_tag
+  , performed_time = format(ce.performed_dt_tm, "mm/dd/yy hh:mm;;q")
+  , recorded_time = format(ce.event_end_dt_tm, "mm/dd/yy hh:mm;;q")
+  , result_status = uar_get_code_display(ce.result_status_cd)
+  , ce.result_val
+
+FROM
+  orders o
+  , clinical_event ce
+
+PLAN o
+  WHERE o.order_id = 0.00  ; ← REPLACE WITH ACTUAL BLOOD CULTURE ORDER_ID (e.g., 6676258775)
+
+JOIN ce
+  WHERE ce.order_id = o.order_id
+  AND ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+
+ORDER BY
+  ce.event_end_dt_tm ASC  ; Chronological
+
+WITH TIME = 60
+
+/*
+Expected Output:
+- May show 1 row (latest event) or multiple rows (all events)
+- performed_dt_tm = when specimen collected
+- event_end_dt_tm = when event recorded
+
+OUTPUT:
+See "Test A - clinical_event.csv"
+*/
+
+
+; TEST B: order_action Approach (shows all lifecycle steps)
+; ========================================================
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , order_time = format(o.orig_order_dt_tm, "mm/dd/yy hh:mm;;q")
+  , oa.action_sequence
+  , oa.action_type_cd
+  , action_type = uar_get_code_display(oa.action_type_cd)
+  , action_meaning = uar_get_code_meaning(oa.action_type_cd)
+  , action_time = format(oa.action_dt_tm, "mm/dd/yy hh:mm;;q")
+  , action_by = uar_get_prsnl_name(oa.action_personnel_id)
+  , o.order_status_cd
+  , current_status = uar_get_code_display(o.order_status_cd)
+
+FROM
+  orders o
+  , order_action oa
+
+PLAN o
+  WHERE o.order_id = 0.00  ; ← REPLACE WITH SAME ORDER_ID AS TEST A
+
+JOIN oa
+  WHERE oa.order_id = o.order_id
+
+ORDER BY
+  oa.action_sequence ASC  ; Chronological order
+
+WITH TIME = 60
+
+/*
+Expected Output:
+- Multiple rows (one per action)
+- Shows: Order → Dispatch → Collect → In-Lab → Complete
+- Each with its own timestamp
+
+OUTPUT:
+See "Test B - order_action.csv"
+*/
+
+
+; TEST C: COMBINED Approach (order_action + clinical_event)
+; ========================================================
+; Get actions from order_action AND collection time from clinical_event
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , order_time = format(o.orig_order_dt_tm, "mm/dd/yy hh:mm;;q")
+  , source = "order_action"
+  , oa.action_sequence
+  , action_type = uar_get_code_display(oa.action_type_cd)
+  , event_time = format(oa.action_dt_tm, "mm/dd/yy hh:mm;;q")
+
+FROM
+  orders o
+  , order_action oa
+
+PLAN o
+  WHERE o.order_id = 0.00  ; ← REPLACE WITH SAME ORDER_ID
+
+JOIN oa
+  WHERE oa.order_id = o.order_id
+
+ORDER BY
+  oa.action_sequence ASC
+
+WITH TIME = 60
+
+; Then separately get clinical_event data
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , source = "clinical_event"
+  , sequence = 0
+  , event_type = uar_get_code_display(ce.event_cd)
+  , event_time = format(ce.performed_dt_tm, "mm/dd/yy hh:mm;;q")
+
+FROM
+  orders o
+  , clinical_event ce
+
+PLAN o
+  WHERE o.order_id = 0.00  ; ← SAME ORDER_ID
+
+JOIN ce
+  WHERE ce.order_id = o.order_id
+  AND ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+
+ORDER BY
+  ce.performed_dt_tm ASC
+
+WITH TIME = 60
+
+/*
+This shows data from BOTH sources side-by-side
+Compare which gives better timing information
+*/
+
+
+; TEST D: Get ALL blood cultures for a patient (Test pattern)
+; ========================================================
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , order_time = format(o.orig_order_dt_tm, "mm/dd/yy hh:mm;;q")
+  , current_status = uar_get_code_display(o.order_status_cd)
+  , action_count = "See order_action query"
+
+FROM
+  orders o
+
+PLAN o
+  WHERE o.encntr_id = 0.00  ; ← REPLACE WITH ACTUAL ENCNTR_ID
+  AND o.catalog_type_cd = value(uar_get_code_by("MEANING", 6000, "GENERAL LAB"))
+  AND (
+    cnvtupper(o.order_mnemonic) = "C BLOOD"
+    OR cnvtupper(o.order_mnemonic) like "*BLOOD CULTURE*"
+  )
+  AND o.active_ind = 1
+
+ORDER BY
+  o.orig_order_dt_tm ASC
+
+WITH TIME = 60
+
+/*******************************************************************************
+* Instructions for Testing:
+*
+* 1. Get a blood culture order_id from CERT:
+*    - From console JSON: "C Blood" order (e.g., 6676258775)
+*    - Status should be "Completed" or "In-Lab" (has lifecycle)
+*
+* 2. Run TEST A (clinical_event):
+*    - See if it shows collection time
+*    - Count how many rows returned
+*
+* 3. Run TEST B (order_action):
+*    - See all lifecycle steps
+*    - Find "Collected" or "Specimen Collected" action
+*    - Note the action_type_cd for that action
+*
+* 4. Compare:
+*    - Does clinical_event show collection time? (performed_dt_tm)
+*    - Does order_action show all steps with times?
+*    - Which is more complete?
+*
+* 5. Run TEST D to verify pattern works for all blood cultures
+*
+* Decision:
+* - If clinical_event shows collection time: Use that (simpler)
+* - If only order_action has it: Use order_action with actions[] sub-array
+* - If both have it: Use whichever is more reliable/complete
+*******************************************************************************/

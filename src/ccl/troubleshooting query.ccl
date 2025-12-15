@@ -1,0 +1,89 @@
+select ;into "nl:"
+	;patients_person_id = drec->patients[d1.seq].person_id
+	;, patients_encntr_id = drec->patients[d1.seq].encntr_id
+"pathway >>>>>"
+,pw.*
+,"act_pw_comp >>>>>"
+,a.*
+,"pw_comp_action >>>>>"
+,pca.*
+,"orders >>>>>"
+,o.*
+,"person >>>>>"
+,p.*
+,"encntr_alias >>>>>"
+,ea.*
+,"prsnl pr >>>>>"
+,pr.*
+,"prsnl pr1 >>>>>"
+,pr1.*
+,"encounter >>>>>"
+,e.*
+,"pathway_action >>>>>"
+,pa.*
+from
+	;(dummyt   d1  with seq = size(drec->patients, 5))
+  ;,
+  pathway pw
+  ,act_pw_comp a
+  ,pw_comp_action pca
+  ,orders o
+  ,person p
+  ,encntr_alias ea
+  ,prsnl pr
+  ,prsnl pr1
+  ,encounter e
+  ,pathway_action pa
+
+;plan d1
+
+plan e where e.encntr_id in (113129478,112858974,113665545,117709810)
+
+;plan p where p.person_id = mf_PERSON_ID
+
+join pw ;get all phase types
+;where pw.pw_status_cd in (planned_cd,initiated_cd)
+where pw.active_ind = 1
+
+;and pw.person_id = p.person_id
+and pw.encntr_id = e.encntr_id
+
+and pw.pw_group_desc = "ED Severe Sepsis - ADULT"
+
+and pw.type_mean in ("CAREPLAN", "PHASE", "SUBPHASE")
+join a
+where a.pathway_id=outerjoin(pw.pathway_id)
+and a.parent_entity_name=outerjoin("ORDERS")
+join pca
+where pca.act_pw_comp_id=outerjoin(a.act_pw_comp_id)
+and pca.parent_entity_id=outerjoin(a.parent_entity_id)
+and pca.parent_entity_name=outerjoin("ORDERS")
+join o ;links orders to phase
+where o.order_id=outerjoin(a.parent_entity_id)
+and o.originating_encntr_id=outerjoin(a.originating_encntr_id)
+join pa
+where pa.pathway_id = pw.pathway_id
+and pa.pw_status_cd !=0
+join pr ;links "last entered by" personel
+where pr.person_id = pa.action_prsnl_id
+join pr1 ;links provider to phase
+where pr1.person_id = pa.provider_id
+join ea
+where ea.encntr_id = pw.encntr_id
+and ea.encntr_alias_type_cd = 1077.000000 ;fin cd
+and ea.active_ind = 1
+and ea.end_effective_dt_tm > cnvtdatetime(curdate, curtime3)
+;join e
+;where e.encntr_id = ea.encntr_id
+join p
+where p.person_id = e.person_id
+order by
+;pw.pathway_id
+;,pw.pw_status_cd
+;,o.order_id
+;,pw.pw_group_desc
+;,pw.description;, 0 ;get distinct plans based on order by items
+
+pw.pw_cat_group_id
+,pw.pathway_id
+,o.order_id

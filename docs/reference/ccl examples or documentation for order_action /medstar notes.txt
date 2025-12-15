@@ -1,0 +1,76 @@
+DEC/24/18 14:24:57    EBP_BEDREST_MINIMIZE_TIM1(2)  ANESTHESIAPYXISES, UMHTEST2        EKS_ASYNCH_02   151  691 Elapsed: 0
+ Triggering request number: 560201
+      Logic (1)        EKS_STOP_LOGIC_L             True                   0                0                0                0
+        The following logic template(s) is(are) STOP logic evaluation.
+      Logic (2)        EKS_LOGIC_TRUE               True            23579218        132559123       7855305221                0
+      Logic (3)        EKS_ENCOUNTER_LOC_DETAIL_L   True            23579218        132559123       7855305221                0
+        the patient's Location Facility is listed Union in ' Union ' for encounter id 132559123.0 - linking to logic
+        template 2
+      Logic (4)        EKS_ENCOUNTER_DETAIL_L       True            23579218        132559123       7855305221                0
+        the patient's Encounter Type is listed INPATIENT in ' INPATIENT ' for encounter id  132559123.0 - linking
+        to logic template 2
+      Logic (5)        EKS_AGE_EVAL_L               True            23579218                0                0                0
+        Birth date of 05-JUN-1981 00:00:00.00 is before 24-DEC-2000 14:24:57.00.  Person is greater than 18 years.
+      Logic (6)        EKS_ORDER_LIST_INCOMING_L    True            23579218        132559123       7855305221                0
+        Bedrest was found with the order status of Ordered
+      Action (1)       EKS_TIMER_SET_A              True            23579218        132559123       7855305221                0
+        Timer 'BEDREST TIMER' (ID:3665266.0                ) is set to expire at  December 24, 2018 14:39:57
+
+
+As is on new Dosing Ht/Wt PF that Rose is working on. 
+
+Orders:
+Obtain MEASURED Dosing Weight
+Do Not Measure Patient's Weight
+
+Powerform:
+Obtain MEASURED Dosing Weight
+
+Rules:
+CN_UPDT_DOSING_WT_OC
+CN_UPDT_DOSING_WT_CE
+
+Testers:
+ McHugh, Megan; Poan, Hilary C; Emralino, Janie C; Waihenya, Evangeline W; Seiler, Leah R; Shelter, Ashley B; 
+
+
+mam113@gunet.georgetown.edu
+Janie.C.Emralino@medstar.net
+Evangeline.W.Waihenya@Medstar.net
+Leah.R.Seiler@medstar.net
+Ashley.B.Shelter@Medstar.net
+
+
+Kim Vandenassem has completed majority of testing for all newborn calculation requests. I will follow up with Kim when she returns to work on Friday, 12/28.
+
+Emailed Subin on Mon. 12/24, asking for his availability to discuss all outstanding requests. Waiting for his response.
+
+
+1. Timer rule
+2. Lactate rule
+3. Measured dosing weight rule
+
+
+
+Fin 4000008237
+
+
+
+
+Adding SOM task # and additional information:
+
+SOM Task # 1796057
+
+Rule moved into Production during Migration go-live, 11/27/18.
+
+No issues reported as of today. Closing requests.
+
+
+
+
+Tentative move into Production date scheduled for Thu, 1/3/19. Will confirm with Kim V.
+
+
+
+
+

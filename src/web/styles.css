@@ -1,0 +1,851 @@
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-style:  
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-style:  
+}
+
+/* Basic Tailwind CSS reset and utilities for clean professional look */
+
+/* Base styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+}
+
+body {
+  margin: 0;
+  line-height: inherit;
+}
+
+/* Utility classes for clean professional interface */
+.w-full { width: 100%; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.pl-2 { padding-left: 0.5rem; }
+.bg-blue-700 { background-color: rgb(29 78 216); }
+.bg-healthcare-blue { background-color: rgb(75 125 175); }
+.text-white { color: rgb(255 255 255); }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.font-sans { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; }
+.font-extralight { font-weight: 200; }
+.font-normal { font-weight: 400; }
+.text-center { text-align: center; }
+.text-slate-500 { color: rgb(100 116 139); }
+.italic { font-style: italic; }
+.font-medium { font-weight: 500; }
+
+/* Status and Acuity Cell Background Colors */
+.bg-red-50 { background-color: rgb(254 242 242) !important; }
+.bg-yellow-50 { background-color: rgb(255 251 235) !important; }
+.bg-orange-50 { background-color: rgb(255 247 237) !important; }
+.bg-green-50 { background-color: rgb(240 253 244) !important; }
+.bg-gray-50 { background-color: rgb(249 250 251) !important; }
+
+/* Status and Acuity Text Colors */
+.text-red-700 { color: rgb(185 28 28); }
+.text-yellow-700 { color: rgb(161 98 7); }
+.text-orange-700 { color: rgb(194 65 12); }
+.text-green-700 { color: rgb(21 128 61); }
+.text-gray-700 { color: rgb(55 65 81); }
+
+/* Hide Eruda entry button/icon for clean PowerChart interface */
+.eruda-icon-tool,
+.eruda-entry-btn,
+[class*="eruda-entry"],
+[class*="eruda-icon"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+#eruda > div:first-child {
+  display: none !important;
+}
+
+/* ========================================== */
+/* Custom Patient List MPage Styles */
+/* ========================================== */
+
+/* Handsontable customization */
+.handsontable {
+  font-size: 13px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-weight: 400; /* Normal weight for better readability */
+}
+
+.handsontable th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  font-size: 12px;
+  border-right: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.handsontable td {
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.handsontable tbody tr:hover td {
+  background-color: #f9fafb !important;
+}
+
+/* Status indicators */
+.status-active {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #ca8a04;
+  font-style: italic;
+}
+
+/* Additional background colors for variety */
+.bg-green-100 {
+  background-color: #d1fae5 !important;
+}
+
+.bg-yellow-100 {
+  background-color: #fef3c7 !important;
+}
+
+.bg-orange-100 {
+  background-color: #fed7aa !important;
+}
+
+/* Layout and container styling */
+#patient-table-container {
+  overflow-x: auto;
+  overflow-y: visible;
+  margin-top: 4px;
+}
+
+#header {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown specific styling */
+#patient-list-select option[disabled] {
+  font-style: italic;
+  color: #9ca3af;
+}
+
+/* Remove focus outline from select dropdown */
+#patient-list-select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.flex-none { flex: none; }
+.min-w-\\[200px\\] { min-width: 200px; }
+.max-w-sm { max-width: 24rem; }
+.relative { position: relative; }
+.flex { display: flex; }
+.cursor-pointer { cursor: pointer; }
+.border { border-width: 1px; }
+.border-slate-400 { border-color: rgb(148 163 184); }
+.bg-transparent { background-color: transparent; }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.transition { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; }
+.duration-200 { transition-duration: 200ms; }
+.ease { transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.text-slate-600 { color: rgb(71 85 105); }
+.tracking-tighter { letter-spacing: -0.05em; }
+.pr-8 { padding-right: 2rem; }
+.pl-1 { padding-left: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+
+/* Focus styles */
+.focus\\:border-slate-400:focus { border-color: rgb(148 163 184); }
+.focus\\:shadow-md:focus { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+.focus\\:outline-none:focus { outline: 2px solid transparent; outline-offset: 2px; }
+
+/* Remove focus outline from select dropdown */
+#patient-list-select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.focus\\:opacity-80:focus { opacity: 0.8; }
+
+/* Hover styles */
+.hover\\:border-slate-400:hover { border-color: rgb(148 163 184); }
+
+/* Placeholder styles */
+.placeholder\\:text-slate-400::placeholder { color: rgb(148 163 184); }
+
+/* Clean table styling */
+#patient-table-container {
+  margin-top: 1rem;
+}
+
+#loading-message {
+  color: rgb(107 114 128);
+  font-style: italic;
+  padding: 1rem;
+}
+
+/* Handsontable overrides for clean look */
+.handsontable {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-size: 0.875rem;
+}
+
+.handsontable th {
+  background-color: rgb(249 250 251);
+  font-weight: 500;
+  color: rgb(55 65 81);
+  height: 32px;
+}
+
+.handsontable td {
+  border-color: rgb(229 231 235);
+  height: 32px;
+  vertical-align: middle;
+  padding: 4px 6px;
+  text-align: center; /* Ensure all cell content is centered */
+}
+
+.handsontable tbody tr:hover td {
+  background-color: rgb(249 250 251);
+}
+
+/* Fix row height for consistent appearance */
+.handsontable tr {
+  height: 32px;
+}
+
+/* Healthcare Order Status Icons - Professional medical progress indicators */
+/* Based on Healthcare Order Status Icons Technical Specification v3 */
+/* Scaled to match Font Awesome icon sizes in table (14px to match Status/Acuity) */
+
+.progress-not-started {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #6c757d;
+  border-radius: 50%;
+  background-color: transparent;
+  box-sizing: border-box;
+  margin: 0 auto; /* Center horizontally */
+}
+
+.progress-pending {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(90deg, #ffc107 50%, #f8f9fa 50%);
+  border: 1px solid #ffc107;
+  border-radius: 50%;
+  box-sizing: border-box;
+  margin: 0 auto; /* Center horizontally */
+}
+
+.progress-completed {
+  width: 14px;
+  height: 14px;
+  background-color: #28a745;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: white;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: bold;
+  margin: 0 auto; /* Center horizontally */
+}
+
+/* Screening Color-Coded Icons (Issue #41) */
+.screening-positive {
+  width: 14px;
+  height: 14px;
+  background-color: #dc3545; /* Red - Sepsis */
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: white;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.screening-indeterminate {
+  width: 14px;
+  height: 14px;
+  background-color: #f59e0b; /* Orange/Yellow - Cannot determine (darker for visibility) */
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: white;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.screening-ruled-out {
+  width: 14px;
+  height: 14px;
+  background-color: #28a745; /* Green - Ruled out */
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: white;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Quick Launch POCs - Unified Clickable Action Styling (Issues #28, #29) */
+/* Used by both PowerForm and PowerPlan clickable circles */
+.clickable-action {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable-action:hover {
+  transform: scale(1.2);
+  border-color: #0066cc !important;
+  box-shadow: 0 0 4px rgba(0, 102, 204, 0.4);
+}
+
+/* Clinical Tooltip System - Healthcare-Grade Styling */
+/* Designed for sepsis dashboard clinical timing information */
+
+.tooltip-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Default: center for most columns */
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+/* Left-aligned tooltip containers for text columns (v1.33.0) */
+.htLeft .tooltip-container {
+  display: block !important; /* Remove flex, use block for left-align */
+  text-align: left !important;
+  justify-content: unset !important;
+}
+
+/* Patient name link styling (v1.33.0 - GitHub Issue #13) */
+.patient-name-link {
+  color: #0066cc !important; /* Blue for links - !important to override td color */
+  text-decoration: none !important; /* No underline by default */
+  cursor: pointer;
+}
+
+.patient-name-link:hover {
+  text-decoration: underline !important; /* Underline on hover only */
+}
+
+.tooltip-content {
+  position: fixed; /* Changed from absolute to fixed for better positioning */
+  bottom: auto;
+  top: auto;
+  left: auto;
+  right: auto;
+  transform: none;
+  z-index: 9999; /* Higher z-index to ensure it appears above Handsontable */
+
+  /* Cerner-style clinical tooltip styling */
+  background-color: #fffbeb; /* Cerner yellow/cream background */
+  color: #374151; /* Dark gray text for readability */
+  border: 1px solid #d1d5db; /* Subtle gray border */
+  padding: 6px 10px;
+  border-radius: 3px; /* Smaller radius for clinical look */
+  font-size: 0.75rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-weight: 400; /* Normal weight, more subtle */
+  line-height: 1.3;
+  white-space: normal; /* Allow wrapping for multi-line content */
+  min-width: 180px;
+  max-width: 300px; /* Prevent overly wide tooltips */
+
+  /* Subtle shadow like Cerner */
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 3px -1px rgba(0, 0, 0, 0.06);
+
+  /* Hidden by default */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  /* Smooth transition */
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+/* Tooltip arrow - Cerner style (pointing upward since tooltip is below) */
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-bottom-color: #fffbeb; /* Match Cerner yellow background */
+}
+
+/* Arrow border for subtle effect */
+.tooltip-content::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: #d1d5db; /* Border color for arrow outline */
+  margin-bottom: 1px;
+}
+
+/* Visible state */
+.tooltip-content.tooltip-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Clinical timing layout within tooltip */
+.tooltip-timing {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tooltip-timing-item {
+  display: flex;
+  justify-content: space-between;
+  min-width: 200px;
+}
+
+.tooltip-timing-label {
+  font-weight: 500; /* Medium weight for clinical subtlety */
+  color: #6b7280; /* Muted gray for labels */
+  text-align: left; /* Ensure left alignment */
+  flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+.tooltip-timing-value {
+  font-weight: 400; /* Normal weight */
+  color: #374151; /* Darker gray for values */
+  text-align: right; /* Ensure right alignment */
+  margin-left: 8px; /* Space between label and value */
+}
+
+/* Alert criteria styling for proper alignment */
+.alert-criteria-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alert-criteria-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2px;
+  padding-left: 12px;
+  position: relative;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.alert-criteria-item::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #6b7280;
+  font-weight: bold;
+}
+
+.alert-criteria-text {
+  flex: 1;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+/* Alternative positioning for edge cases */
+.tooltip-content.tooltip-bottom {
+  bottom: auto;
+  top: 125%;
+}
+
+.tooltip-content.tooltip-bottom::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: #1e3a8a;
+}
+
+/* Responsive sizing for different screen sizes */
+@media (max-width: 768px) {
+  .tooltip-content {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+
+  .tooltip-timing-item {
+    min-width: 180px;
+  }
+}
+
+/* ========================================== */
+/* Refresh Button Styles */
+/* Copied from respiratory-assignment-worklist-fix */
+/* ========================================== */
+
+/* Refresh Button Specific Styles - Updated for Issue #35 (icon only, no timestamp) */
+#refresh-data {
+  /* Inherits from .btn-icon class */
+}
+
+#refresh-data.disabled {
+  color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+#refresh-data.disabled.refreshing .fa-sync-alt {
+  animation: spin 1s linear infinite !important;
+  color: #0066cc;
+  opacity: 1;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================== */
+/* Auto-Refresh UI Styles (Issue #35, Task 8.5) */
+/* ========================================== */
+
+/* Refresh controls group container */
+.refresh-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85em;
+}
+
+/* Refresh label */
+.refresh-label {
+  color: #6b7280;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+/* Manual refresh icon button (no timestamp) */
+.btn-icon {
+  padding: 6px;
+  min-width: 32px;
+  height: 32px;
+  background: none;
+  color: #0066cc;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background-color: rgba(0, 102, 204, 0.1);
+  border-color: #0066cc;
+}
+
+.btn-icon .fa-sync-alt {
+  transition: transform 0.3s ease;
+}
+
+.btn-icon.refreshing .fa-sync-alt {
+  animation: spin 1s linear infinite;
+}
+
+/* iOS-Style Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #16a34a;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.toggle-switch:hover .toggle-slider {
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Auto-refresh status indicator */
+.auto-refresh-status {
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  min-width: 30px;
+  text-align: center;
+}
+
+.auto-refresh-status.active {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+/* Auto-refresh countdown */
+.auto-refresh-countdown {
+  font-size: 0.8em;
+  color: #6b7280;
+  font-family: monospace;
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 65px;
+  display: inline-block;
+  text-align: left;
+}
+
+/* Filter Controls Group (Issue #57) */
+.filter-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85em;
+}
+
+/* Filter label */
+.filter-label {
+  color: #6b7280;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+/* Control separator pipes (FirstNet style) */
+.control-separator {
+  color: #cbd5e1;
+  font-size: 1.2em;
+  font-weight: 300;
+  user-select: none;
+  margin: 0 4px;
+}
+
+/* Patient stats text (FirstNet style - replaces count) */
+.patient-stats-text {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: normal;
+  white-space: nowrap;
+  display: inline-block;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Individual stat item */
+.stat-item {
+  display: inline-block;
+  font-weight: normal;
+  color: #64748b;
+}
+
+.stat-item:not(:last-child) {
+  margin-right: 12px;
+}
+
+/* ========================================== */
+/* NOTE: .clickable-action styles defined earlier (line 372) */
+/* Unified styling for both PowerForm and PowerPlan POCs */
+/* ========================================== */
+/* ============================================
+   Tippy.js Custom Theme - Sepsis Standard
+   Issue #48 - Tooltip Standardization
+   ============================================ */
+
+.tippy-box[data-theme~='sepsis-standard'] {
+  background-color: #fffbeb;
+  border: 1.5px solid #9ca3af;
+  color: #374151;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  font-size: 0.75rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  max-width: 300px;
+}
+
+.tippy-box[data-theme~='sepsis-standard'] .tippy-arrow {
+  color: #fffbeb;
+}
+
+.tippy-box[data-theme~='sepsis-standard'] .tippy-arrow::before {
+  border-color: #9ca3af;
+}
+
+.tippy-box[data-theme~='sepsis-standard'] .tippy-content {
+  padding: 6px 10px;
+}

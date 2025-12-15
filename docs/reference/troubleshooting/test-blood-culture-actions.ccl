@@ -1,0 +1,148 @@
+/*******************************************************************************
+* Test Query: Blood Culture Order Actions Discovery
+*
+* Purpose: Discover what action types exist for blood culture orders
+*          and how to properly reference them (CKI, DISPLAYKEY, MEANING)
+*
+* Usage: Replace ORDER_ID_TO_TEST with actual blood culture order_id from CERT
+*        Run in DiscernExplorer to see complete action lifecycle
+*
+* Expected Results:
+* - All actions for the order (Ordered, Dispatched, Collected, In-Lab, Completed)
+* - Action type codes and display values
+* - Timestamps for each action
+*******************************************************************************/
+
+; STEP 1: Find all actions for a specific blood culture order
+; Replace with actual "C Blood" order_id from CERT (e.g., 6676258775)
+
+SELECT
+  oa.order_id
+  , oa.action_sequence
+  , oa.action_type_cd
+  , action_type_display = uar_get_code_display(oa.action_type_cd)
+  , action_type_meaning = uar_get_code_meaning(oa.action_type_cd)
+  , oa.action_dt_tm
+  , action_dt_tm_disp = format(oa.action_dt_tm, "mm/dd/yyyy hh:mm;;q")
+  , oa.action_personnel_id
+  , action_by = uar_get_prsnl_name(oa.action_personnel_id)
+  , oa.needs_verify_ind
+  , o.order_mnemonic
+  , o.order_status_cd
+  , order_status = uar_get_code_display(o.order_status_cd)
+
+FROM
+  orders o
+  , order_action oa
+
+PLAN o
+  WHERE o.order_id = 0.00  ; ← REPLACE WITH ACTUAL BLOOD CULTURE ORDER_ID
+
+JOIN oa
+  WHERE oa.order_id = o.order_id
+
+ORDER BY
+  oa.action_sequence ASC  ; Chronological order
+
+WITH TIME = 60
+
+
+/*******************************************************************************
+* STEP 2: Get CKI values for action types
+*
+* Run this after STEP 1 to get the CKI reference for each action_type_cd
+*******************************************************************************/
+
+SELECT
+  cv.code_value
+  , cv.display
+  , cv.display_key
+  , cv.cdf_meaning
+  , cv.description
+  , cki = cv.cki
+
+FROM
+  code_value cv
+
+WHERE cv.code_set = 6004  ; Order Action Types code set
+  AND cv.active_ind = 1
+  AND cv.display in (
+    "Order",
+    "Ordered",
+    "Dispatch",
+    "Dispatched",
+    "Collect",
+    "Collected",
+    "Specimen Collected",
+    "In Lab",
+    "InLab",
+    "Complete",
+    "Completed"
+  )
+
+ORDER BY cv.display
+
+WITH TIME = 60
+
+
+/*******************************************************************************
+* STEP 3: Test pattern for ALL blood culture orders for a patient
+*
+* Shows all actions for all blood culture orders for one encounter
+*******************************************************************************/
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , oa.action_sequence
+  , action_type = uar_get_code_display(oa.action_type_cd)
+  , action_time = format(oa.action_dt_tm, "mm/dd/yy hh:mm;;q")
+  , action_by = uar_get_prsnl_name(oa.action_personnel_id)
+
+FROM
+  orders o
+  , order_action oa
+
+PLAN o
+  WHERE o.encntr_id = 0.00  ; ← REPLACE WITH ACTUAL ENCNTR_ID
+  AND o.catalog_type_cd = value(uar_get_code_by("MEANING", 6000, "GENERAL LAB"))
+  AND (
+    cnvtupper(o.order_mnemonic) like "*C BLOOD*"
+    OR cnvtupper(o.order_mnemonic) like "*BLOOD CULTURE*"
+  )
+  AND o.active_ind = 1
+
+JOIN oa
+  WHERE oa.order_id = o.order_id
+
+ORDER BY
+  o.order_id
+  , oa.action_sequence ASC
+
+WITH TIME = 60
+
+
+/*******************************************************************************
+* Instructions for Testing:
+*
+* 1. Find a blood culture order_id from PowerPlan data in CERT
+*    - Look in console JSON for "C Blood" orders
+*    - Example: 6676258775, 6867824065
+*
+* 2. Run STEP 1 with that order_id to see all actions
+*    - Note which action types exist
+*    - Note the timestamps
+*
+* 3. Run STEP 2 to get CKI/DISPLAYKEY/MEANING for those action types
+*    - Use this to write proper uar_get_code_by() calls
+*
+* 4. Run STEP 3 with an encntr_id to see all blood cultures for a patient
+*    - Verify we can get all orders + all actions
+*
+* Expected Output from STEP 1:
+* Order ID | Seq | Action Type CD | Display | Time | Who
+* 6676258775 | 1 | 2548 | Order | 04/05/25 10:19 | Williams, PA-C
+* 6676258775 | 2 | 2550 | Dispatch | 04/05/25 10:20 | Lab Tech
+* 6676258775 | 3 | XXXX | Collected | 04/05/25 10:25 | Phlebotomist
+* 6676258775 | 4 | 2543 | Complete | 04/05/25 11:30 | Lab System
+*******************************************************************************/

@@ -1,0 +1,351 @@
+ccl program: 1_cust_mp_sep_get_pdata_01
+
+execute:
+1_cust_mp_sep_get_pdata_01 "MINE", 114259401 go
+
+json response:
+{
+  "drec": {
+    "patientcnt": 1,
+    "patientListId": 0,
+    "name": "Generic Patient List",
+    "description": "Basic patient demographics",
+    "patientListTypeCd": 0,
+    "ownerId": 0,
+    "prsnlAccessCd": 0,
+    "executionDtTm": "/Date(0000-00-00T00:00:00.000+00:00)/",
+    "executionStatusCd": 0,
+    "executionStatusDisp": "",
+    "arguments": [],
+    "encntrTypeFilters": [],
+    "patients": [
+      {
+        "personId": 25581750,
+        "personName": "ZZTEST, ZZSEPSISTWO",
+        "encntrId": 114259401,
+        "facility": "GH",
+        "unit": "ZZGTST",
+        "roombed": "ZZ05-01",
+        "age": "",
+        "gender": "Male",
+        "admissionDate": "03/11/2025",
+        "patientClass": "",
+        "isdischarged": 0,
+        "fin": "3010319548",
+        "mrn": "",
+        "powerplans": [
+          {
+            "ppPowerplanName": "ED Severe Sepsis - ADULT",
+            "ppPatientName": "ZZTEST, ZZSEPSISTWO",
+            "ppFinNumber": "3010319548",
+            "ppType": "",
+            "ppGroupId": 10770752899,
+            "ppPathwayId": 5264185977,
+            "ppPathwayCatalogId": 273284307,
+            "phase": [
+              {
+                "pStatus": "Initiated",
+                "pFacility": "GH",
+                "pPhaseName": "ED Lab Panel",
+                "pProviderName": "Crawford, DO, Adam Thomas",
+                "pEnteredBy": "Shelton, Troy P",
+                "pOrderDate": "09/09/2025",
+                "pPhaseId": 5264185977,
+                "pPcgId": 273284307,
+                "pPhaseCnt": 0,
+                "pDiscCompOrderCnt": 0,
+                "pPrescriptionOrdCnt": 0,
+                "pTotalOrderCnt": 10,
+                "pCompletedInd": 0,
+                "pPhaseType": "SUBPHASE",
+                "pGroupNum": 5264186215,
+                "pParentPhaseDispDesc": "ED Severe Sepsis - ADULT",
+                "pParentPhaseDesc": "ED Severe Sepsis - ADULT EKM",
+                "pCatGroupId": 10770752899,
+                "pParentName": "",
+                "orders": [
+                  {
+                    "oOrderId": 6867049731,
+                    "oOrderMnemonic": "CBC",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 2921414,
+                    "oOrderSynonymId": 2921415,
+                    "oOrderCnt": 1
+                  },
+                  {
+                    "oOrderId": 6867049733,
+                    "oOrderMnemonic": "LA",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 272253411,
+                    "oOrderSynonymId": 272253419,
+                    "oOrderCnt": 2
+                  },
+                  {
+                    "oOrderId": 6867049735,
+                    "oOrderMnemonic": "NA WB",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 274280511,
+                    "oOrderSynonymId": 274280519,
+                    "oOrderCnt": 3
+                  },
+                  {
+                    "oOrderId": 6867049737,
+                    "oOrderMnemonic": "K WB",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 272272519,
+                    "oOrderSynonymId": 272272527,
+                    "oOrderCnt": 4
+                  },
+                  {
+                    "oOrderId": 6867049739,
+                    "oOrderMnemonic": "CL WB",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 274280631,
+                    "oOrderSynonymId": 274280639,
+                    "oOrderCnt": 5
+                  },
+                  {
+                    "oOrderId": 6867049741,
+                    "oOrderMnemonic": "CO2 WB",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 274280641,
+                    "oOrderSynonymId": 274280649,
+                    "oOrderCnt": 6
+                  },
+                  {
+                    "oOrderId": 6867049743,
+                    "oOrderMnemonic": "IOCA",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 31558539,
+                    "oOrderSynonymId": 31558545,
+                    "oOrderCnt": 7
+                  },
+                  {
+                    "oOrderId": 6867049745,
+                    "oOrderMnemonic": "GLU WB",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 272253391,
+                    "oOrderSynonymId": 272253399,
+                    "oOrderCnt": 8
+                  },
+                  {
+                    "oOrderId": 6867049747,
+                    "oOrderMnemonic": "CREA WB",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 272244003,
+                    "oOrderSynonymId": 272244011,
+                    "oOrderCnt": 9
+                  },
+                  {
+                    "oOrderId": 6867049749,
+                    "oOrderMnemonic": "BUN",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 2921234,
+                    "oOrderSynonymId": 2921235,
+                    "oOrderCnt": 10
+                  }
+                ],
+                "subphases": []
+              },
+              {
+                "pStatus": "Initiated",
+                "pFacility": "GH",
+                "pPhaseName": "Blood Culture X 2",
+                "pProviderName": "Crawford, DO, Adam Thomas",
+                "pEnteredBy": "Shelton, Troy P",
+                "pOrderDate": "09/09/2025",
+                "pPhaseId": 5264185985,
+                "pPcgId": 7929659547,
+                "pPhaseCnt": 0,
+                "pDiscCompOrderCnt": 0,
+                "pPrescriptionOrdCnt": 0,
+                "pTotalOrderCnt": 2,
+                "pCompletedInd": 0,
+                "pPhaseType": "SUBPHASE",
+                "pGroupNum": 5264186215,
+                "pParentPhaseDispDesc": "ED Severe Sepsis - ADULT",
+                "pParentPhaseDesc": "ED Severe Sepsis - ADULT EKM",
+                "pCatGroupId": 10770752899,
+                "pParentName": "",
+                "orders": [
+                  {
+                    "oOrderId": 6867049751,
+                    "oOrderMnemonic": "C Blood",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 31713873,
+                    "oOrderSynonymId": 31713879,
+                    "oOrderCnt": 1
+                  },
+                  {
+                    "oOrderId": 6867049753,
+                    "oOrderMnemonic": "C Blood",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 31713873,
+                    "oOrderSynonymId": 31713879,
+                    "oOrderCnt": 2
+                  }
+                ],
+                "subphases": []
+              },
+              {
+                "pStatus": "Initiated",
+                "pFacility": "GH",
+                "pPhaseName": "ED Severe Sepsis - ADULT EKM",
+                "pProviderName": "Crawford, DO, Adam Thomas",
+                "pEnteredBy": "Shelton, Troy P",
+                "pOrderDate": "09/09/2025",
+                "pPhaseId": 5264185987,
+                "pPcgId": 10770752899,
+                "pPhaseCnt": 0,
+                "pDiscCompOrderCnt": 1,
+                "pPrescriptionOrdCnt": 0,
+                "pTotalOrderCnt": 14,
+                "pCompletedInd": 0,
+                "pPhaseType": "CAREPLAN",
+                "pGroupNum": 5264186215,
+                "pParentPhaseDispDesc": "",
+                "pParentPhaseDesc": "",
+                "pCatGroupId": 10770752899,
+                "pParentName": "",
+                "orders": [
+                  {
+                    "oOrderId": 6867049653,
+                    "oOrderMnemonic": "Bedrest",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 2694596,
+                    "oOrderSynonymId": 2694597,
+                    "oOrderCnt": 1
+                  },
+                  {
+                    "oOrderId": 6867049673,
+                    "oOrderMnemonic": "Hepatic",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 2921556,
+                    "oOrderSynonymId": 2921557,
+                    "oOrderCnt": 2
+                  },
+                  {
+                    "oOrderId": 6867049677,
+                    "oOrderMnemonic": "PT",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 2921669,
+                    "oOrderSynonymId": 2921670,
+                    "oOrderCnt": 3
+                  },
+                  {
+                    "oOrderId": 6867049679,
+                    "oOrderMnemonic": "APTT",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 2921672,
+                    "oOrderSynonymId": 3308667,
+                    "oOrderCnt": 4
+                  },
+                  {
+                    "oOrderId": 6867049695,
+                    "oOrderMnemonic": "MRSAscreen",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 57289223,
+                    "oOrderSynonymId": 57289229,
+                    "oOrderCnt": 5
+                  },
+                  {
+                    "oOrderId": 6867049697,
+                    "oOrderMnemonic": "UrineScr",
+                    "oOrderStatus": "Dispatched",
+                    "oOrderCatalogCd": 1781399667,
+                    "oOrderSynonymId": 1781399675,
+                    "oOrderCnt": 6
+                  },
+                  {
+                    "oOrderId": 6867049711,
+                    "oOrderMnemonic": "Peripheral IV",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 2780695,
+                    "oOrderSynonymId": 2780696,
+                    "oOrderCnt": 7
+                  },
+                  {
+                    "oOrderId": 6867049713,
+                    "oOrderMnemonic": "Vital Signs",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 2696752,
+                    "oOrderSynonymId": 2696753,
+                    "oOrderCnt": 8
+                  },
+                  {
+                    "oOrderId": 6867049715,
+                    "oOrderMnemonic": "Cardiac Monitoring",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 3713507,
+                    "oOrderSynonymId": 3713508,
+                    "oOrderCnt": 9
+                  },
+                  {
+                    "oOrderId": 6867049717,
+                    "oOrderMnemonic": "Oximetry - Continuous",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 24486639,
+                    "oOrderSynonymId": 24486643,
+                    "oOrderCnt": 10
+                  },
+                  {
+                    "oOrderId": 6867049721,
+                    "oOrderMnemonic": "CV Electrocardiogram 12 Lead",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 270305265,
+                    "oOrderSynonymId": 270305269,
+                    "oOrderCnt": 11
+                  },
+                  {
+                    "oOrderId": 6867049725,
+                    "oOrderMnemonic": "Notify Provider",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 269846097,
+                    "oOrderSynonymId": 269846101,
+                    "oOrderCnt": 12
+                  },
+                  {
+                    "oOrderId": 6867049727,
+                    "oOrderMnemonic": "ED Adult Severe Sepsis Audit",
+                    "oOrderStatus": "Completed",
+                    "oOrderCatalogCd": 661838449,
+                    "oOrderSynonymId": 661838457,
+                    "oOrderCnt": 13
+                  },
+                  {
+                    "oOrderId": 6867049729,
+                    "oOrderMnemonic": "Sepsis Quality Measures",
+                    "oOrderStatus": "Ordered",
+                    "oOrderCatalogCd": 273925199,
+                    "oOrderSynonymId": 273925207,
+                    "oOrderCnt": 14
+                  }
+                ],
+                "subphases": [
+                  {
+                    "subphaseIds": 5264185977
+                  },
+                  {
+                    "subphaseIds": 5264185985
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "statusData": {
+      "status": "S",
+      "message": "Found1 patients with basic demographics",
+      "subeventstatus": [
+        {
+          "operationname": "",
+          "operationstatus": "",
+          "targetobjectname": "",
+          "targetobjectvalue": ""
+        }
+      ]
+    }
+  }
+}

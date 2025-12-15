@@ -1,0 +1,162 @@
+/*******************************************************************************
+* Test Query: Multi-Ingredient IV Drip Detection
+*
+* Purpose: Validate order_ingredient table join for detecting multi-ingredient
+*          IV fluids before implementing in CCL v17
+*
+* Usage: Replace ORDER_ID_TO_TEST with actual order_id from CERT
+*        Run in DiscernExplorer to see ingredient breakdown
+*
+* Expected Results:
+* - Pure crystalloid (NS, LR, Normosol): 1 row, ingredient_type_flag = 2 (Base)
+* - Multi-ingredient IV: Multiple rows or flag 3/4/5 present
+*******************************************************************************/
+
+; STEP 1: Test a specific order to see all ingredients
+; Replace ORDER_ID_TO_TEST with actual order_id from your fluids query
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , o.template_order_flag
+  , oi.comp_sequence
+  , oi.ingredient_type_flag
+  , ingredient_type = evaluate(oi.ingredient_type_flag,
+      0, "Not Set",
+      1, "Medication",
+      2, "Base (Fluid)",
+      3, "Additive (Med in Fluid)",
+      4, "Compound Parent",
+      5, "Compound Child",
+      "Unknown")
+  , oi.order_mnemonic as ingredient_name
+  , oi.catalog_cd
+  , oi.action_sequence
+
+FROM
+  orders o
+  , order_ingredient oi
+
+PLAN o
+  WHERE o.order_id = 0.00  ; ← REPLACE WITH ACTUAL ORDER_ID FROM CERT
+
+JOIN oi
+  WHERE oi.order_id = o.order_id
+  AND oi.action_sequence = (
+    SELECT max(oi2.action_sequence)
+    FROM order_ingredient oi2
+    WHERE oi2.order_id = o.order_id
+  )
+
+ORDER BY
+  oi.comp_sequence
+
+WITH TIME = 60
+
+
+/*******************************************************************************
+* STEP 2: Test counting approach
+*
+* This query counts ingredients and flags multi-ingredient status
+*******************************************************************************/
+
+; Test with multiple order_ids to see pattern
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , ingredient_count = count(oi.ingredient_sequence)
+  , has_additive = max(if(oi.ingredient_type_flag in (3, 4, 5)) 1 else 0 endif)
+  , multi_ingredient_ind = evaluate(
+      1, 1, count(oi.ingredient_sequence) > 1 OR max(if(oi.ingredient_type_flag in (3, 4, 5)) 1 else 0 endif) = 1,
+      0, "Pure Crystalloid",
+      "Multi-Ingredient")
+
+FROM
+  orders o
+  , order_ingredient oi
+
+PLAN o
+  WHERE o.encntr_id = 0.00  ; ← REPLACE WITH ACTUAL ENCNTR_ID FROM CERT
+  AND o.catalog_type_cd = value(uar_get_code_by("MEANING", 6000, "PHARMACY"))
+  AND (
+    cnvtupper(o.order_mnemonic) like "*SODIUM CHLORIDE 0.9%*"
+    OR cnvtupper(o.order_mnemonic) like "*NORMAL SALINE*"
+    OR cnvtupper(o.order_mnemonic) like "*LACTATED RINGERS*"
+    OR cnvtupper(o.order_mnemonic) like "*NORMOSOL*"
+  )
+  AND o.template_order_flag in (0, 1)
+  AND o.active_ind = 1
+
+JOIN oi
+  WHERE oi.order_id = o.order_id
+  AND oi.action_sequence = (
+    SELECT max(oi2.action_sequence)
+    FROM order_ingredient oi2
+    WHERE oi2.order_id = o.order_id
+  )
+
+GROUP BY
+  o.order_id
+  , o.order_mnemonic
+
+ORDER BY
+  o.order_id
+
+WITH TIME = 60
+
+
+/*******************************************************************************
+* STEP 3: Detailed ingredient breakdown for analysis
+*
+* Shows ALL ingredients with their flags to understand order composition
+*******************************************************************************/
+
+SELECT
+  o.order_id
+  , o.order_mnemonic
+  , oi.comp_sequence as seq
+  , oi.ingredient_type_flag as flag
+  , flag_meaning = evaluate(oi.ingredient_type_flag,
+      2, "Base Fluid",
+      3, "Additive",
+      4, "Compound Parent",
+      5, "Compound Child",
+      "Other")
+  , oi.order_mnemonic as ingredient
+  , oi.strength
+  , oi.strength_unit_cd
+  , oi.volume
+  , oi.volume_unit_cd
+
+FROM
+  orders o
+  , order_ingredient oi
+
+PLAN o
+  WHERE o.encntr_id = 0.00  ; ← REPLACE WITH ACTUAL ENCNTR_ID
+  AND o.catalog_type_cd = value(uar_get_code_by("MEANING", 6000, "PHARMACY"))
+  AND cnvtupper(o.order_mnemonic) like "*NORMAL SALINE*"
+  AND o.template_order_flag in (0, 1)
+
+JOIN oi
+  WHERE oi.order_id = o.order_id
+
+ORDER BY
+  o.order_id
+  , oi.comp_sequence
+
+WITH TIME = 60
+
+/*******************************************************************************
+* Instructions for Testing:
+*
+* 1. Find an order_id from your current fluids query in CERT
+* 2. Run STEP 1 with that order_id to see ingredient breakdown
+* 3. Find an encntr_id with multiple fluid orders
+* 4. Run STEP 2 to see multi-ingredient detection across multiple orders
+* 5. Run STEP 3 for detailed ingredient composition analysis
+*
+* Expected Results:
+* - Pure NS/LR/Normosol: 1 ingredient, flag = 2, multi_ingredient_ind = "Pure Crystalloid"
+* - NS + Medication: 2+ ingredients or flag = 3, multi_ingredient_ind = "Multi-Ingredient"
+*******************************************************************************/

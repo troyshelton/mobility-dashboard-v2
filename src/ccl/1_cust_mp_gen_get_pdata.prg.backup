@@ -1,0 +1,807 @@
+drop program 1_mhn_mp_rt_patproc_03 go
+create program 1_mhn_mp_rt_patproc_03
+ 
+prompt 
+	"Output to File/Printer/MINE" = "MINE"
+	, "Encounter IDs" = 0 
+
+with OUTDEV, ENCOUNTER_IDS
+ 
+free record recRTActiveWorklist
+record recRTActiveWorklist(
+ 	1 patientCnt = i4
+	1 patient_list_id = f8
+	1 name = vc
+	1 description = vc
+	1 patient_list_type_cd = f8
+	1 owner_id = f8
+	1 prsnl_access_cd = f8
+	1 execution_dt_tm = dq8
+	1 execution_status_cd = f8
+	1 execution_status_disp = vc
+	1 arguments[*]
+		2 argument_name = vc
+		2 argument_value = vc
+		2 parent_entity_name = vc
+		2 parent_entity_id = f8
+	1 encntr_type_filters[*]
+		2 encntr_type_cd = f8
+	1 patients[*]
+		2 person_id = f8
+		2 person_name = vc
+		2 encntr_id = f8
+		2 facility = vc
+		2 unit = vc
+		2 roomBed = vc
+		2 tasks = vc
+		2 meds = vc
+		2 newOrders = i1
+		2 ord_need_nurse_review_ind = i1
+		2 ordrev_nurse_not_reviewed = i1
+		2 isDischarged = i1
+		2 fin = vc
+		2 hasActiveRTTasks = i1
+		2 hasActiveRTMeds = i1
+	1 status_data
+		2 status = c1
+		2 message = vc
+		2 subeventstatus[1]
+			3 operationname = c25
+			3 operationstatus = c1
+			3 targetobjectname = c25
+			3 targetobjectvalue = vc
+)
+
+; Variables for processing
+declare cnt = i4 with noconstant(0)
+declare num_patients = i4 with noconstant(0)
+declare pt_idx = i4 with noconstant(0)
+declare patient_task = vc with noconstant("")
+declare patient_med = vc with noconstant("")
+
+declare active_count = i4 with noconstant(0)
+
+;call echo(build("Processing encounter IDs: ", $ENCOUNTER_IDS))
+
+; Get patient info using the encounter IDs
+; The ENCOUNTER_IDS parameter should contain the value() function already
+select into "nl:"
+from 
+    encounter e,
+    person p
+plan e
+    where e.encntr_id = $ENCOUNTER_IDS
+    and e.active_ind = 1
+join p
+    where p.person_id = e.person_id
+    and p.active_ind = 1
+head report
+    cnt = 0
+    stat = alterlist(recRTActiveWorklist->patients, 10)
+    
+detail
+    cnt = cnt + 1
+    
+    ; Resize array if needed
+    if (cnt > size(recRTActiveWorklist->patients, 5))
+        stat = alterlist(recRTActiveWorklist->patients, cnt + 10)
+    endif
+    
+    ; Store patient info
+    recRTActiveWorklist->patients[cnt].encntr_id = e.encntr_id
+    recRTActiveWorklist->patients[cnt].person_id = e.person_id
+    recRTActiveWorklist->patients[cnt].person_name = p.name_full_formatted
+    
+    ; Initialize other fields
+    recRTActiveWorklist->patients[cnt].tasks = ""
+    recRTActiveWorklist->patients[cnt].meds = ""
+    recRTActiveWorklist->patients[cnt].newOrders = 0
+    recRTActiveWorklist->patients[cnt].ord_need_nurse_review_ind = 0
+    recRTActiveWorklist->patients[cnt].ordrev_nurse_not_reviewed = 0
+    recRTActiveWorklist->patients[cnt].isDischarged = 0
+    recRTActiveWorklist->patients[cnt].hasActiveRTTasks = 0
+    recRTActiveWorklist->patients[cnt].hasActiveRTMeds = 0
+    
+    ; Get location info directly in the same query
+    recRTActiveWorklist->patients[cnt].facility = trim(uar_get_code_display(e.loc_facility_cd), 3)
+    recRTActiveWorklist->patients[cnt].unit = trim(uar_get_code_display(e.loc_nurse_unit_cd), 3)
+    recRTActiveWorklist->patients[cnt].roomBed = build(
+        uar_get_code_display(e.loc_room_cd),
+        "-",
+        uar_get_code_display(e.loc_bed_cd)
+    )
+    
+    ; Check if discharged
+    if (e.disch_dt_tm > 0)
+        recRTActiveWorklist->patients[cnt].isDischarged = 1
+    endif
+
+foot report
+    num_patients = cnt
+    
+    ; Resize the array to actual size
+    if (cnt > 0)
+        stat = alterlist(recRTActiveWorklist->patients, cnt)
+    else
+        stat = alterlist(recRTActiveWorklist->patients, 0)
+    endif
+with nocounter, format, time = 400
+
+;call echo(build("Found ", num_patients, " patients from encounter IDs"))
+
+; Check if we have any patients
+if (num_patients = 0)
+    set recRTActiveWorklist->status_data.status = "Z"
+    set recRTActiveWorklist->status_data.message = "No patients found with the provided encounter IDs."
+    set recRTActiveWorklist->patientCnt = 0
+    
+    set _memory_reply_string = cnvtrectojson(recRTActiveWorklist, 4)
+    call echojson(recRTActiveWorklist, $1)
+    go to exit_script
+endif
+
+; Set basic info
+set recRTActiveWorklist->patient_list_id = 0
+set recRTActiveWorklist->name = "Respiratory Therapy Patients"
+set recRTActiveWorklist->description = "All patients with RT task/med status flags"
+set recRTActiveWorklist->patientCnt = num_patients
+set recRTActiveWorklist->status_data.status = "S"
+set recRTActiveWorklist->status_data.message = build("Found ", num_patients, " patients initially")
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Get FIN numbers (Financial Identification Numbers)
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Getting FIN numbers")
+
+; Process all patients to get their FIN numbers
+SELECT into "nl:"
+  ea.encntr_id,
+  ea.alias,
+  d1.seq
+
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients),
+    encntr_alias ea
+
+PLAN D1
+join ea
+    where ea.encntr_id = recRTActiveWorklist->patients[D1.SEQ].encntr_id
+    and ea.encntr_alias_type_cd = 1077.0  ; Standard FIN alias type
+    and ea.data_status_cd = 25.00         ; Active data status
+    and ea.end_effective_dt_tm > sysdate  ; Still effective
+
+detail
+    ; Store the FIN number for this patient
+    recRTActiveWorklist->patients[d1.seq].fin = trim(ea.alias, 3)
+    call echo(build("Found FIN ", trim(ea.alias, 3), " for patient ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Get RT tasks with meds
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Getting RT tasks with medications")
+
+; Variables for task processing
+declare rt_med_disp = vc with noconstant ("")
+declare task_prn_disp = vc with noconstant ("")
+
+; Get RT tasks for all patients
+SELECT distinct into "nl:"
+  ta.task_id,
+  ta.encntr_id,
+  ta.task_dt_tm,
+  ot.task_description,
+  od.oe_field_display_value,
+  o.prn_ind,
+  o2.ordered_as_mnemonic,
+  od2.oe_field_display_valu, ;e AS med_field,
+  d1.seq
+
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients),
+    task_activity ta,
+    order_task ot,
+    orders o,
+    order_detail od,
+    order_detail od2,
+    orders o2,
+    dummyt d2
+
+PLAN D1
+join ta
+    where ta.encntr_id = recRTActiveWorklist->patients[D1.SEQ].encntr_id
+    and ta.task_type_cd in (
+        value(uar_get_code_by("DISPLAYKEY",6026,"NURSINGRTSHARED")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYASMTTXMONITORING")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYCARE")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYINTERVENTIONS")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYTREATMENTSLTC")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RTHIDDENTASKS")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RTTXPROCEDURES"))
+    )
+    and ta.task_status_cd in (
+        value(uar_get_code_by("DISPLAYKEY",79,"OVERDUE")),
+        value(uar_get_code_by("DISPLAYKEY",79,"PENDING"))
+    ) 
+    and ta.active_ind = 1
+    and ta.task_dt_tm 
+        between cnvtdatetime(cnvtlookbehind("4,D",cnvtdatetime(curdate,curtime3),0)) 
+        and cnvtdatetime(cnvtlookahead("4,D",cnvtdatetime(curdate,curtime3),0))
+    ; Exclude continuous tasks (2646.00) here - they are handled in a separate query below
+    and ta.task_class_cd != 2646.00
+
+join ot
+    where ot.reference_task_id = ta.reference_task_id 
+    and ot.active_ind = 1
+
+join o
+    where o.order_id = ta.order_id
+
+join od
+    where (
+        (od.order_id = o.template_order_id and o.template_order_flag > 1)
+        or 
+        (od.order_id = o.order_id and o.template_order_flag = 0)
+    )
+    and od.oe_field_meaning_id = 2011.00
+
+join od2
+    where (
+        (od2.order_id = o.template_order_id and o.template_order_flag > 1)
+        or 
+        (od2.order_id = o.order_id and o.template_order_flag = 0)
+    )
+    and od2.oe_field_meaning_id = 9000.0
+
+join d2
+    where cnvtreal(od2.oe_field_display_value) > 0.00 
+
+join o2
+    where o2.order_id = cnvtreal(od2.oe_field_display_value)
+
+order by
+    d1.seq,
+    ta.task_type_cd,
+    ot.task_description,
+    ta.task_dt_tm
+
+head report
+    null
+
+head d1.seq
+    call echo(build("Processing tasks for patient: ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+detail
+    ; Build med display string if available
+    rt_med_disp = ""
+    if (o2.order_id > 0.00)
+        rt_med_disp = build(" (", o2.ordered_as_mnemonic, ")")
+    endif
+    
+    ; Build PRN display string if applicable
+    task_prn_disp = ""
+    if (o.prn_ind = 1)
+        task_prn_disp = ",PRN"
+    endif
+    
+    ; Format the task string
+    if (recRTActiveWorklist->patients[d1.seq].tasks > " ")
+        ; Add to existing tasks
+        recRTActiveWorklist->patients[d1.seq].tasks = build(
+            recRTActiveWorklist->patients[d1.seq].tasks,
+            "|",
+            ot.task_description,
+            rt_med_disp,
+            ",",
+            od.oe_field_display_value, 
+            task_prn_disp,
+            "^",
+            format(ta.task_dt_tm, "MM/DD/YYYY hh:mm;;Q"),
+            "^",
+            ta.task_id
+        )
+    else
+        ; First task
+        recRTActiveWorklist->patients[d1.seq].tasks = build(
+            ot.task_description,
+            rt_med_disp,
+            ",",
+            od.oe_field_display_value, 
+            task_prn_disp,
+            "^",
+            format(ta.task_dt_tm, "MM/DD/YYYY hh:mm;;Q"),
+            "^",
+            ta.task_id
+        )
+    endif
+    
+    ; Set flag indicating this patient has active RT tasks
+    recRTActiveWorklist->patients[d1.seq].hasActiveRTTasks = 1
+    
+    call echo(build("Added task: ", ot.task_description, " for patient ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400, outerjoin = d2
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Get tasks with no meds
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Get tasks with no meds")
+
+SELECT distinct into "nl:"
+  ta.task_id,
+  ta.encntr_id,
+  ta.task_dt_tm,
+  ot.task_description,
+  od.oe_field_display_value,
+  o.prn_ind,
+  d1.seq
+
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients),
+    task_activity ta,
+    order_task ot,
+    orders o,
+    order_detail od
+
+PLAN D1
+join ta
+    where ta.encntr_id = recRTActiveWorklist->patients[D1.SEQ].encntr_id
+    and ta.task_type_cd in (
+        value(uar_get_code_by("DISPLAYKEY",6026,"NURSINGRTSHARED")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYASMTTXMONITORING")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYCARE")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYINTERVENTIONS")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYTREATMENTSLTC")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RTHIDDENTASKS")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RTTXPROCEDURES"))
+    )
+    and ta.task_status_cd in (
+        value(uar_get_code_by("DISPLAYKEY",79,"OVERDUE")),
+        value(uar_get_code_by("DISPLAYKEY",79,"PENDING"))
+    ) 
+    and ta.active_ind = 1
+    and ta.task_dt_tm 
+        between cnvtdatetime(cnvtlookbehind("4,D",cnvtdatetime(curdate,curtime3),0)) 
+        and cnvtdatetime(cnvtlookahead("4,D",cnvtdatetime(curdate,curtime3),0))
+    ; Exclude continuous tasks
+    and ta.task_class_cd != 2646.00
+
+join ot 
+    where ot.reference_task_id = ta.reference_task_id
+    ; Exclude tasks that should have meds tied to them
+    and ot.task_description not in (
+        "Aerosol Therapy",
+        "Meter Dose Inhaler Treatment", 
+        "Internal Percussive Ventilator Therapy"
+    )
+    and ot.active_ind = 1
+
+join o
+    where o.order_id = ta.order_id
+
+join od
+    where od.order_id = o.template_order_id
+    and od.oe_field_meaning_id = 2011.00 ; frequency
+
+order by
+    d1.seq,
+    ta.task_type_cd,
+    ot.task_description,
+    ta.task_dt_tm
+
+head report
+    null
+
+head d1.seq
+    call echo(build("Processing tasks without meds for patient: ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+detail
+    ; Build PRN display string if applicable
+    task_prn_disp = ""
+    if (o.prn_ind = 1)
+        task_prn_disp = ",PRN"
+    endif
+    
+    ; Format the task string
+    if (recRTActiveWorklist->patients[d1.seq].tasks > " ")
+        ; Add to existing tasks
+        recRTActiveWorklist->patients[d1.seq].tasks = build(
+            recRTActiveWorklist->patients[d1.seq].tasks,
+            "|",
+            ot.task_description,
+            ",",
+            od.oe_field_display_value, 
+            task_prn_disp,
+            "^",
+            format(ta.task_dt_tm, "MM/DD/YYYY hh:mm;;Q"),
+            "^",
+            ta.task_id
+        )
+    else
+        ; First task
+        recRTActiveWorklist->patients[d1.seq].tasks = build(
+            ot.task_description,
+            ",",
+            od.oe_field_display_value, 
+            task_prn_disp,
+            "^",
+            format(ta.task_dt_tm, "MM/DD/YYYY hh:mm;;Q"),
+            "^",
+            ta.task_id
+        )
+    endif
+    
+    ; Set flag indicating this patient has active RT tasks
+    recRTActiveWorklist->patients[d1.seq].hasActiveRTTasks = 1
+    
+    call echo(build(
+         "Added task without med: ", ot.task_description, " for patient ", recRTActiveWorklist->patients[d1.seq].person_name)
+    )
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Get continuous tasks (ventilator tasks, etc.)
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Getting continuous RT tasks (ventilator tasks, etc.)")
+
+; Get continuous RT tasks for all patients
+SELECT distinct into "nl:"
+  ta.task_id,
+  ta.encntr_id,
+  ta.task_dt_tm,
+  ot.task_description,
+  d1.seq
+
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients),
+    task_activity ta,
+    order_task ot,
+    orders o
+
+PLAN D1
+join ta
+    where ta.encntr_id = recRTActiveWorklist->patients[D1.SEQ].encntr_id
+    and ta.task_type_cd in (
+        value(uar_get_code_by("DISPLAYKEY",6026,"NURSINGRTSHARED")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYASMTTXMONITORING")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYCARE")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYINTERVENTIONS")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RESPIRATORYTREATMENTSLTC")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RTHIDDENTASKS")),
+        value(uar_get_code_by("DISPLAYKEY",6026,"RTTXPROCEDURES"))
+    )
+    and ta.task_status_cd in (
+        value(uar_get_code_by("DISPLAYKEY",79,"OVERDUE")),
+        value(uar_get_code_by("DISPLAYKEY",79,"PENDING"))
+    ) 
+    and ta.active_ind = 1
+    ; Specifically include continuous tasks (e.g., ventilator tasks)
+    and ta.task_class_cd = 2646.00
+
+join ot
+    where ot.reference_task_id = ta.reference_task_id 
+    and ot.active_ind = 1
+
+join o
+    where o.order_id = ta.order_id
+
+order by
+    d1.seq,
+    ta.task_type_cd,
+    ot.task_description,
+    ta.task_dt_tm
+
+head report
+    null
+
+head d1.seq
+    call echo(build("Processing continuous tasks for patient: ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+detail
+    ; Build PRN display string if applicable
+    task_prn_disp = ""
+    if (o.prn_ind = 1)
+        task_prn_disp = ",PRN"
+    endif
+    
+    ; Format the continuous task string
+    if (recRTActiveWorklist->patients[d1.seq].tasks > " ")
+        ; Add to existing tasks
+        recRTActiveWorklist->patients[d1.seq].tasks = build(
+            recRTActiveWorklist->patients[d1.seq].tasks,
+            "|",
+            ot.task_description,
+            task_prn_disp,
+            "^",
+            format(ta.task_dt_tm, "MM/DD/YYYY hh:mm;;Q"),
+            "^",
+            ta.task_id
+        )
+    else
+        ; First task
+        recRTActiveWorklist->patients[d1.seq].tasks = build(
+            ot.task_description,
+            task_prn_disp,
+            "^",
+            format(ta.task_dt_tm, "MM/DD/YYYY hh:mm;;Q"),
+            "^",
+            ta.task_id
+        )
+    endif
+    
+    ; Set flag indicating this patient has active RT tasks
+    recRTActiveWorklist->patients[d1.seq].hasActiveRTTasks = 1
+    
+    call echo(build(
+         "Added continuous task: ", ot.task_description, " for patient ", recRTActiveWorklist->patients[d1.seq].person_name)
+    )
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Get RT medications
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Getting RT medications")
+
+; Variables for medication processing
+declare prn_disp = vc with noconstant("")
+
+; Get RT medications for all patients
+SELECT into "nl:"
+  o.ordered_as_mnemonic,
+  od.oe_field_display_value,
+  o.simplified_display_line,
+  o.order_id,
+  o.prn_ind,
+  d1.seq
+
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients),
+    orders o,
+    order_detail od
+
+PLAN D1
+join o
+    where o.person_id = recRTActiveWorklist->patients[D1.SEQ].person_id
+    and o.order_status_cd = 2550.00  ; Active orders
+    and o.catalog_type_cd = 2516.00  ; Medication orders
+    and o.encntr_id = recRTActiveWorklist->patients[D1.SEQ].encntr_id
+
+join od
+    where od.order_id = o.order_id
+    and cnvtupper(od.oe_field_display_value) = "*RESPIRATORY"  ; RT-specific orders
+
+order by
+    d1.seq,
+    o.ordered_as_mnemonic
+
+head report
+    null
+
+head d1.seq
+    call echo(build("Processing medications for patient: ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+detail
+    ; Build PRN display string if applicable
+    prn_disp = ""
+    if (o.prn_ind = 1)
+        prn_disp = ",PRN"
+    endif
+    
+    ; Format the medication string
+    if (recRTActiveWorklist->patients[d1.seq].meds > " ")
+        ; Add to existing medications
+        recRTActiveWorklist->patients[d1.seq].meds = build(
+            recRTActiveWorklist->patients[d1.seq].meds
+            ,"|"
+            ,trim(o.ordered_as_mnemonic,3),",",trim(od.oe_field_display_value,3),prn_disp
+            ,"^",trim(o.simplified_display_line,3)
+            ,"^",o.order_id
+        )
+    else
+        ; First medication
+        recRTActiveWorklist->patients[d1.seq].meds = build(
+            trim(o.ordered_as_mnemonic,3),",",trim(od.oe_field_display_value,3),prn_disp
+            ,"^",trim(o.simplified_display_line,3)
+            ,"^",o.order_id
+        )  
+    endif
+    
+    ; Set flag indicating this patient has active RT medications
+    recRTActiveWorklist->patients[d1.seq].hasActiveRTMeds = 1
+    
+    call echo(build(
+         "Added medication: ", trim(o.ordered_as_mnemonic,3), " for patient ", recRTActiveWorklist->patients[d1.seq].person_name)
+    )
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Get orders to review (for new order indicators)
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Getting orders to review")
+
+; Get orders to review for all patients
+SELECT distinct into "nl:"
+  o.encntr_id,
+  d1.seq
+
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients),
+    orders o,
+    order_review orev
+
+PLAN D1
+join o
+    where o.person_id = recRTActiveWorklist->patients[D1.SEQ].person_id
+    and o.order_status_cd = 2550.00  ; Active orders
+    and o.catalog_type_cd = 2516.00  ; Medication orders
+    and o.encntr_id = recRTActiveWorklist->patients[D1.SEQ].encntr_id
+    and o.need_nurse_review_ind = 1  ; Needs nurse review
+
+join orev
+    where orev.order_id = o.order_id
+    and orev.review_type_flag = 1
+    and orev.reviewed_status_flag = 0  ; Not yet reviewed
+
+head report
+    null
+
+head o.encntr_id
+    ; Set flags for this patient
+    recRTActiveWorklist->patients[d1.seq].ord_need_nurse_review_ind = 1
+    recRTActiveWorklist->patients[d1.seq].ordrev_nurse_not_reviewed = 1
+    recRTActiveWorklist->patients[d1.seq].newOrders = 1
+    
+    call echo(build("Found orders needing review for patient ", recRTActiveWorklist->patients[d1.seq].person_name))
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400
+
+;--------------------------------------------------------------------------------------------------------------------------------
+; Copy all patients without filtering (client-side filtering will handle this)
+;--------------------------------------------------------------------------------------------------------------------------------
+call echo(">>> Copying all patients (filtering will be done client-side)")
+
+; Create a temporary record structure to hold all patients
+free record tmpRTActiveWorklist
+record tmpRTActiveWorklist(
+    1 patients[*]
+        2 person_id = f8
+        2 person_name = vc
+        2 encntr_id = f8
+        2 facility = vc
+        2 unit = vc
+        2 roomBed = vc
+        2 tasks = vc
+        2 meds = vc
+        2 newOrders = i1
+        2 ord_need_nurse_review_ind = i1
+        2 ordrev_nurse_not_reviewed = i1
+        2 isDischarged = i1
+        2 fin = vc
+        2 hasActiveRTTasks = i1
+        2 hasActiveRTMeds = i1
+)
+
+; Copy all patients (no filtering - let client handle it)
+SELECT into "nl:"
+    d1.seq
+FROM
+    (DUMMYT D1 WITH SEQ = num_patients)
+PLAN D1 
+; No WHERE clause - include all patients
+ORDER BY
+    recRTActiveWorklist->patients[d1.seq].facility,
+    recRTActiveWorklist->patients[d1.seq].unit,
+    recRTActiveWorklist->patients[d1.seq].roomBed
+
+HEAD REPORT
+    cnt = 0
+    stat = alterlist(tmpRTActiveWorklist->patients, 10)
+    call echo("Starting patient filtering")
+
+DETAIL
+    cnt = cnt + 1
+    
+    ; Resize array if needed
+    if (cnt > size(tmpRTActiveWorklist->patients, 5))
+        stat = alterlist(tmpRTActiveWorklist->patients, cnt + 10)
+    endif
+    
+    ; Copy patient data to the filtered record
+    tmpRTActiveWorklist->patients[cnt].person_id = recRTActiveWorklist->patients[d1.seq].person_id
+    tmpRTActiveWorklist->patients[cnt].person_name = recRTActiveWorklist->patients[d1.seq].person_name
+    tmpRTActiveWorklist->patients[cnt].encntr_id = recRTActiveWorklist->patients[d1.seq].encntr_id
+    tmpRTActiveWorklist->patients[cnt].facility = recRTActiveWorklist->patients[d1.seq].facility
+    tmpRTActiveWorklist->patients[cnt].unit = recRTActiveWorklist->patients[d1.seq].unit
+    tmpRTActiveWorklist->patients[cnt].roomBed = recRTActiveWorklist->patients[d1.seq].roomBed
+    tmpRTActiveWorklist->patients[cnt].tasks = recRTActiveWorklist->patients[d1.seq].tasks
+    tmpRTActiveWorklist->patients[cnt].meds = recRTActiveWorklist->patients[d1.seq].meds
+    tmpRTActiveWorklist->patients[cnt].newOrders = recRTActiveWorklist->patients[d1.seq].newOrders
+    tmpRTActiveWorklist->patients[cnt].ord_need_nurse_review_ind = recRTActiveWorklist->patients[d1.seq].ord_need_nurse_review_ind
+    tmpRTActiveWorklist->patients[cnt].ordrev_nurse_not_reviewed = recRTActiveWorklist->patients[d1.seq].ordrev_nurse_not_reviewed
+    tmpRTActiveWorklist->patients[cnt].isDischarged = recRTActiveWorklist->patients[d1.seq].isDischarged
+    tmpRTActiveWorklist->patients[cnt].fin = recRTActiveWorklist->patients[d1.seq].fin
+    tmpRTActiveWorklist->patients[cnt].hasActiveRTTasks = recRTActiveWorklist->patients[d1.seq].hasActiveRTTasks
+    tmpRTActiveWorklist->patients[cnt].hasActiveRTMeds = recRTActiveWorklist->patients[d1.seq].hasActiveRTMeds
+    
+;    call echo(build("Including patient: ", recRTActiveWorklist->patients[d1.seq].person_name, 
+;        " - Tasks: ", if(recRTActiveWorklist->patients[d1.seq].hasActiveRTTasks = 1, "Yes", "No"),
+;        " - Meds: ", if(recRTActiveWorklist->patients[d1.seq].hasActiveRTMeds = 1, "Yes", "No")))
+
+FOOT REPORT
+    ; Resize array to actual size
+    if (cnt > 0)
+        stat = alterlist(tmpRTActiveWorklist->patients, cnt)
+    else
+        stat = alterlist(tmpRTActiveWorklist->patients, 0)
+    endif
+    
+;    ; Count patients with active tasks/meds
+;    declare active_count = i4 with noconstant(0)
+;    for (i = 1 to cnt)
+;        if (tmpRTActiveWorklist->patients[i].hasActiveRTTasks = 1 or tmpRTActiveWorklist->patients[i].hasActiveRTMeds = 1)
+;            set active_count = active_count + 1
+;        endif
+;    endfor
+    
+    ;call echo(build("Total patient count: ", cnt, " (", active_count, " with active RT tasks/meds)"))
+
+WITH NOCOUNTER, SEPARATOR=" ", FORMAT, time = 400
+
+; Replace original patient list with filtered list
+if (size(tmpRTActiveWorklist->patients, 5) > 0)
+
+    set active_count = 0
+    
+    ; Copy filtered patients back to main record
+    set stat = alterlist(recRTActiveWorklist->patients, size(tmpRTActiveWorklist->patients, 5))
+    
+    for (pt_idx = 1 to size(tmpRTActiveWorklist->patients, 5))
+        set recRTActiveWorklist->patients[pt_idx].person_id = tmpRTActiveWorklist->patients[pt_idx].person_id
+        set recRTActiveWorklist->patients[pt_idx].person_name = tmpRTActiveWorklist->patients[pt_idx].person_name
+        set recRTActiveWorklist->patients[pt_idx].encntr_id = tmpRTActiveWorklist->patients[pt_idx].encntr_id
+        set recRTActiveWorklist->patients[pt_idx].facility = tmpRTActiveWorklist->patients[pt_idx].facility
+        set recRTActiveWorklist->patients[pt_idx].unit = tmpRTActiveWorklist->patients[pt_idx].unit
+        set recRTActiveWorklist->patients[pt_idx].roomBed = tmpRTActiveWorklist->patients[pt_idx].roomBed
+        set recRTActiveWorklist->patients[pt_idx].tasks = tmpRTActiveWorklist->patients[pt_idx].tasks
+        set recRTActiveWorklist->patients[pt_idx].meds = tmpRTActiveWorklist->patients[pt_idx].meds
+        set recRTActiveWorklist->patients[pt_idx].newOrders = tmpRTActiveWorklist->patients[pt_idx].newOrders
+        set recRTActiveWorklist->patients[pt_idx].ord_need_nurse_review_ind = 
+            tmpRTActiveWorklist->patients[pt_idx].ord_need_nurse_review_ind
+        set recRTActiveWorklist->patients[pt_idx].ordrev_nurse_not_reviewed = 
+            tmpRTActiveWorklist->patients[pt_idx].ordrev_nurse_not_reviewed
+        set recRTActiveWorklist->patients[pt_idx].isDischarged = tmpRTActiveWorklist->patients[pt_idx].isDischarged
+        set recRTActiveWorklist->patients[pt_idx].fin = tmpRTActiveWorklist->patients[pt_idx].fin
+        set recRTActiveWorklist->patients[pt_idx].hasActiveRTTasks = tmpRTActiveWorklist->patients[pt_idx].hasActiveRTTasks
+        set recRTActiveWorklist->patients[pt_idx].hasActiveRTMeds = tmpRTActiveWorklist->patients[pt_idx].hasActiveRTMeds
+        
+        if(tmpRTActiveWorklist->patients[pt_idx].hasActiveRTTasks or tmpRTActiveWorklist->patients[pt_idx].hasActiveRTMeds)
+          set active_count = active_count + 1
+        endif
+    endfor
+    
+    ; Update record counts
+    set recRTActiveWorklist->patientCnt = size(tmpRTActiveWorklist->patients, 5)
+    set recRTActiveWorklist->status_data.message = concat(
+        "Found ", build(recRTActiveWorklist->patientCnt), " total patients (", build(active_count), " with active RT tasks/meds)"
+    )
+else
+    ; No patients found
+    set stat = alterlist(recRTActiveWorklist->patients, 0)
+    set recRTActiveWorklist->patientCnt = 0
+    set recRTActiveWorklist->status_data.message = "No patients found"
+endif
+
+; Clean up temp record
+free record tmpRTActiveWorklist
+
+; Return the data with filtered patient information
+set _memory_reply_string = cnvtrectojson(recRTActiveWorklist, 4)
+call echo(_memory_reply_string)
+call echojson(recRTActiveWorklist, $1)
+
+#exit_script
+end go
