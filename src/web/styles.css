@@ -727,14 +727,7 @@ body {
   font-size: 12px;
 }
 
-#date-navigator {
-  opacity: 0;  /* Hidden by default, shown after page loads */
-}
-
-body.loaded #date-navigator {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
+/* Date navigator visible for testing (will hide buttons properly after JS implementation) */
 
 /* iOS-Style Toggle Switch */
 .toggle-switch {
