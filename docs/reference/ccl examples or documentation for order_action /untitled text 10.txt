@@ -1,0 +1,202 @@
+OCIR info:
+
+1. https://connect.ucern.com/thread/111347
+
+2 quick OCIR audits - from your last order_catalog question
+
+To audit for products in which the synonym is pointing to a different orderable than the item:
+
+SELECT OCIR.ITEM_ID, OCS.CATALOG_CD, OC.CATALOG_CD
+FROM ORDER_CATALOG_ITEM_R OCIR, ORDER_CATALOG_SYNONYM OCS, ORDER_CATALOG OC
+WHERE OCIR.SYNONYM_ID = OCS.SYNONYM_ID
+AND OCIR.CATALOG_CD = OC.CATALOG_CD
+AND OCS.CATALOG_CD != OC.CATALOG_CD
+GO
+
+Any results returned must be fixed.  Either the ocir.synonym_id is incorrect or the ocir.catalog_cd is incorrect on ocir table.  Less likely, but possible, is that the ocs.synonym_id is pointing to the wrong orderable.  SolutionWorks team can help fix it.
+
+Also check to ensure an item_id appears only once on order_catalog_item_r!! 
+RDB select item_id, count(*) from order_catalog_item_r
+Group by item_id having count(*) > 1 go
+
+2. https://connect.ucern.com/thread/113539
+
+complete drug Information!
+
+Hi,
+
+I'm trying to create CCL report that will have complete drug (NON FORMULARY)
+information:
+DRUG NAME (brand and generic)+ STRENGTH + VOLUME + CHARGE CODE.
+(including also Physician, pharmacist, Pat. acc#...,)
+
+Looks simple enough but I might change already 3 time the code (using
+different tables), every time I run report with the new tables set I get
+wrong data!
+My last tables selection was:
+
+     ORDERS  O,
+     ORDER_CATALOG_ITEM_R  OC,
+     MED_DISPENSE  M,
+     ENCNTR_ALIAS  E,
+     ORDER_ACTION  OA,
+     PRSNL  P,
+     PRSNL  P1,
+     PERSON  PE
+
+I also tried to use ORDER_PRODUCT tame, but no data in the columns as:
+"LABER_DESC",'BRAND_DESC','GENERIC_DESC'.
+
+I appreciate for any help, or suggestions.
+
+Thank you.
+
+Spartak Kent
+North Arundel Hospital
+Programmer
+410-787-6780
+
+3. https://connect.ucern.com/thread/113120
+
+Re: formulary report (correction)
+
+In an earlier posting today I gave an example query of how to join to the alt_sel_cat table from the medication_definition table to obtain the therapeutic class associated with that item (see below).  It was brought to my attention (thanks Molly!) that this query doesn't return any results!  After a little investigation I discovered that the culprit was the 'ASC' alias I assigned to the alt_sel_cat table.  If you change this to 'AS' the query should work fine.  A corrected version follows:
+
+SELECT
+  M.ITEM_ID,
+  AS.LONG_DESCRIPTION
+FROM
+  MEDICATION_DEFINITION M,
+  ORDER_CATALOG_ITEM_R OCIR,
+  ALT_SEL_LIST ASL,
+  ALT_SEL_CAT AS
+
+PLAN M
+JOIN OCIR WHERE M.ITEM_ID = OCIR.ITEM_ID
+JOIN ASL WHERE OCIR.SYNONYM_ID = ASL.SYNONYM_ID
+JOIN AS WHERE ASL.ALT_SEL_CATEGORY_ID = AS.ALT_SEL_CATEGORY_ID
+
+I'm not sure why the ASC alias caused this problem.  I can't find anywhere that it's a reserved word in CCL.   Sorry for any confusion this may have caused anyone.
+
+-----Original Message-----
+From: Greg Zarambo [mailto:Greg.Zarambo@childrenshc.org]
+Sent: Tuesday, February 26, 2002 8:29 AM
+To: millennium pharmnet
+Subject: Re: formulary report
+
+Don,
+
+You don't have to go to the Multum tables to get the therapeutic class.
+This is also stored on the alt_sel_cat table (in the long_description
+field), which you can reach in the following manner:
+
+SELECT
+  M.ITEM_ID,
+  ASC.LONG_DESCRIPTION
+FROM
+  MEDICATION_DEFINITION M,
+  ORDER_CATALOG_ITEM_R OCIR,
+  ALT_SEL_LIST ASL,
+  ALT_SEL_CAT ASC
+
+PLAN M
+JOIN OCIR WHERE M.ITEM_ID = OCIR.ITEM_ID
+JOIN ASL WHERE OCIR.SYNONYM_ID = ASL.SYNONYM_ID
+JOIN ASC WHERE ASL.ALT_SEL_CATEGORY_ID = ASC.ALT_SEL_CATEGORY_ID
+
+Obviously, this needs to be fleshed out more to be a useful query, but it
+shows how to reach the therapeutic class.  I would be interested in how you
+were able to reach the v500 tables through Visual Explorer, though.
+
+My apologies if someone already responded with this info as I get this list
+as the daily digest.
+
+----------------------------------------------------------------------
+
+Greg Zarambo, PharmD
+Pharmacy Information Systems Coordinator
+Children's Hospitals and Clinics
+Minneapolis/St. Paul, MN
+651.855.2010  Phone
+greg.zarambo@childrenshc.org
+
+4. https://connect.ucern.com/thread/336600
+
+Formulary and non-formulary PROD description
+
+Good morning everyone,
+
+Does any body has a query that pulls a list of pharmacy orders including product description ( including multi ingredients), CDMs and the HCPCS description?
+
+Here is what I have so far but I'm missing the multi ingredient description and their CDM codes and the non- formulary description as well. The non-formulay has an item_id on the order_prod table but no order_id so, how to join the med_identifier to get the non-formulary description?
+
+ 
+
+Any help would be HIGHLY APPRECIATED. Thank you
+
+ 
+
+SELECT DISTINCT into "NL:"
+order_id =  o.order_id,
+o.encntr_id,
+oa.order_provider_id,
+therapeutic = trim(ac.long_description),;ac.short_description,
+mnemonic =  trim(o.order_mnemonic),
+CDM      = trim(MI.value)
+from orders                    O ,
+     order_product             op,
+     order_catalog             OC,
+     encntr_alias              EA,
+     order_catalog_item_r      OCI,
+      order_catalog_synonym     OCS,   ; I need the order synonyms too
+     med_identifier            MI,
+     med_identifier            MI1,
+     BILL_ITEM                 B,
+     BILL_ITEM_MODIFIER        BI,
+     alt_sel_cat               ac,
+     alt_sel_list              al
+  
+
+PLAN o  ;O.order_id = OA.order_id
+     where o.orig_order_dt_tm between       cnvtdatetime(cnvtdate(07172012),0)
+                                  ;and cnvtdatetime(cnvtdate(07232012),235959)
+                                  and o.active_ind = 1
+
+                             
+                                  and o.template_order_flag in(0,1)
+                                  and o.cs_flag != 1
+                                  and o.activity_type_cd = 3823.00 ; pharmacy
+                                  and o.contributor_system_cd != 15775203 ; Pyxis
+                                  and o.need_rx_verify_ind = 0
+                                
+
+join op where op.order_id = outerjoin(o.order_id)
+JOIN action
+            where action.person_id = oa.order_provider_id
+            ;and oa.action_type_cd +0=        1167.00
+            and action.active_ind = 1
+            and action.end_effective_dt_tm > cnvtdatetime(curdate, curtime)
+JOIN OC where oc.catalog_cd = outerjoin(o.catalog_cd)
+JOIN OCI where outerjoin(OC.catalog_cd )= OCI.catalog_cd
+       JOIN OCS where ocs.catalog_cd = outerjoin(oc.catalog_cd)
+; Get the CDMs
+
+join MI where MI.item_id = outerjoin(op.item_id)
+       and MI.med_identifier_type_cd = outerjoin(1301) ;; CDM       
+
+and MI.active_ind = outerjoin(1)
+      ; and mi.med_product_id = 0
+; Get the product description      
+JOIN MI1 where mi1.item_id = outerjoin(op.item_id) ;;tried mi1.item_id = outerjoin(oci.item_id)
+       and MI1.med_identifier_type_cd = outerjoin(1302); Pharmnet_prod_desc
+
+       and MI1.active_ind = outerjoin(1)
+       and mi1.med_product_id = outerjoin(0 )    
+      
+JOIN  b
+        where outerjoin(mi1.med_def_flex_id )= b.ext_parent_reference_id
+         and b.active_ind = outerjoin(1)
+JOIN  bi
+        where bi.bill_item_id = outerjoin(b.bill_item_id)
+         and bi.bill_item_type_cd =       outerjoin( 1559.00)
+         and bi.active_ind = outerjoin(1)   

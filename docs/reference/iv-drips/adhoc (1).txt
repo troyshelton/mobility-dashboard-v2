@@ -1,0 +1,236 @@
+/* Scheduled */
+
+select
+    order_mnemonic = trim(cnvtupper(o.order_mnemonic))
+    , o.order_id
+    , od.oe_field_meaning
+    , ce2.event_end_dt_tm
+from
+    orders o
+    , orders o2
+    , order_detail od
+    , order_action oa
+    , clinical_event ce1
+    , clinical_event ce2
+    , ce_med_result cemr
+    
+plan o where o.encntr_id = 70751069.00
+    and o.order_status_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3102"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3100")))
+    and o.active_ind = 1
+    and o.template_order_flag in (0, 1)
+    and o.catalog_type_cd = value(uar_get_code_by_cki("CKI.CODEVALUE!3079"))
+    and o.orig_ord_as_flag not in (1, 2)
+    and o.prn_ind = 0
+    and o.iv_ind = 0
+    and o.suspend_ind = 0
+    and o.discontinue_ind = 0
+ 
+join o2 where o2.template_order_id = o.order_id 
+    and o2.person_id = o.person_id  
+    and o2.order_status_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3102"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3100")))
+    and o2.active_ind = 1
+    and o2.template_order_flag = 4
+    and o2.catalog_type_cd = value(uar_get_code_by_cki("CKI.CODEVALUE!3079"))
+    and o2.orig_ord_as_flag not in (1, 2)
+    and o2.prn_ind = 0
+    and o2.iv_ind = 0
+    and o2.suspend_ind = 0
+    and o2.discontinue_ind = 0
+    
+join oa where oa.order_id = o.order_id
+    and oa.action_type_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3093"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3094"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3091")))
+
+join od where od.order_id = oa.order_id
+    and od.action_sequence > 0
+    and od.detail_sequence > 0
+
+join ce1 where ce1.order_id = o2.order_id
+    and ce1.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    and ce1.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "ROOT"))
+    /* Latest event_end_dt_tm */
+    and ce1.event_end_dt_tm = (select
+                                max(ce.event_end_dt_tm)
+                               from
+                                clinical_event ce
+                               where ce.order_id = ce1.order_id
+                                and ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+                                and ce.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "ROOT")))
+      
+join ce2 where ce2.parent_event_id = ce1.event_id
+    and ce2.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    and ce2.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "CHILD"))
+;    /* Sometimes there can be more than one child row depending on if the administration was multi-ingredient */
+;    and ce2.event_id = (select
+;                            min(ce.event_id)
+;                        from
+;                            clinical_event ce
+;                        where ce.parent_event_id = ce2.parent_event_id
+;                            and ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+;                            and ce.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "CHILD")))                            
+                           
+join cemr where cemr.event_id = ce2.event_id
+    and cemr.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    
+order by
+    order_mnemonic
+    , o.order_id
+;    , oa.action_sequence desc
+;    , od.oe_field_meaning
+;    , od.action_sequence desc
+    
+with noformat, separator=" ", time=60, orahintcbo("xie2orders"), format(date, "mm/dd/yyyy hh:mm:ss;;q")
+
+/* Continuous */
+
+select
+    order_mnemonic = trim(cnvtupper(o.order_mnemonic))
+    , o.order_id
+    , od.oe_field_meaning
+    , ce2.event_id
+    , ce2.event_end_dt_tm
+    , cemr.*
+from
+    orders o
+    , order_action oa
+    , order_detail od
+    , clinical_event ce1
+    , clinical_event ce2
+    , ce_med_result cemr
+    
+plan o where o.encntr_id = 70751069.00
+    and o.order_status_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3102"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3100")))
+    and o.active_ind = 1
+    and o.template_order_flag in (0, 1)
+    and o.catalog_type_cd = value(uar_get_code_by_cki("CKI.CODEVALUE!3079"))
+    and o.med_order_type_cd = value(uar_get_code_by_cki("CKI.CODEVALUE!31634"))
+    and o.orig_ord_as_flag not in (1, 2)
+    and o.iv_ind = 1
+    and o.suspend_ind = 0
+    and o.prn_ind = 0
+    and o.discontinue_ind = 0
+    
+join oa where oa.order_id = o.order_id
+    and oa.action_type_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3093"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3094"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3091")))
+
+join od where od.order_id = oa.order_id
+    and od.action_sequence > 0
+    and od.detail_sequence > 0
+    
+join ce1 where ce1.order_id = o.order_id
+    and ce1.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    and ce1.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "ROOT"))
+    /* Latest event_end_dt_tm */
+    and ce1.event_end_dt_tm = (select
+                                max(ce.event_end_dt_tm)
+                               from
+                                clinical_event ce
+                               where ce.order_id = ce1.order_id
+                                and ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+                                and ce.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "ROOT")))
+      
+join ce2 where ce2.parent_event_id = ce1.event_id
+    and ce2.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    and ce2.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "CHILD"))
+    /* Sometimes there can be more than one child row depending on if the administration was multi-ingredient */
+    and ce2.event_id = (select
+                            min(ce.event_id)
+                        from
+                            clinical_event ce
+                        where ce.parent_event_id = ce2.parent_event_id
+                            and ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+                            and ce.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "CHILD")))                            
+                           
+join cemr where cemr.event_id = ce2.event_id
+    and cemr.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    
+order by
+    order_mnemonic
+    , o.order_id
+    , oa.action_sequence desc
+    , od.oe_field_meaning
+    , od.action_sequence desc
+    , ce1.event_end_dt_tm
+    
+with noformat, separator=" ", time=60, orahintcbo("xie2orders"), format(date, "mm/dd/yyyy hh:mm:ss;;q")
+
+/* PRN */
+
+select
+    order_mnemonic = trim(cnvtupper(o.order_mnemonic))
+    , o.order_id
+    , od.oe_field_meaning
+    , ce2.event_id
+    , ce2.event_end_dt_tm
+    , cemr.*
+from
+    orders o
+    , order_action oa
+    , order_detail od
+    , clinical_event ce1
+    , clinical_event ce2
+    , ce_med_result cemr
+    
+plan o where o.encntr_id = 70751069.00
+    and o.order_status_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3102"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3100")))
+    and o.active_ind = 1
+    and o.template_order_flag in (0, 1)
+    and o.catalog_type_cd = value(uar_get_code_by_cki("CKI.CODEVALUE!3079"))
+    and o.orig_ord_as_flag not in (1, 2)
+    and o.prn_ind = 1
+    and o.suspend_ind = 0
+    and o.discontinue_ind = 0
+    
+join oa where oa.order_id = o.order_id
+    and oa.action_type_cd in (value(uar_get_code_by_cki("CKI.CODEVALUE!3093"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3094"))
+                             , value(uar_get_code_by_cki("CKI.CODEVALUE!3091")))
+    and oa.prn_ind = 1
+
+join od where od.order_id = oa.order_id
+    and od.action_sequence > 0
+    and od.detail_sequence > 0
+    
+join ce1 where ce1.order_id = o.order_id
+    and ce1.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    and ce1.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "ROOT"))
+    /* Latest event_end_dt_tm */
+    and ce1.event_end_dt_tm = (select
+                                max(ce.event_end_dt_tm)
+                               from
+                                clinical_event ce
+                               where ce.order_id = ce1.order_id
+                                and ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+                                and ce.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "ROOT")))
+      
+join ce2 where ce2.parent_event_id = ce1.event_id
+    and ce2.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    and ce2.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "CHILD"))
+    /* Sometimes there can be more than one child row depending on if the administration was multi-ingredient */
+    and ce2.event_id = (select
+                            min(ce.event_id)
+                        from
+                            clinical_event ce
+                        where ce.parent_event_id = ce2.parent_event_id
+                            and ce.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+                            and ce.event_reltn_cd = value(uar_get_code_by("MEANING", 24, "CHILD")))                            
+                           
+join cemr where cemr.event_id = ce2.event_id
+    and cemr.valid_until_dt_tm > cnvtdatetime(curdate, curtime3)
+    
+order by
+    order_mnemonic
+    , o.order_id
+    , oa.action_sequence desc
+    , od.oe_field_meaning
+    , od.action_sequence desc
+    , ce1.event_end_dt_tm
+    
+with noformat, separator=" ", time=60, orahintcbo("xie2orders"), format(date, "mm/dd/yyyy hh:mm:ss;;q")

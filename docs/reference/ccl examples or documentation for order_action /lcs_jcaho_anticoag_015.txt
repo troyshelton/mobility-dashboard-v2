@@ -1,0 +1,396 @@
+   /**************************************************************************************
+    *   	Program - lcs_jcaho_enoxaparin_001
+    *
+    *       Purpose - JAHCO required | delimited file to ftp to another
+    *                 system for compilation into a database.  Data to
+    *                 include a list of patients who have received the drug
+    *                 in the past 3 days.
+    *
+    **************************************************************************************
+ 
+        Author:                 Grant Fricks (cloned from a cerner report)
+        Date Written:           07/21/08
+        Source file name:       1_ca_warfarin_adm_ext.prg
+        Object name:            1_ca_warfarin_adm_ext
+        Request #:              CMCM002646
+ 
+        Product:                HNAM Lab
+        HNA Version:
+        CCL Version:
+ 
+        Tables read:            Various
+        Tables updated:         None
+        Executing from:         Ops
+ 
+        Special Notes:          All current inpatients who had received warfarin
+        						in the past 72 hours.
+------------------------------------------------------------------------------------------
+		Calls		: 1_utl_get_fac_cd fac
+						Param in	:	Facility alpha code (SMH, SCV, etc)
+						Explanation :	call will populate global variable:
+										declare PARAM_FAC_NBR = f8 with public
+										set PARAM_FAC_NBR = 0
+------------------------------------------------------------------------------------------
+ 
+    ***************************************************************************************
+    *                      GENERATED MODIFICATION CONTROL LOG
+    ***************************************************************************************
+    *
+    *Mod Date     Engineer             Comment
+    *--- -------- -------------------- ----------------------------------------------------
+    *000 07/21/08 Grant Fricks         Initial Release
+    *001 9/4/08   LSonnenschein		   Modified per requests CMCM003082,84,86,87
+    ***************************************************************************************/
+    
+drop program lcs_jcaho_anticoag_015 go
+create program lcs_jcaho_anticoag_015
+
+prompt 
+	"Output to File/Printer/MINE" = "MINE"   ;* Enter or select the printer or file name to send this report to. 
+
+with OUTDEV
+
+;prompt 
+;	"Output to File/Printer/MINE" = "MINE" 
+
+;with OUTDEV
+ 
+set reply->status_data->status = "F"
+ 
+declare fac = c3 ;WITH "SMH"
+declare add_action(aTitle = vc, aPerform = c1) = i2
+
+call create_output('SMH','HEPARIN')
+/*
+call create_output('SMH','ENOXAPARIN')
+call create_output('SMH','DALTEPARIN')
+call create_output('SMH','FONDAPARINUX')
+
+call create_output('SCV','HEPARIN')
+call create_output('SCV','ENOXAPARIN')
+call create_output('SCV','DALTEPARIN')
+call create_output('SCV','FONDAPARINUX')
+
+call create_output('SGR','HEPARIN')
+call create_output('SGR','ENOXAPARIN')
+call create_output('SGR','DALTEPARIN')
+call create_output('SGR','FONDAPARINUX')
+
+call create_output('SCO','HEPARIN')
+call create_output('SCO','ENOXAPARIN')
+call create_output('SCO','DALTEPARIN')
+call create_output('SCO','FONDAPARINUX')
+*/
+go to endit
+
+/**************************************************************
+; DVDev DECLARED SUBROUTINES
+**************************************************************/
+subroutine create_output(fac,medication)
+; Global for shrp_sub_get_fac_code to receive facility code value.
+declare PARAM_FAC_NBR = f8 with public
+set PARAM_FAC_NBR = 0
+; translate the hospital mnemonic for the code value populating into global PARAM_FAC_NBR
+execute 1_utl_get_fac_cd fac
+
+set dest_path = concat("ccluserdir/:",trim(fac),"_",trim(medication),"2.DAT")
+ 
+free record t_record
+record t_record
+(
+	1 output = vc					; output destination
+	1 printer = vc					; printer if called from ops
+	1 action_dt_tm = dq8			; date and time used for computations
+	1 beg_date = dq8				; earliest date and time for drug admin
+	1 end_date = dq8				; latest date and time for drug admin
+	1 attachment_name = vc			; attachment name of file (if valid)
+	1 inpatient_cd = f8				; inpatient encounter class code value
+	1 observation_cd = f8			; observation encounter class code value
+	1 medication_cat_cd = f8		; enoxaparin catalog code value
+	1 med_ce_event_class_cd = f8	; MED event class code
+	1 fc_prov_nbr_cd = f8			; PRSNL_ALIAS type code
+	1 shc_type_cd = f8				; shc number type code
+	1 order_action_cd = f8			; order action code value of ordered
+	1 pharm_cat_type_cd = f8		; Pharmacy catalog type code
+	1 fin_type_cd = f8				; Encounter Alias type code of FIN NBR
+	1 mrn_type_cd = f8				; MRN Alias type code of MRN
+	1 o_list[*]						; output list of qualifying patients
+      2 person_nm = vc				; person_id of patient
+      2 person_nm_last = vc			; person_id of patient
+      2 person_nm_first = vc		; person_id of patient
+      2 person_nm_mid = vc			; person_id of patient
+      2 loc_facility_cd = c3		; current patient facility
+      2 mrn = vc					; patient MRN
+      2 shc_nbr = vc				; patient Sharp Healthcare number
+      2 fin = vc					; patient FIN
+      2 location = vc				; current patient location
+      2 dose_unit_s = vc			; drug dose unit string
+      2 frequency_s = vc			; drug frequency value
+      2 perf_dt = vc	 			; drug administration date and time
+      2 perf_tm = vc				; drug administration date and time
+      2 ord_phys_id = vc			; ordering physician id
+      2 ord_phys_nm = vc			; ordering physician id
+)
+
+set t_record->inpatient_cd        		= uar_get_code_by("MEANING"	,69		,"INPATIENT"	)
+set t_record->observation_cd       		= uar_get_code_by("MEANING"	,69		,"OBSERVATION"	)
+
+set t_record->fc_prov_nbr_cd			= uar_get_code_by("MEANING"	,320	,"EXTERNALID"	)
+set t_record->med_ce_event_class_cd     = uar_get_code_by("MEANING"	,53		,"MED"			)
+set t_record->pharm_cat_type_cd         = uar_get_code_by("MEANING"	,6000	,"PHARMACY"		)
+set t_record->fin_type_cd 				= uar_get_code_by("MEANING"	,319	,"FIN NBR"		)
+set t_record->mrn_type_cd 				= uar_get_code_by("MEANING"	,319	,"MRN"			)
+set t_record->shc_type_cd 				= uar_get_code_by("MEANING"	,4		,"CMRN"			)
+
+record meds(
+		1 qual [*]
+		  2 cat_cd = f8)
+set idx1 = 0
+ record reply
+( 
+%i cclsource:status_block.inc
+)
+declare iv_cd = f8 with public, constant(uar_get_code_by("DISPLAY_KEY",18309 ,'IV'))
+declare set_nbr = i2 with noconstant = 0
+declare beg_dt  = vc
+declare end_dt	= vc
+ 
+;set t_record->beg_date	= cnvtdatetime(curdate-30,0)    		; set the beg date
+set t_record->beg_date	= cnvtdatetime(curdate-4,0)    		; set the beg date
+set t_record->end_date	= cnvtdatetime(curdate-1,235959)	; set the end date
+ 
+call echo(t_record->beg_date)
+call echo(t_record->end_date)
+ 
+set beg_dt = format(cnvtdatetime(t_record->beg_date),"mm/dd/yyyy hh:mm;;q")
+set end_dt = format(cnvtdatetime(t_record->end_date),"mm/dd/yyyy hh:mm;;q")
+ 
+call echo(beg_dt)
+call echo(end_dt)
+ 
+select into "nl:"
+	o.order_mnemonic,
+	o.dept_misc_line,
+	o.*
+from orders o
+
+      ,prsnl pr
+      ,prsnl_alias pra
+      ,encntr_alias ea
+      ,person_alias pa
+      ,clinical_event ce
+
+      ,person p
+      ,frequency_schedule fr
+      ,order_action oa
+      ,encounter e
+      ,order_dispense od
+      ,order_ingredient oi
+
+plan  o
+      where 
+	  o.orig_order_dt_tm >= cnvtdatetime(t_record->beg_date)
+      and o.active_ind = 1
+      and (o.discontinue_effective_dt_tm  >= cnvtdatetime(t_record->beg_date)
+        or o.discontinue_effective_dt_tm  = NULL)
+	  and cnvtupper(o.ordered_as_mnemonic)  = '*HEPARIN*'
+	  and cnvtupper(o.dept_misc_line) not in ('*LOCK*','*FLUSH*')
+	  and cnvtupper(o.order_mnemonic) != '*10 UNIT*'
+ 
+join oi
+	where oi.order_id = o.order_id
+	and cnvtupper(oi.ordered_as_mnemonic) = '*HEPARIN*'
+	
+join e
+      where e.encntr_id            		= o.encntr_id
+        and e.person_id           		= o.person_id
+        and e.active_ind           		= 1
+        and (e.disch_dt_tm         		= null
+          or e.disch_dt_tm		   		> cnvtdatetime(t_record->end_date))
+        and e.loc_facility_cd      		= PARAM_FAC_NBR
+        and e.beg_effective_dt_tm +0    <= cnvtdatetime(t_record->end_date)
+        and e.encntr_type_class_cd in (t_record->inpatient_cd, t_record->observation_cd) ;( INPAT, OBSV )
+ 
+join od
+	where od.order_id = o.template_order_id
+ 
+join fr
+	where fr.frequency_id = od.frequency_id
+ 
+join oa
+      where oa.order_id            = o.template_order_id
+      and   oa.action_sequence     = ( select max(oa1.action_sequence)
+                                       from order_action oa1
+                                       where oa1.order_id = o.template_order_id)
+
+join p where p.person_id           = o.person_id
+         and p.active_ind          = 1
+ 
+join  ce
+      where ce.order_id                 = o.order_id
+        and ce.event_class_cd			= t_record->med_ce_event_class_cd
+        and ce.performed_dt_tm +0       >= cnvtdatetime(t_record->beg_date)
+        and ce.performed_dt_tm +0       <= cnvtdatetime(t_record->end_date)
+ 
+join  pr
+      where pr.person_id                  = o.last_update_provider_id	;oa.order_provider_id
+      and   pr.active_ind                 = 1
+;      where pr.person_id                  = outerjoin(oa.order_provider_id)
+;      and   pr.active_ind                 = outerjoin(1)
+ 
+join pra
+   	 where pra.person_id                  = o.last_update_provider_id	;oa.order_provider_id
+     and pra.prsnl_alias_type_cd          = t_record->fc_prov_nbr_cd
+     and pra.active_ind                   = 1
+;   	 where pra.person_id                  = outerjoin(oa.order_provider_id)
+;     and pra.prsnl_alias_type_cd          = outerjoin(t_record->fc_prov_nbr_cd)
+;     and pra.active_ind                   = outerjoin(1)
+ 
+join  ea
+      where ea.encntr_id                  = o.encntr_id
+      and   ea.encntr_alias_type_cd       in (t_record->fin_type_cd, t_record->mrn_type_cd)
+      and   ea.active_ind                 = 1
+ 
+join  pa
+      where pa.person_id                  = o.person_id
+      and pa.person_alias_type_cd         = t_record->shc_type_cd
+      and   pa.active_ind                 = 1
+ 
+order by
+       o.order_id
+      ,ce.performed_dt_tm desc
+ 
+head report
+	cnt = 0
+head o.order_id
+;	if (mod(cnt,10) = 1)
+	 stat = alterlist(t_record->o_list, (cnt + 1))
+;	endif
+	cnt = (cnt + 1)
+	t_record->o_list[cnt].person_nm = substring(1, 25, concat(
+                                               				  trim(cnvtcap(p.name_last))
+                                              				, ", "
+                                              				, trim(cnvtcap(p.name_first))
+                                              				, " "
+                                              				, substring(1,1,p.name_middle)
+                                              				  )
+                                			   )
+	t_record->o_list[cnt].loc_facility_cd 	= fac
+	t_record->o_list[cnt].shc_nbr			= pa.alias
+	t_record->o_list[cnt].perf_dt 			= format(ce.performed_dt_tm,"mmddyyyy;;")
+	t_record->o_list[cnt].perf_tm 			= format(ce.performed_dt_tm,"hhmm;;")
+	t_record->o_list[cnt].dose_unit_s		= ce.event_tag
+	t_record->o_list[cnt].frequency_s		= uar_get_code_display(fr.frequency_cd)
+	t_record->o_list[cnt].ord_phys_id		= trim(cnvtstring(pr.person_id),3)
+ 
+	t_record->o_list[cnt].ord_phys_nm  =    substring(1, 25, concat(
+                                              					      trim(cnvtcap(pr.name_last))
+                                            						, ", "
+	                                            					, trim(cnvtcap(pr.name_first))
+	                                              					)
+                                					  )
+	set_nbr = 0
+	MOT = UAR_GET_CODE_DISPLAY(o.med_order_type_cd)
+	om = substring(1,40,o.order_mnemonic)
+	et = substring(1,80,ce.event_tag)
+  col 0 o.order_id,' - ',o.order_mnemonic, et row+1
+
+detail
+	if ( set_nbr = 0 )
+		if (size(trim(uar_get_code_display(e.loc_nurse_unit_cd)),1) > 10)
+			t_record->o_list[cnt].location	= substring(1,10,trim(uar_get_code_display(e.loc_nurse_unit_cd),1))
+			set_nbr = 1
+	    elseif (e.loc_nurse_unit_cd	> 0
+			and e.loc_room_cd		> 0
+			and e.loc_bed_cd		> 0)
+			t_record->o_list[cnt].location =
+							substring(1, 10, concat(
+													  trim(uar_get_code_display(e.loc_nurse_unit_cd))
+													, " "
+													, trim(uar_get_code_display(e.loc_room_cd))
+													, "-"
+													, trim(uar_get_code_display(e.loc_bed_cd))
+													)
+									  )
+ 
+			set_nbr = 1
+		endif
+	endif
+	if (ea.encntr_alias_type_cd				= t_record->fin_type_cd)
+       t_record->o_list[cnt].fin			= cnvtalias(ea.alias,ea.alias_pool_cd)
+	elseif (ea.encntr_alias_type_cd			= t_record->mrn_type_cd)
+       t_record->o_list[cnt].mrn			= ea.alias
+   	endif
+foot o.order_id
+	call echo(set_nbr)
+	call echorecord(t_record)
+ 
+foot report
+	stat = alterlist(t_record->o_list, cnt)
+
+with 	format,
+		maxcol=200
+		,format
+		,separator=' '
+ 
+;go to endit 
+/*=============================================================================================
+	Report section
+==============================================================================================*/
+if (size(t_record->o_list,5) > 0.0)
+ 
+	declare v_bar = vc with public, constant(char(124))
+	declare t_line = vc with public, noconstant(" ")
+	declare temp_text = vc with public, noconstant(" ")
+	 
+	select into value(dest_path)
+
+	from (dummyt d with seq = size(t_record->o_list,5))
+
+	plan d
+	
+    order by
+         t_record->o_list[d.seq].perf_dt
+        ,t_record->o_list[d.seq].perf_tm
+        ,t_record->o_list[d.seq].person_nm
+
+	head report
+		col 0 t_line
+ 
+    detail
+        t_line = build2(
+				          t_record->o_list[d.seq].person_nm			, v_bar,
+				          t_record->o_list[d.seq].loc_facility_cd	, v_bar,
+				          t_record->o_list[d.seq].mrn				, v_bar,
+				          t_record->o_list[d.seq].shc_nbr			, v_bar,
+				          t_record->o_list[d.seq].fin				, v_bar,
+				          t_record->o_list[d.seq].location			, v_bar,
+				          t_record->o_list[d.seq].perf_dt			, v_bar,
+				          t_record->o_list[d.seq].perf_tm			, v_bar,
+				          t_record->o_list[d.seq].dose_unit_s		, v_bar,
+				          t_record->o_list[d.seq].frequency_s		, v_bar,
+				          t_record->o_list[d.seq].ord_phys_id		, v_bar,
+				          t_record->o_list[d.seq].ord_phys_nm		, v_bar,
+				          v_bar, v_bar, v_bar
+				        )
+		call echo(t_line)
+        row +1
+        col 0 t_line
+foot report
+		row+0
+    with 	nocounter, 
+    		noformfeed, 
+    		format=variable, 
+    		noheading, 
+    		maxrow = 1, 
+    		maxcol = 32000
+ 
+endif
+
+set reply->status_data->status = "S"
+	return
+end 
+
+#endit
+end 
+go

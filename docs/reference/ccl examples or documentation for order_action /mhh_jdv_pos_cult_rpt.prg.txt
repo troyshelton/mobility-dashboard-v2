@@ -1,0 +1,565 @@
+drop program mhh_jdv_pos_culture go
+create program mhh_jdv_pos_culture
+ 
+prompt
+	"Output to File/Printer/MINE" = "MINE"   ;* Enter or select the printer or file name to send this report to.
+	, "Facility" = 4350104.00
+	, "Beginning Date:" = CURDATE
+	, "Ending Date:" = CURDATE
+	, "Report Type:" = 0
+ 
+with OUTDEV, facility, PFRM_BEG, PFRM_END, rpt_fmt
+ 
+/****************************************************************************************************************
+                                             PROGRAM NAME HEADER
+              Purpose:	Microbiology Blood Culture Evaluation for Contamination
+              			All Positive Blood culture report for date range and per facility
+              			Report will be used by Micro tech to evaluate if discovered organism is a contaminate
+     Source File Name:	mhh_jdv_pos_culture
+          Application:	PathNet Microbiology department
+  Exectuion Locations:	ExplorerMenu, Operations
+            Request #:	Request 1 of Request Data Structure
+      Translated From:	No original Cerner Program, orginal developement of code
+        Special Notes:	Anything that is unique to this program, such as required data structures
+ 
+;****************************************************************************************************************
+                                           MODIFICATION CONTROL LOG
+;****************************************************************************************************************
+   Mod  Date            Engineer                Description
+   ---  --------------- ----------------------- ----------------------------------------------------------------
+    1   02/15/2012      James Vogeler - MHH     Initial Release
+ 
+;***************************************************************************************************************/
+ 
+/*
+ 
+ 
+SELECT
+	ed.encntr_id
+	, p.person_id
+	, p.name_full_formatted
+;	, oa.action_type_cd
+	, ed.encntr_id
+;	, e.encntr_type_class_cd
+;	, ea.encntr_alias_type_cd
+	, o.catalog_cd
+	, uar_get_code_display(o.catalog_cd)
+	, o.order_id
+	, o.order_comment_ind
+	, ce.event_cd
+	, event_code = UAR_GET_CODE_DISPLAY(ce.event_cd)
+	, ce.parent_event_id
+	, ce.event_tag
+	, ce.parent_event_id
+	, ce.event_id
+;	, ceb.event_id
+ 
+ 
+FROM
+	encntr_domain   ed
+	, encntr_alias   ea
+	, encounter   e
+	, person   p
+	, orders   o
+	, order_action   oa
+	, clinical_event   ce
+ 
+ 
+plan  ed
+	where
+	ed.encntr_id =        5691751.00   and
+	ed.loc_facility_cd =      4350104.00   and ;$facility and
+	ed.encntr_domain_type_cd+0 =        1139.00   and ;census_cd and
+	ed.active_ind+0 = 1   and
+	ed.beg_effective_dt_tm+0 <=  sysdate   and
+	ed.end_effective_dt_tm >=  sysdate
+ 
+join e
+	where
+	e.encntr_id = ed.encntr_id   and
+	e.active_ind+0 = 1   and
+	e.beg_effective_dt_tm+0 <=  sysdate   and
+	e.end_effective_dt_tm+0 >=  sysdate    and
+	e.encntr_type_class_cd+0 in (391) ;( ip_cd, ed_cd, obs_cd )
+ 
+join p
+	where
+	p.person_id = e.person_id   and
+	p.active_ind+0 = 1   and
+	p.beg_effective_dt_tm+0 <= sysdate     and
+	p.end_effective_dt_tm+0 >=  sysdate
+ 
+join ea
+	where
+	ea.encntr_id =    e.encntr_id   and
+	ea.encntr_alias_type_cd+0 = 1077   and ;fnbr_cd and
+	ea.active_ind+0 = 1     and
+	ea.beg_effective_dt_tm+0 <=  sysdate     and
+	ea.end_effective_dt_tm+0 >=  sysdate
+ 
+join o
+    where
+    o.encntr_id = ed.encntr_id
+    and ed.person_id = o.person_id
+	and o.catalog_cd in(    4869582.00) ; (BLOODCULTURE_200_CV,URINECULTBLD_200_CV,CATHETERCULT_200_CV,SPUTUMCULT_200_CV)
+;;	and o.order_id+0 > 0
+;	and o.catalog_type_cd = lab_ct_var
+;    and o.activity_type_cd = lab_at_var
+	and o.template_order_id+0=0
+	and o.order_status_cd+0 in(       2543.00) ;(stat_comp_var)
+	and o.orig_ord_as_flag+0 = 0
+ 
+join oa
+	where
+	oa.order_id = o.order_id
+;	and oa.action_type_cd =       2529.00 ; completed_action
+and oa.order_status_cd = 2543
+ 
+join ce where ce.order_id = oa.order_id
+and ce.valid_until_dt_tm > sysdate
+and ce.view_level = 1
+ 
+	*/
+ 
+ 
+declare UserHeader = vc with public
+SELECT
+	UserHeader = p.name_full_formatted
+ 
+FROM
+	prsnl   p
+ 
+plan p
+	where reqinfo->updt_id = p.person_id
+ 
+order by p.person_id
+ 
+head p.person_id
+UserHeader = p.name_full_formatted
+ 
+ 
+WITH nocounter
+ 
+ 
+declare noquals = i2 with public
+ 
+record contam(
+	1 rec_cnt 				= i4
+	1 report_generated_dt	= vc
+	1 run_dt_tm 			= vc
+ 
+  	1 rec [*]
+		2 display_rec 		= c1
+	    2 facility 			= c60
+	    2 nurse_unit 		= c60
+		2 room_bed			= c20
+	    2 patient 			= c30
+	    2 fin 				= vc
+	    2 personid			= f8
+	    2 encntrid			= f8
+		2 cultures[*]
+			3 orderid			= f8
+			3 culture_name		= c30
+			3 culture_stat		= vc
+			3 specimen_type		= vc
+	    	3 ce_result	    	= vc
+			3 accession 		= vc
+	    	3 drawn_prsnl 		= vc
+	   		3 drawn_dt_tm 		= vc
+			3 completed_dt_tm 	= vc
+			3 huge_result 		= c2000
+ 
+)
+ 
+/*===============================================================================================================
+                               PROGRAMMER AND TEMPLATE DEFINED CONSTANTS
+===============================================================================================================*/
+ 
+DECLARE BLOODCULTURE_200_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",200,"BLOODCULTURE"))
+DECLARE URINECULTBLD_200_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",200,"CULTUREURINE"))
+DECLARE CATHETERCULT_200_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",200,"CULTUREBODYSITE"))
+DECLARE SPUTUMCULT_200_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",200,"SPUTUMCULTURE"))
+ 
+DECLARE fnbr_cd = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",319,"FINNBR"))
+DECLARE FINAL_1000_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",1000,"FINAL"))
+DECLARE CORR_1000_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",1000,"CORR"))
+DECLARE AMEND_1000_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",1000,"AMEND"))
+ 
+DECLARE VERIFIED_1901_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",1901,"VERIFIED"))
+DECLARE CORRECTED_1901_CV = F8 WITH PROTECT, CONSTANT(uar_get_code_by("DISPLAYKEY",1901,"CORRECTED"))
+ 
+DECLARE NUM = I4 		WITH PROTECT, NOCONSTANT(0) 	; index variable used with expands
+DECLARE POS = I4    	WITH PROTECT, NOCONSTANT(1)
+ 
+/*===============================================================================================================
+                        	PROGRAMMER AND TEMPLATE DEFINED VARIABLES
+===============================================================================================================*/
+;**********************************************************************************
+;   get the date range based on the prompts
+;**********************************************************************************
+declare begin_date         = dq8 with protect, constant(cnvtdatetime(cnvtdate($3),0))
+declare end_date           = dq8 with protect, constant(cnvtdatetime(cnvtdate($4),235959))
+DECLARE Temp_Date_DQ8 = DQ8 WITH PROTECT, NOCONSTANT ;Temporary date variable used for functional date prg
+ 
+ 
+declare lab_at_var = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',106,'MICRO'))
+declare lab_ct_var = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',6000,'LABORATORY'))
+declare ip_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',69,'INPATIENT'))
+declare ed_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',69,'EMERGENCY'))
+declare obs_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',69,'OBSERVATION'))
+ 
+declare OCFCOMP_VAR = f8 with Constant(uar_get_code_by("MEANING",120,"OCFCOMP")),protect
+declare NOCOMP_VAR = f8 with Constant(uar_get_code_by("MEANING",120,"NOCOMP")),protect
+declare  BlobOut = vc
+declare  BlobNoRTF =  vc
+declare bsize = i4
+ 
+declare stat_comp_var = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',6004,'COMPLETED'))
+declare completed_action = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',6003,'COMPLETE'))
+ 
+declare census_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',339,'CENSUS'))
+declare cntr = i4
+ 
+declare pharm_loc_type_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',222,'PHARM'))
+declare building_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',222,'BUILDINGS'))
+declare facility_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',222,'FACILITYS'))
+declare room_cd = f8 with public, constant(uar_get_code_by('DISPLAY_KEY',222,'ROOM'))
+declare fac_cd = f8
+set fac_cd = cnvtreal($facility)
+declare ord_idx = i2
+declare ords = i2
+ 
+record nu (
+	1 qual[*]
+		2 bld_cd = f8
+		2 nu_cd = f8
+		2 room_cd = f8
+)
+declare idx_locs = i2
+declare idx_encs = i2
+ 
+select into "nl:"
+    rlc = uar_get_code_display(lc3.root_loc_cd)
+    ,pc = uar_get_code_display(lc3.parent_loc_cd)
+    ,cc = uar_get_code_display(lc3.child_loc_cd)
+ 
+from code_value c
+	 ,location_group lc
+	 ,location_group lc2
+	 ,location_group lc3
+	 ,code_value c2
+ 
+plan lc
+	where fac_cd = lc.parent_loc_cd
+	and lc.location_group_type_cd = facility_cd		;783			;Facility
+	and lc.active_ind+0 = 1
+	and lc.root_loc_cd = 0
+ 
+join lc2
+	where lc.child_loc_cd = lc2.parent_loc_cd
+	and lc2.location_group_type_cd = building_cd	;778		;building
+	and lc2.active_ind+0 = 1
+	and lc2.root_loc_cd = 0
+ 
+join c
+	where lc2.child_loc_cd = c.code_value
+	and c.code_set = 220
+	and c.active_ind+0 = 1
+	and trim(c.cdf_meaning) = 'NURSEUNIT'
+ 
+join lc3
+	where lc2.child_loc_cd = lc3.parent_loc_cd
+	and lc3.root_loc_cd = 0
+	and lc3.active_ind+0 = 1
+ 
+join c2
+	where lc3.child_loc_cd = c2.code_value
+	and c2.code_set = 220
+	and c2.active_ind+0 = 1
+	and trim(c2.cdf_meaning) = 'ROOM'
+ 
+	order
+		lc.child_loc_cd
+		,lc2.child_loc_cd
+		,lc3.child_loc_cd
+ 
+	HEAD report
+	idx_locs = 0
+ 
+	HEAD lc.child_loc_cd
+	null
+ 
+	head lc2.child_loc_cd
+	null
+ 
+	head lc3.child_loc_cd
+	idx_locs = idx_locs+1
+	stat = alterlist(nu->qual,idx_locs)
+	nu->qual[idx_locs].nu_cd = c.code_value
+	nu->qual[idx_locs].bld_cd = lc2.parent_loc_cd
+	nu->qual[idx_locs].room_cd = lc3.child_loc_cd
+;	col 0 nu->qual[idx_locs].nu_cd
+;	col 15 c.code_value,' ',c.display
+;	col 60 c2.code_value,' ',c2.display
+;	row+1
+ 
+	with nocounter
+	,format
+	,separator = ' '
+ 
+ 
+declare ords = i2
+set ords = 0
+ 
+/*===============================================================================================================
+                        	GATHER ALL ACTIVE INPATIENTS FOR SELECTED FACILTY
+===============================================================================================================*/
+ 
+select into 'NL:'
+ 
+      ed.encntr_id
+    , p.name_full_formatted
+	, e.loc_facility_cd
+	, e.loc_nurse_unit_cd
+	, e.loc_room_cd
+	, e.loc_bed_cd
+	, ed.encntr_id
+ 
+from
+ 
+	  encntr_alias ea
+   	, encounter e
+  	, encntr_domain ed
+ 	, person p
+    , orders o
+    , order_action oa
+    , order_detail od
+    , clinical_event ce
+	, ce_event_note cen
+	, long_blob l
+    ,(dummyt d with seq = idx_locs)
+;    , dummyt d2
+ 
+plan d
+ 
+join ed
+	where
+;	ed.encntr_id =        5691751.00   and
+	ed.loc_facility_cd = fac_cd and
+	ed.loc_building_cd = nu->qual[d.seq].bld_cd and
+	ed.loc_nurse_unit_cd = nu->qual[d.seq].nu_cd and
+	ed.loc_room_cd = nu->qual[d.seq].room_cd and
+	ed.encntr_domain_type_cd+0 = census_cd and
+	ed.active_ind+0 = 1 and
+	ed.beg_effective_dt_tm+0 <=  sysdate and
+	ed.end_effective_dt_tm >=  sysdate
+ 
+join e
+	where
+	e.encntr_id = ed.encntr_id and
+	e.active_ind+0 = 1 and
+	e.beg_effective_dt_tm+0 <=  sysdate and
+	e.end_effective_dt_tm+0 >=  sysdate  and
+	e.encntr_type_class_cd+0 in ( ip_cd, ed_cd, obs_cd )
+ 
+join p
+	where
+	p.person_id = e.person_id and
+	p.active_ind+0 = 1 and
+	p.beg_effective_dt_tm+0 <= sysdate   and
+	p.end_effective_dt_tm+0 >=  sysdate
+ 
+join ea
+	where
+	ea.encntr_id =    e.encntr_id and
+	ea.encntr_alias_type_cd+0 = fnbr_cd and
+	ea.active_ind+0 = 1   and
+	ea.beg_effective_dt_tm+0 <=  sysdate   and
+	ea.end_effective_dt_tm+0 >=  sysdate
+;	and ea.alias = '81540174'
+ 
+join o
+    where
+    o.encntr_id = ed.encntr_id
+    and ed.person_id = o.person_id
+;	and o.catalog_cd in (BLOODCULTURE_200_CV,URINECULTBLD_200_CV,CATHETERCULT_200_CV,SPUTUMCULT_200_CV)
+;	and o.order_id+0 > 0
+	and o.catalog_type_cd = lab_ct_var
+    and o.activity_type_cd = lab_at_var
+	and o.template_order_id+0=0
+	and o.order_status_cd+0 in(stat_comp_var)
+	and o.orig_ord_as_flag+0 = 0
+ 
+join oa
+	where
+	oa.order_id = o.order_id
+;	and oa.action_type_cd = completed_action
+ 	and oa.order_status_cd+0 in(stat_comp_var)
+; 	and oa.action_dt_tm between cnvtdatetime( cnvtdate(begin_date), 0) and
+;							      cnvtdatetime( cnvtdate(end_date), 0)
+join od
+	where
+	od.order_id = oa.order_id
+	and od.oe_field_meaning = "SPECIMEN TYPE"
+ 
+join ce
+	where
+	ce.order_id = oa.order_id
+	and ce.valid_until_dt_tm > sysdate
+	and ce.view_level = 1
+ 	and ce.event_end_dt_tm between cnvtdatetime( cnvtdate(begin_date), 0) and
+							      cnvtdatetime( cnvtdate(end_date), 0)
+	and ce.result_val = "POSITIVE"
+ 
+join cen
+	where
+	ce.event_id= cen.event_id
+	and cen.compression_cd in (NOCOMP_VAR, OCFCOMP_VAR)
+	and cen.valid_until_dt_tm > sysdate
+ 
+JOIN l
+	where
+	cen.ce_event_note_id = l.parent_entity_id
+	and l.parent_entity_name = "CE_EVENT_NOTE"
+ 
+;join d2
+;	where
+;	o.ordered_as_mnemonic = patstring("*CULTURE*")
+;	trim(uar_get_code_display(o.catalog_cd)) = patstring("*Culture*")
+ 
+ 
+order by
+		 e.loc_facility_cd
+		 , e.loc_nurse_unit_cd
+		 , e.loc_room_cd
+		 , e.loc_bed_cd
+		 , ed.encntr_id
+	     ,o.order_id
+ 
+head report
+ 
+   	i = 0
+   	j = 0
+ 
+head ed.encntr_id
+ 
+   	i = i + 1
+   if(mod(i, 10) = 1)
+      stat = alterlist(contam->rec, i + 9)
+   endif
+ 
+	contam->rec[i].facility		=	trim(uar_get_code_description(e.loc_facility_cd))
+	contam->rec[i].nurse_unit	=	trim(uar_get_code_display(e.loc_nurse_unit_cd))
+	contam->rec[i].room_bed		=	concat(trim(uar_get_code_display(e.loc_room_cd))," - ",
+										   trim(uar_get_code_display(e.loc_bed_cd)))
+	contam->rec[i].patient		=	trim(p.name_full_formatted)
+	contam->rec[i].fin			=	cnvtalias(ea.alias,ea.alias_pool_cd)
+	contam->rec[i].personid		=	e.person_id
+	contam->rec[i].encntrid		=	e.encntr_id
+ 
+	j = 0
+ 
+head o.order_id
+ 
+	ords = 1
+ 
+	j = j + 1
+   if(mod(j, 10) = 1)
+      stat = alterlist(contam->rec[i].cultures, j + 9)
+   endif
+ 
+	contam->rec[i].cultures[j].culture_name		=	trim(uar_get_code_display(o.catalog_cd))
+	contam->rec[i].cultures[j].orderid			=	o.order_id
+	contam->rec[i].cultures[j].culture_stat		=	trim(uar_get_code_display(o.order_status_cd))
+	contam->rec[i].cultures[j].completed_dt_tm  =	format(oa.action_dt_tm, "mm/dd/yyyy hh:mm;;q")
+	contam->rec[i].cultures[j].specimen_type	=	trim(od.oe_field_display_value)
+	contam->rec[i].cultures[j].ce_result		=	trim(ce.result_val)
+ 
+	  if (cen.compression_cd = OCFCOMP_VAR)
+				    blob_out1 = fillstring(32000, " ")
+				    blob_out2 = fillstring(32000, " ")
+				    blob_out1_len = 0
+				    call uar_ocf_uncompress(l.long_blob, size(l.long_blob), blob_out1, size(blob_out1), blob_out1_len)
+				    call uar_rtf2(blob_out1, blob_out1_len, blob_out2, 32000, blob_out1_len, 0)
+				    contam->rec[i].cultures[j].huge_result = build(uar_get_code_display(ce.event_cd), "-",
+				    							trim(substring(1,blob_out1_len,blob_out2),3))
+				  else
+				    contam->rec[i].cultures[j].huge_result = build(uar_get_code_display(ce.event_cd), "-", trim(l.long_blob,3))
+				  endif
+ 
+ 
+foot ed.encntr_id
+ 
+		stat = alterlist(contam->rec[i].cultures, j)
+ 
+foot report
+ 
+	contam->rec_cnt = i
+	stat = alterlist(contam->rec, i)
+ 
+ 
+with	 nocounter
+ 
+if(ords = 0)
+	set noquals = 1
+else
+	set noquals = 0
+endif
+ 
+ 
+if ($rpt_fmt = 1)
+ 
+	execute reportrtl
+%i CCLUSERDIR:mhh_jdv_pos_culture.dvl
+	set _sendto = $outdev	;REQUEST -> OUTPUT_DEVICE ;md->lst[a].print_name ; $1 ;;$1 ;VALUE(output_file) ;
+	call layoutquery(0)
+ 
+elseif ($rpt_fmt = 2)
+ 
+ 
+;------------------------------------------------------------------------------------
+;-- Send derived data to output/screen  ---------------------------------------------
+;------------------------------------------------------------------------------------
+ 
+select into $OUTDEV
+ 
+ 	facility		  		= contam->rec[d1.seq].facility
+,	nurse_unit 				= contam->rec[d1.seq].nurse_unit
+,	room_bed 				= contam->rec[d1.seq].room_bed
+,	patient_name			= contam->rec[d1.seq].patient
+,	fin 					= contam->rec[d1.seq].fin
+,	orderid 				= contam->rec[d1.seq].cultures[d2.seq].orderid
+,	culture_name 			= contam->rec[d1.seq].cultures[d2.seq].culture_name
+,   specimen_type 			= contam->rec[d1.seq].cultures[d2.seq].specimen_type
+,	culture_status 			= contam->rec[d1.seq].cultures[d2.seq].culture_stat
+,	completed_date 			= contam->rec[d1.seq].cultures[d2.seq].completed_dt_tm
+,   resultfrom_ce_table		= contam->rec[d1.seq].cultures[d2.seq].ce_result
+ 
+from (dummyt d1  with seq = value(contam->rec_cnt))
+, dummyt d2
+ 
+plan d1 where
+   maxrec(d2, size(contam->rec[d1.seq].cultures, 5))
+ 
+join d2
+ 
+order by
+ 
+facility, nurse_unit, room_bed
+ 
+WITH format, separator = " ", time = 600
+ 
+ 
+endif
+ 
+ 
+;---------------------------
+;-- End of Script Processing
+;---------------------------
+#ExitScript
+ 
+ 
+end
+go
+ 
+ 

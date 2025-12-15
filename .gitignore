@@ -1,0 +1,57 @@
+# CCL specific
+*.log
+*.lst
+*.bak
+*.old
+*~
+
+# Note: These CCL files SHOULD be tracked:
+# - *.dpb (prompt/parameter files)
+# - *.prg (CCL program files)
+# - *.tst (test execution files with parameters)
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Temporary
+tmp/
+temp/
+
+# Note: For MPage/healthcare projects, consider tracking:
+# - node_modules/ (specific validated versions)
+# - dist/ and build/ (deployment artifacts)
+# - *.min.js and *.min.css (pre-built files)
+
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+# Dependency directories
+node_modules/
+# Environment variables
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Task files
+# tasks.json
+# tasks/ 
+.taskmaster/tasks/task_*.txt

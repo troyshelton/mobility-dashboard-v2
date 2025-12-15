@@ -1,0 +1,136 @@
+SELECT distinct
+ocs.catalog_cd
+FROM
+	alt_sel_cat   ac
+	, alt_sel_list   asl
+	, order_catalog_synonym   ocs
+
+plan ac
+    where ac.long_description_key_cap IN (
+    "INSULIN"
+    ,"ANTIDIABETIC COMBINATIONS"
+    ,"ALPHA-GLUCOSIDASE INHIBITORS"
+    ,"MEGLITINIDES"
+    ,"SULFONYLUREAS"
+    ,"THIAZOLIDINEDIONES")
+join asl
+    where asl.alt_sel_category_id = ac.alt_sel_category_id
+join ocs
+    where ocs.synonym_id = outerjoin(asl.synonym_id)
+	and ocs.active_ind = 1
+
+ORDER BY
+	ocs.catalog_cd
+
+WITH MAXREC = 1000, TIME = 20
+
+
+
+-----------------------------------------------------------------------
+
+
+SELECT
+	o.order_id
+	, o.order_status_cd
+	, o.template_order_id
+	, o.need_rx_verify_ind
+	, o.orig_ord_as_flag
+	, o.last_ingred_action_sequence
+	, oi.action_sequence
+	, oi.catalog_type_cd
+	, oi.catalog_cd
+	, od.*
+;	, o.*
+;	, oi.*
+
+FROM
+	orders   o
+	, order_ingredient   oi
+	, order_dispense od
+
+
+
+/*
+person p,
+
+ 
+
+encntr_alias ea,
+
+encounter e,
+
+order_catalog_synonym ocs,
+
+order_ingredient oi
+*/
+plan o where o.order_id = 19704640
+join oi	where oi.order_id = o.order_id
+
+join od
+    where o.order_id = od.order_id
+
+WITH MAXREC = 100, TIME = 20
+
+/*
+where oi.catalog_type_cd = 2516
+
+and oi.catalog_cd  in
+
+    (2748946.00  ;amikacin
+
+    ,2749866.00  ;argatroban
+
+    ,2758928.00  ;gentamicin
+
+    ,2770944.00  ;vancomycin
+
+    ,2771189.00  ;warfarin
+
+    ,2770186.00  ;tobramycin
+
+    ,4602382.00  ;pain consult to pharmacy
+
+    ,4679851.00  ;TPN
+
+    ,16853757.00)            ;Renal consult to pharmacy
+
+ 
+
+ 
+*/
+/* join o
+
+where o.order_id = oi.order_id
+
+and o.order_status_cd = 2550 ;ordered
+
+and o.template_order_id = 0
+
+*/
+
+
+/*and o.catalog_cd in
+
+    (2748946.00  ;amikacin
+
+    ,2749866.00  ;argatroban
+
+    ,2758928.00  ;gentamicin
+
+    ,2770944.00  ;vancomycin
+
+    ,2771189.00  ;warfarin
+
+    ,2770186.00  ;tobramycin
+
+    ,4602382.00  ;pain consult to pharmacy
+
+    ,4679851.00  ;TPN
+
+    ,16853757.00)            ;Renal consult to pharmacy        */
+
+;and o.need_rx_verify_ind = 0
+
+;and o.orig_ord_as_flag = 0
+
+;and o.last_ingred_action_sequence = oi.action_sequence

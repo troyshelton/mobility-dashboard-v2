@@ -1,0 +1,213 @@
+/*
+Domain: TST41
+Login: RNCN1
+Patient: PHARMACY, HHCINPATIENT	
+FIN: 2400160921
+*/
+
+select * from orders o where o.order_id = 3282062761 with time = 60 go
+
+select od.oe_field_display_value 
+from 
+orders o,
+order_detail od
+plan o where o.order_id = 5823153827.00 ; @MISC:6 
+join od where od.order_id = o.order_id
+and od.oe_field_meaning_id in (
+99.0
+, 100.0
+)
+order by od.detail_sequence
+head report log_message = "WEIGHT NOT FOUND" log_misc1 = "WEIGHT NOT FOUND"
+detail
+if(od.oe_field_meaning_id = 99.0) 
+log_misc1 = trim(od.oe_field_display_value,3) 
+elseif(od.oe_field_meaning_id = 100.0)
+log_misc1 = build2(log_misc1," ",trim(od.oe_field_display_value,3))
+endif 
+foot report 
+log_message = "WEIGHT FOUND" 
+with nocounter, time = 60, nullreport go
+
+select ocs.* 
+from 
+ orders o,
+ order_catalog_synonym ocs
+plan o where o.order_id = 3282062761 
+join ocs where ocs.synonym_id = o.synonym_id
+with time = 60 go
+
+
+; For IV's, find all order ingredients (products) and create RXA segments
+;------------------------------------------------------------------------
+SELECT into "nl:"
+;oi.action_sequence,
+o.order_id;,
+;oi.catalog_cd,
+;oi.ingredient_type_flag,
+;o.template_order_flag,
+;o.template_order_id,
+;m.*
+;,m.event_id
+FROM
+ORDERS   O
+, ORDER_INGREDIENT   OI
+, med_admin_event m
+plan O WHERE O.person_id = 20596520.0 
+and o.iv_ind = 1 
+and o.template_order_id = 0.00
+and o.order_status_cd != 2544.00 ; Voided
+join oi
+where oi.order_id = o.order_id
+and oi.catalog_cd =     2757252.00 ; epoprostenol
+;and oi.ingredient_type_flag = 3.00  ; commented this out so I can all ingredients
+;and oi.ingredient_type_flag in (3)
+and oi.action_sequence =
+                (select max(oi2.action_sequence)
+                from order_ingredient oi2
+                where oi2.order_id = o.order_id ;3282062761.00 ; 392523809.00
+                ;and oi2.ingredient_type_flag = 3.00
+                ;and oi2.ingredient_type_flag in (3)
+                )
+join m where m.order_id = o.order_id 
+and m.event_type_cd = value(uar_get_code_by("DISPLAYKEY",4000040,"ADMINISTERED"))                
+with time = 60
+go
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Try this one below in rule
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SELECT
+;oi.action_sequence,
+o.order_id,
+o.template_order_flag,
+o.template_order_id,
+o.catalog_type_cd,
+o.activity_type_cd,
+o.product_id
+;oi.catalog_cd,
+;oi.ingredient_type_flag,
+;o.template_order_flag,
+;o.template_order_id,
+;m.*
+;,m.event_id
+FROM
+ORDERS   O
+, ORDER_INGREDIENT   OI
+, med_admin_event m
+plan O WHERE O.person_id = 20596520.0 ; trigger_personid
+;and o.encntr_id > 0.00
+;and o.catalog_cd > 0.00
+and o.catalog_type_cd = value(uar_get_code_by("DISPLAYKEY",6000,"PHARMACY"))
+and o.activity_type_cd = value(uar_get_code_by("DISPLAYKEY",106,"PHARMACY"))
+and o.orig_order_dt_tm between cnvtlookbehind("1,Y",cnvtdatetime(curdate,0)) and cnvtdatetime(curdate,235959)
+and o.order_status_cd != value(uar_get_code_by("DISPLAYKEY",6004,"VOIDED"))
+and o.iv_ind = 1 
+and o.template_order_id = 0.00
+join oi
+where oi.order_id = o.order_id
+and oi.catalog_cd =  value(uar_get_code_by("DISPLAYKEY",200,"EPOPROSTENOL")) ;2757252.00 ; epoprostenol
+and oi.ingredient_type_flag = 3.00  ; commented this out so I can all ingredients
+;and oi.ingredient_type_flag in (3)
+and oi.action_sequence =
+                (select max(oi2.action_sequence)
+                from order_ingredient oi2
+                where oi2.order_id = o.order_id
+                and oi2.ingredient_type_flag = 3.00
+                )
+join m where m.order_id = o.order_id 
+and m.event_type_cd = value(uar_get_code_by("DISPLAYKEY",4000040,"ADMINISTERED"))
+order by o.order_id               
+;head report 
+;log_message = "ORDER NOT FOUND" 
+;log_misc1 = cnvtstring(0) 
+;is_found = 0 
+;head o.order_id 
+;if(is_found = 0) 
+;log_message = "ORDER FOUND" 
+;log_misc1 = cnvtstring(o.order_id) 
+;endif 
+;is_found = 1 
+with nocounter, time = 60, nullreport go
+
+
+select ce.event_tag 
+from orders o, med_admin_event m, clinical_event ce 
+plan o where o.order_id = @MISC:3 
+join m where o.order_id = m.order_id and m.event_type_cd = value(uar_get_code_by("DISPLAYKEY",4000040,"ADMINISTERED")) 
+join ce where ce.event_id = m.event_id and ce.result_status_cd in (25.0,34.0,35.0) 
+order by ce.event_id 
+;head report log_message = "ADM DOSE NOT FOUND" log_misc1 = "ADM DOSE NOT FOUND" cnt = 0 
+;head ce.event_id 
+;cnt = cnt + 1 if(cnt = 1) 
+;log_misc1 = build2(trim(ce.event_tag,3)," @ ",format(ce.performed_dt_tm,"MM/DD/YY hh:mm;;dq")) 
+;else 
+;log_misc1 = build2(log_misc1," | ",trim(ce.event_tag,3)," @ ",format(ce.performed_dt_tm,"MM/DD/YY hh:mm;;dq")) 
+;endif 
+;foot report 
+;log_message = "ADM DOSE FOUND" 
+with nocounter, time = 60, nullreport go
+;;;;;;;;;;;;;;;;;;;;;
+
+SELECT into "nl:"
+o.order_id,
+oi.catalog_cd,
+ocs.*
+FROM
+ORDERS   O
+, ORDER_INGREDIENT   OI
+, order_catalog_synonym ocs
+;plan O
+;                                WHERE O.ORDER_ID = 3282062761.00
+plan O WHERE O.person_id = 20596520.0 and o.iv_ind = 1
+JOIN OI
+                                WHERE OI.ORDER_ID = O.ORDER_ID
+JOIN OCS
+                                WHERE ocs.catalog_cd = oi.catalog_cd ;primary level
+                                AND ocs.mnemonic_type_cd = 2583.00 ;primary level
+with time = 60
+
+select m.event_id 
+from orders o, med_admin_event m 
+plan o where o.person_id = trigger_personid and o.encntr_id = trigger_encntrid 
+and o.catalog_cd = value(uar_get_code_by("DISPLAYKEY",200,"KETOROLAC")) 
+and o.order_status_cd in (
+value(uar_get_code_by("MEANING",6004,"ORDERED")), 
+value(uar_get_code_by("MEANING",6004,"COMPLETED"))) 
+join m where o.order_id = m.order_id 
+and m.event_type_cd = value(uar_get_code_by("DISPLAYKEY",4000040,"ADMINISTERED")) 
+order by m.event_id desc 
+head report 
+log_message = "ORDER NOT FOUND" 
+log_misc1 = cnvtstring(0) is_found = 0 
+head m.event_id 
+if(is_found = 0) 
+log_message = "ORDER FOUND" 
+log_misc1 = cnvtstring(m.order_id) 
+endif 
+is_found = 1 
+with nocounter, time = 60, nullreport go
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

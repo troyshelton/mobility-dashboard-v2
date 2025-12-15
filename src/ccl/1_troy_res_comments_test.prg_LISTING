@@ -1,0 +1,162 @@
+1)drop program 1_troy_res_comments_test go
+1)create program 1_troy_res_comments_test
+2)
+3)prompt
+4)	"Output to File/Printer/MINE" = "MINE"   ;* Enter or select the printer or file name to send this report to.
+5)	, "prompt1" = 0
+6)
+7)with OUTDEV, prompt1
+8)
+9)/**************************************************************
+10); DVDev DECLARED VARIABLES
+11)**************************************************************/
+12)declare sR13_res_comments = vc with Protect
+13)declare sR13_res_text = vc with Protect
+14)
+15)/*
+16)
+17)comment out - not in ce_blob table
+18)select into "nl:"
+19)FROM
+20)  ce_blob cb
+21)plan cb where cb.event_id = 7445458758
+22)          and cb.valid_until_dt_tm=  cnvtdatetime ("31-DEC-2100,00:00:00" )
+23)          and cb.blob_seq_num != 0
+24)detail
+25)
+26)  if(cb.compression_cd= 728.00) ;ocf compression
+27)    blob_out = fillstring(32000," ")
+28)    blob_out2 = fillstring(32000," ")
+29)    blob_out3 = fillstring(32000," ")
+30)    blob_ret_len = 0 ,
+31)    call uar_ocf_uncompress(cb.BLOB_CONTENTS, size(cb.BLOB_CONTENTS), blob_out, 32000, blob_ret_len)
+32)  else
+33)    blob_out = fillstring(32000," ")
+34)    y1 = size(trim(cb.BLOB_CONTENTS))
+35)    blob_out = substring(1,(y1 - 8),cb.BLOB_CONTENTS)
+36)  endif
+37)  ;First, replace line breaks with the CR text. This text will remain after feeding the string through the uar_rtf function
+38)  blob_out = replace(blob_out,char(10),"«cr»") ;replaces line breaks
+39)  blob_out = replace(blob_out,char(13),"«cr»") ;replaces line breaks
+40)  blob_out = replace(blob_out,"\pard","«cr»")   ;replaces line breaks
+41)  blob_out = replace(blob_out,"\par","«cr»")   ;replaces line breaks
+42)
+43)  ;Cal RTF function
+44)  call uar_rtf(blob_out, textlen(blob_out), blob_out2, 32000, 32000, 0)
+45)  ;set blob_out = to result from function
+46)  blob_out = blob_out2
+47)
+48)  ;11-30-2011 - add HL7 character removal
+49)  blob_out = replace(blob_out, "\", "\E\")
+50)  blob_out = replace(blob_out, "|", "\F\")
+51)  blob_out = replace(blob_out, "^", "\S\")
+52)  blob_out = replace(blob_out, "&", "\T\")
+53)  blob_out = replace(blob_out, "~", "\R\")
+54)
+55)  ;Replace all the CR placeholders with the \.br\ text
+56)  blob_out = replace(blob_out,"«cr»","\.br\")   ;replaces line breaks
+57)
+58)  sR13_res_text =  trim(blob_out)
+59)
+60)
+61)
+62)
+63)with nocounter
+64)
+65)
+66)
+67)call echo(sR13_res_text)
+68)
+69)*/
+70);/*
+71)
+72)
+73);Get comments
+74)select into "nl:"
+75)cen.seq,
+76)lb.long_blob
+77)from
+78)  ce_event_note cen
+79)     ,long_blob lb
+80)     ,long_text lt
+81)plan cen where cen.event_id= 7445458758
+
+%CCL-W-407-EKS_CALL_COMPILE(0,0,58)250920:2208{}Converting to 0 due to invalid integer.
+(S58L3.3m5)
+82)    and cen.valid_until_dt_tm = cnvtdatetime("31-DEC-2100,00:00:00")
+83)join lb where lb.parent_entity_id = outerjoin(cen.ce_event_note_id)
+84)    and lb.parent_entity_name= outerjoin("CE_EVENT_NOTE")
+85)join lt where lt.long_text_id = cen.long_text_id
+86)detail
+87)  if (lt.long_text_id > 0)
+88)    sR13_res_comments = lt.long_text
+89)  else
+90)    if(cen.compression_cd= 728.00) ;ocf compression
+91)      blob_out = fillstring(32000," ")
+92)      blob_out2 = fillstring(32000," ")
+93)      blob_out3 = fillstring(32000," ")
+94)      blob_ret_len = 0 ,
+95)      call uar_ocf_uncompress(lb.long_blob, size(lb.long_blob),
+96)       blob_out, 32000, blob_ret_len)
+97)    else
+98)      blob_out = fillstring(32000," ")
+99)      y1 = size(trim(lb.long_blob))
+100)      blob_out = substring(1,(y1 - 8),lb.long_blob)
+101)    endif
+102)
+103)    ;First, replace line breaks with the CR text. This text will remain after feeding the string through the uar_rtf function
+104)    blob_out = replace(blob_out,char(10),"«cr»") ;replaces line breaks
+105)    blob_out = replace(blob_out,char(13),"«cr»") ;replaces line breaks
+106)    blob_out = replace(blob_out,"\pard","«cr»")   ;replaces line breaks
+107)    blob_out = replace(blob_out,"\par","«cr»")   ;replaces line breaks
+108)    call uar_rtf(blob_out, textlen(blob_out), blob_out2, 32000, 32000, 0)
+109)    blob_out = blob_out2
+110)
+111)    ;11-30-2011 - add HL7 character removal
+112)    blob_out = replace(blob_out, "\", "\E\")
+113)    blob_out = replace(blob_out, "|", "\F\")
+114)    blob_out = replace(blob_out, "^", "\S\")
+115)    blob_out = replace(blob_out, "&", "\T\")
+116)    blob_out = replace(blob_out, "~", "\R\")
+117)
+118)    ;Replace all the CR placeholders with the \.br\ text
+119)    blob_out = replace(blob_out,"«cr»","\.br\")   ;replaces line breaks
+120)
+121)    sR13_res_comments =  trim(blob_out)
+122)
+123)  endif
+124)
+125)
+126)
+127)with nocounter
+128);*/
+129)
+130)
+131)call echo(sR13_res_comments)
+132)
+133)end
+134)go
+>>>Optimize 1_TROY_RES_COMMENTS_TEST Sub:0,0|Out:2|Mth:0|Dea:0|Exe:0|Rpt:0|Dat:0|Dep:0|Fun:0|
+1)
+1)
+1)1_troy_res_comments_test "MINE", 7445458758 go
+
+%CCL-W-407-EKS_CALL_COMPILE(0,0,58)250920:2208{}Converting to 0 due to invalid integer.
+(S58L3.3m5)
+
+%CCL-W-399-1_TROY_RES_COMMENTS_TEST(0,0,58)250920:2208{UAR_OCF_UNCOMPRESS}Comparison of expression (I4:W8) incompatible in type for function (UAR_OCF_UNCOMPRESS) arg (5).
+(S58L5.4c3)
+
+ CALL uar_ocf_uncompress(lb.long_blob,size(lb.long_blob),blob_out,32000,blob_ret_len)
+
+  0)CE_EVENT_NOTE:CEN(N#0#0)(Rng:0)Len<378>Dim<1>KEY1<0>Rec<1>
+   1)LONG_BLOB:LB(N#5#0)(Rng:1)Len<32356>Dim<1>Row<1>
+    2)LONG_TEXT:LT(N#5#0)(Rng:2)Len<32348>Dim<1>Row<1>
+
+Row:      3 Qual:      1 Len:  64027
+31f04ec3-89f3-41a0-85e2-9a94985a2fd4\F\\.br\04/22/2025  12:29 EDT   HR = 97 bpm [Greater than or equal to 91]\F\04/22/2025  12:29 E
+DT   RR = 29 br/min [Greater than or equal to 21]\F\\.br\04/22/2025  12:29 EDT   Sys BP = 84 mmHg [Less than 90]
+1)
+1)
+
+250920:220813 1_troy_res_comments_test.prg              Cost 0.00 Cpu 0.00 Ela 0.00 Dio   0 O0M0R0 P2R3 S1,1

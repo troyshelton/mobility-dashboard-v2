@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="XMLCCLREQUEST,APPLINK,MPAGES_EVENT" name="discern"/>
+  <title>Sepsis Dashboard</title>
+
+  <!-- Version Information -->
+  <meta name="version" content="v1.48.0-sepsis">
+  <meta name="build-date" content="2025-12-08">
+  <meta name="git-branch" content="main">
+  <meta name="deployment" content="citrix-i-drive">
+  <meta name="repository" content="https://github.com/troyshelton/sepsis-dashboard">
+  <meta name="repository-name" content="sepsis-dashboard">
+  <meta name="features" content="powerplan-column,lactate-column,lactate-tooltips,cerner-style-tooltips,blood-culture-column,antibiotic-column,fluid-column,pressor-detection,timeout-optimization,global-phase-filtering,healthcare-order-icons,alert-tooltips,blob-data-extraction,criteria-parsing,volume-tracking,administration-times,citrix-deployment,er-tracking-filters,firstnet-stats">
+
+  <link href="$SOURCE_DIR$\\styles.css" rel="stylesheet" />
+  <!-- Font Awesome for medical-standard icons (local) -->
+  <link rel="stylesheet" href="$SOURCE_DIR$\\lib\\fontawesome\\all.min.css" />
+
+  <!-- Handsontable (local) - v15.2.0 with Modern Theme (Issue #39) -->
+  <script src="$SOURCE_DIR$\\lib\\handsontable\\handsontable.full.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="$SOURCE_DIR$\\lib\\handsontable\\handsontable.full.min.css" />
+  <link type="text/css" rel="stylesheet" href="$SOURCE_DIR$\\lib\\handsontable\\ht-theme-main.min.css" />
+
+  <!-- Eruda - Modern DevTools for PowerChart environments (local) -->
+  <!-- Pre-hide Eruda icon to prevent flash - load before Eruda script -->
+  <style>
+    /* Hide Eruda elements immediately on page load */
+    .eruda-icon-tool,
+    .eruda-entry-btn,
+    [class*="eruda-entry"],
+    [class*="eruda-icon"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+
+    /* Also hide by ID in case it uses that */
+    #eruda > div:first-child {
+      display: none !important;
+    }
+  </style>
+
+  <script>
+    // Immediate CSS injection to prevent any flash
+    document.addEventListener('DOMContentLoaded', function() {
+      var style = document.createElement('style');
+      style.textContent = '.eruda-icon-tool, .eruda-entry-btn { display: none !important; }';
+      document.head.insertBefore(style, document.head.firstChild);
+    });
+  </script>
+
+  <script src="$SOURCE_DIR$\\lib\\eruda\\eruda.js"></script>
+  <script>
+    // Initialize Eruda with PowerChart-friendly settings
+    eruda.init({
+      container: document.body,
+      tool: ['console', 'elements', 'network', 'resources', 'info'],
+      useShadowDom: true,
+      autoScale: false,
+      defaults: {
+        displaySize: 40,
+        transparency: 0.9,
+        theme: 'Material Design'
+      }
+    });
+
+    // Hide by default for end users, show only when needed
+    eruda.hide();
+
+    // Destroy the Eruda entry button entirely using official API
+    setTimeout(function() {
+      try {
+        eruda.get('entryBtn').destroy();
+        console.log('Eruda entry button destroyed via API');
+      } catch (error) {
+        console.log('API destroy failed, trying hide:', error.message);
+        try {
+          eruda.get('entryBtn').hide();
+          console.log('Eruda entry button hidden via API');
+        } catch (hideError) {
+          console.log('Both destroy and hide failed:', hideError.message);
+        }
+      }
+    }, 50);
+
+    // Track Eruda visibility state manually
+    var erudaVisible = false;
+
+    // Add keyboard shortcut (Cmd+Shift+F on Mac)
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+        e.preventDefault();
+        // Toggle between show/hide
+        if (erudaVisible) {
+          eruda.hide();
+          erudaVisible = false;
+          console.log('Eruda DevTools hidden via Command+Shift+F');
+        } else {
+          eruda.show();
+          erudaVisible = true;
+          console.log('Eruda DevTools shown via Command+Shift+F');
+        }
+      }
+    });
+
+    // Manual toggle functions for PowerChart
+    window.toggleEruda = function() {
+      if (erudaVisible) {
+        eruda.hide();
+        erudaVisible = false;
+        return 'Eruda DevTools hidden';
+      } else {
+        eruda.show();
+        erudaVisible = true;
+        return 'Eruda DevTools shown';
+      }
+    };
+
+    window.showEruda = function() {
+      eruda.show();
+      return 'Eruda DevTools opened';
+    };
+
+    window.hideEruda = function() {
+      eruda.hide();
+      return 'Eruda DevTools hidden';
+    };
+  </script>
+</head>
+
+<body onload="window.PatientListApp && window.PatientListApp.init()">
+  <!-- Header -->
+  <div id="header" class="w-full py-2 pl-2" style="border-bottom: 1px solid #1e3a8a;">
+    <span class="font-sans text-sm font-medium" style="color: #1e3a8a;">Severe Sepsis Dashboard</span>
+  </div>
+  <!-- End Header -->
+
+  <!-- Main -->
+  <div id="main" class="px-2" style="padding-top: 8px;">
+    <!-- Patient List Select -->
+    <div class="w-full" style="margin-bottom: 8px;">
+      <div class="relative" style="display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; width: 100%;">
+        <select id="patient-list-select"
+          class="flex py-1 pl-1 pr-8 font-sans text-sm tracking-tighter transition duration-200 bg-transparent border shadow-sm cursor-pointer font-normal ease border-slate-400 text-slate-600 placeholder:text-slate-400 hover:border-slate-400 focus:border-slate-400 focus:shadow-md focus:outline-none"
+          style="min-width: 200px; max-width: 250px;">
+          <option value="">Select Patient List...</option>
+        </select>
+
+        <!-- Issue #78: ER Units Dropdown (Option A: no labels, just placeholder) -->
+        <select id="er-unit-select"
+          class="flex py-1 pl-1 pr-8 font-sans text-sm tracking-tighter transition duration-200 bg-transparent border shadow-sm cursor-pointer font-normal ease border-slate-400 text-slate-600 placeholder:text-slate-400 hover:border-slate-400 focus:border-slate-400 focus:shadow-md focus:outline-none"
+          style="min-width: 200px; max-width: 250px;">
+          <option value="">Select ER Unit...</option>
+          <option value="271365867.00">General Hospital</option>
+          <option value="28309431.00">Memorial Hospital</option>
+          <option value="271366149.00">Teays Valley</option>
+          <option value="271366419.00">Women and Children's</option>
+          <option value="8800251397.00">Greenbrier</option>
+          <option value="9799324931.00">Plateau</option>
+        </select>
+
+        <!-- Vertical separator -->
+        <span class="control-separator">|</span>
+
+        <!-- Refresh Controls Group (Issue #35) -->
+        <div class="refresh-controls-group" style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+          <span class="refresh-label">Refresh:</span>
+          <button id="refresh-data" class="btn-icon" title="Manual Refresh">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+          <label class="toggle-switch" title="Auto-Refresh (3 min)">
+            <input type="checkbox" id="auto-refresh-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+          <span id="auto-refresh-status" class="auto-refresh-status">OFF</span>
+          <span id="auto-refresh-countdown" class="auto-refresh-countdown" style="min-width: 60px;"></span>
+        </div>
+
+        <!-- Vertical separator -->
+        <span class="control-separator">|</span>
+
+        <!-- Filter Controls Group (Issue #57 - FirstNet style) -->
+        <div class="filter-controls-group" style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+          <span class="filter-label">Filter:</span>
+          <select id="patient-filter-select"
+            class="flex py-1 pl-1 pr-8 font-sans text-sm tracking-tighter transition duration-200 bg-transparent border shadow-sm cursor-pointer font-normal ease border-slate-400 text-slate-600 hover:border-slate-400 focus:border-slate-400 focus:shadow-md focus:outline-none">
+            <option value="none">&lt;None&gt;</option>
+            <option value="current">Current Patients</option>
+            <option value="sepsis">Sepsis Criteria</option>
+            <option value="current-sepsis" selected>Current + Sepsis</option>
+          </select>
+        </div>
+
+        <!-- Vertical separator -->
+        <span class="control-separator">|</span>
+
+        <!-- Patient Stats Indicator (Issue #57 - FirstNet style) -->
+        <span id="patient-stats-indicator" class="patient-stats-text" style="white-space: nowrap;"></span>
+      </div>
+    </div>
+    <!-- End Select -->
+
+    <!-- Data Table Container -->
+    <div id="patient-table-container" style="margin-top: 4px;">
+      <p id="loading-message" class="font-sans font-normal text-center text-slate-500 italic" style="padding: 2rem;">Select a patient list to fetch and display data</p>
+    </div>
+
+  </div>
+
+  <!-- Load service scripts -->
+  <script src="$SOURCE_DIR$\\js\\VisualIndicators.js"></script>
+  <script src="$SOURCE_DIR$\\js\\Config.js"></script>
+  <script src="$SOURCE_DIR$\\js\\AdminCommands.js"></script>
+  <script src="$SOURCE_DIR$\\js\\SendCclRequest.js"></script>
+  <script src="$SOURCE_DIR$\\js\\XMLCclRequestSimulator.js"></script>
+  <script src="$SOURCE_DIR$\\js\\UserInfoService.js"></script>
+  <script src="$SOURCE_DIR$\\js\\PatientListService.js?v=20251208v23"></script><!-- v23: Cache-bust for Issue #75 -->
+  <script src="$SOURCE_DIR$\\js\\PatientDataService.js?v=20251208v23"></script><!-- v23: Cache-bust for Issue #75 -->
+
+  <!-- Quick Launch POCs (Issues #28, #29) -->
+  <script src="$SOURCE_DIR$\\js\\PowerFormLauncher.js"></script>
+  <script src="$SOURCE_DIR$\\js\\PowerPlanLauncher.js"></script>
+
+  <!-- Tippy.js Tooltip Library (Issue #48) -->
+  <link rel="stylesheet" href="$SOURCE_DIR$\\lib\\tippy\\tippy.css">
+  <script src="$SOURCE_DIR$\\lib\\tippy\\popper.min.js"></script>
+  <script src="$SOURCE_DIR$\\lib\\tippy\\tippy.umd.min.js"></script>
+
+  <!-- Initialize Tippy.js defaults immediately after loading -->
+  <script>
+    if (typeof tippy !== 'undefined') {
+      tippy.setDefaultProps({
+        theme: 'sepsis-standard',
+        placement: 'bottom',
+        flip: true,
+        shift: true,
+        offset: [0, 8],
+        animation: 'fade',
+        duration: [200, 150],
+        arrow: true,
+        allowHTML: true,
+        boundary: 'viewport',
+        maxWidth: 300
+      });
+      console.log('[Tippy] Global defaults set with sepsis-standard theme');
+    }
+  </script>
+
+  <script src="$SOURCE_DIR$\\js\\main.js?v=20251208v48"></script><!-- v48: Cache-bust for v1.48.0-sepsis -->
+
+</body>
+</html>
