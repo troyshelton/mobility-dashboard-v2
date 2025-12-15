@@ -133,23 +133,6 @@
   </div>
   <!-- End Header -->
 
-  <!-- Date Navigator -->
-  <div id="date-navigator" style="padding: 8px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; display: flex; align-items: center; justify-content: center; gap: 12px;">
-    <button id="date-prev" class="date-nav-btn" title="Previous Day">
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <button id="date-today" class="date-nav-btn" title="Jump to Today">
-      <i class="fas fa-calendar-day"></i> Today
-    </button>
-    <span id="date-display" style="font-size: 14px; font-weight: 500; color: #1e3a8a; min-width: 280px; text-align: center; font-family: system-ui;">
-      Monday, December 16, 2025
-    </span>
-    <button id="date-next" class="date-nav-btn" title="Next Day" disabled>
-      <i class="fas fa-chevron-right"></i>
-    </button>
-  </div>
-  <!-- End Date Navigator -->
-
   <!-- Main -->
   <div id="main" class="px-2" style="padding-top: 8px;">
     <!-- Patient List Select -->
@@ -208,7 +191,24 @@
       </div>
     </div>
     <!-- End Select -->
-    
+
+    <!-- Date Navigator -->
+    <div id="date-navigator" style="padding: 8px; margin-top: 8px; margin-bottom: 8px; border: 1px solid #e5e7eb; background: #f9fafb; display: flex; align-items: center; justify-content: center; gap: 12px; border-radius: 4px;">
+      <button id="date-prev" class="date-nav-btn" title="Previous Day">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button id="date-today" class="date-nav-btn" title="Jump to Today">
+        <i class="fas fa-calendar-day"></i> Today
+      </button>
+      <span id="date-display" style="font-size: 14px; font-weight: 500; color: #1e3a8a; min-width: 280px; text-align: center; font-family: system-ui;">
+        Monday, December 16, 2025
+      </span>
+      <button id="date-next" class="date-nav-btn" title="Next Day" disabled>
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    <!-- End Date Navigator -->
+
     <!-- Data Table Container -->
     <div id="patient-table-container" style="margin-top: 4px;">
       <!-- Handsontable will be inserted here by initializeEmptyTable() -->
