@@ -141,7 +141,10 @@
         },
         state: {
             currentListId: null,
-            handsontableInstance: null
+            handsontableInstance: null,
+            currentERUnit: null,
+            selectedDate: new Date(),  // NEW (Issue #1): Currently selected date
+            isToday: true              // NEW (Issue #1): Flag if viewing today's data
         },
         initialized: false,
         init: initializeApp, // Main entry point
