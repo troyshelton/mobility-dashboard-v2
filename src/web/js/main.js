@@ -50,6 +50,91 @@
     // REMOVED: meetsSepsisCriteria function (sepsis-specific logic removed for mobility dashboard)
 
     /**
+     * Date Navigator Functions (Issue #1)
+     */
+
+    /**
+     * Format date for display: "Monday, December 15, 2025"
+     */
+    function formatDateDisplay(date) {
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    /**
+     * Update date display text
+     */
+    function updateDateDisplay(date) {
+        const app = window.PatientListApp;
+        const display = document.getElementById('date-display');
+        if (display) {
+            let text = formatDateDisplay(date);
+            if (app.state.isToday) {
+                text += ' (Today)';
+            }
+            display.textContent = text;
+        }
+    }
+
+    /**
+     * Update navigation button states
+     */
+    function updateDateNavButtons() {
+        const app = window.PatientListApp;
+        const nextBtn = document.getElementById('date-next');
+        const todayBtn = document.getElementById('date-today');
+
+        // Next button disabled if viewing today
+        if (nextBtn) {
+            nextBtn.disabled = app.state.isToday;
+        }
+
+        // Today button highlighted if viewing today
+        if (todayBtn) {
+            if (app.state.isToday) {
+                todayBtn.style.background = '#dbeafe';
+                todayBtn.style.borderColor = '#0066cc';
+                todayBtn.style.color = '#0066cc';
+            } else {
+                todayBtn.style.background = '#f3f4f6';
+                todayBtn.style.borderColor = '#d1d5db';
+                todayBtn.style.color = '#374151';
+            }
+        }
+    }
+
+    /**
+     * Set selected date and update UI
+     */
+    function setSelectedDate(date) {
+        const app = window.PatientListApp;
+        app.state.selectedDate = date;
+
+        // Check if viewing today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selected = new Date(date);
+        selected.setHours(0, 0, 0, 0);
+        app.state.isToday = (selected.getTime() === today.getTime());
+
+        // Update date display
+        updateDateDisplay(date);
+
+        // Enable/disable navigation buttons
+        updateDateNavButtons();
+
+        // Reload data for selected date (will implement when CCL ready)
+        // reloadCurrentData();
+
+        debugLog('Date changed to: ' + formatDateDisplay(date) + ' (isToday: ' + app.state.isToday + ')');
+    }
+
+    /**
      * Apply patient filters based on dropdown selection (Issue #57 - FirstNet style)
      */
     function applyPatientFilters(patients) {
