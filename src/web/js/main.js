@@ -3280,6 +3280,44 @@
             debugLog('Event handler attached to patient filter dropdown');
         }
 
+        // Date Navigator event handlers (Issue #1)
+        const datePrevBtn = document.getElementById('date-prev');
+        if (datePrevBtn) {
+            datePrevBtn.addEventListener('click', () => {
+                const app = window.PatientListApp;
+                const currentDate = new Date(app.state.selectedDate);
+                currentDate.setDate(currentDate.getDate() - 1);  // Go back 1 day
+                setSelectedDate(currentDate);
+                debugLog('Date navigation: Previous day clicked');
+            });
+            debugLog('Event handler attached to date-prev button');
+        }
+
+        const dateTodayBtn = document.getElementById('date-today');
+        if (dateTodayBtn) {
+            dateTodayBtn.addEventListener('click', () => {
+                setSelectedDate(new Date());  // Jump to today
+                debugLog('Date navigation: Today button clicked');
+            });
+            debugLog('Event handler attached to date-today button');
+        }
+
+        const dateNextBtn = document.getElementById('date-next');
+        if (dateNextBtn) {
+            dateNextBtn.addEventListener('click', () => {
+                const app = window.PatientListApp;
+                const currentDate = new Date(app.state.selectedDate);
+                currentDate.setDate(currentDate.getDate() + 1);  // Go forward 1 day
+                setSelectedDate(currentDate);
+                debugLog('Date navigation: Next day clicked');
+            });
+            debugLog('Event handler attached to date-next button');
+        }
+
+        // Initialize date display with today's date
+        setSelectedDate(new Date());
+        debugLog('Date navigator initialized with today\'s date');
+
         // Initialize auto-refresh if enabled in config (Issue #35, Task 8.3)
         if (window.AUTO_REFRESH_CONFIG && window.AUTO_REFRESH_CONFIG.enabled) {
             debugLog('Auto-refresh enabled in config, starting service');
