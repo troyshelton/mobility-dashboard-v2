@@ -3,7 +3,7 @@
 **Project:** Mobility Dashboard v2
 **Feature:** Date Navigator for Temporal Mobility Data
 **Session Date:** December 14-15, 2025
-**Status:** Paused at 40% complete (4/10 subtasks)
+**Status:** 70% complete (7/10 subtasks) - Azure CERT deployed, awaiting validation
 
 ---
 
@@ -75,10 +75,59 @@
 
 ---
 
-## What Remains (Subtasks 1.5-1.10)
+## Today's Session Progress (2025-12-15)
 
-### ⏸️ 1.5: Create Mobility CCL Program (NOT STARTED)
-**Purpose:** Create `1_cust_mp_mob_get_pdata_01.prg` with date filtering
+### ✅ 1.5: CCL Program with Date Filtering (COMPLETED)
+- Created `1_cust_mp_mob_get_pdata_03.prg` with date filtering
+- Two-query pattern: SELECT 1 (demographics) + SELECT 2 (clinical events with DUMMYT)
+- Date parameter: mmddyyyy integer format (Bob Ross uCern pattern)
+- Inline CNVTDATETIME in WHERE clauses (avoids Oracle ORA-00932 error)
+- 5 clinical events with date filtering:
+  - Morse Fall Risk Score (3612336.00)
+  - Call Light & Personal Items (29672179.00)
+  - IV Sites Assessed (45431765.00)
+  - SCDs Applied (10288133561.00)
+  - Safety Needs Addressed (29672693.00)
+- Compiled and tested in non-prod with real patient data
+- Proven: Different dates return different clinical values (Morse 45 vs 60)
+
+### ✅ 1.6: JavaScript Service Integration (COMPLETED)
+- Updated PatientListService.js to call `1_cust_mp_mob_get_pdata`
+- Added formatDateForCCL() helper function
+- Fixed state path: window.PatientListApp.state.selectedDate
+- Date parameter passed to all 3 CCL call locations
+
+### ✅ 1.7: Date-Aware Mock Data (COMPLETED)
+- Added getMockMobilityPatientData() to XMLCclRequestSimulator.js
+- Dynamic today/yesterday calculation
+- Test dates: 03/27/2025 (Morse 45), 04/19/2025 (Morse 60)
+- Helper functions: parseDateParam(), formatDateKey(), formatDateTime()
+
+### ✅ Frontend Display Fix (COMPLETED)
+- Fixed PatientDataService.formatForTable() to include clinical event fields (ROOT CAUSE)
+- Added reloadCurrentData() function for date navigation
+- Updated Handsontable with nested headers: "Patient Demographics" | "Clinical Events"
+- Smooth updateSettings approach (no destroy/recreate flicker)
+
+### ✅ Azure CERT Deployment (COMPLETED)
+- Deployed all updated web files to ihazurestoragedev
+- Destination: $web/mobility-dashboard/src
+- 28 files deployed successfully
+- Ready for CERT testing with real CCL program
+
+### 📚 CCL Reference Updates (COMPLETED)
+- Added report writer section rule (must contain statements, use `null`)
+- Added outerjoin limitations (cannot mix with ANSI LEFT JOIN, cannot use with IN clause)
+- Added DUMMYT pattern for record updates
+- Added Two-Query pattern with date filtering
+- Added inline CNVTDATETIME pattern for Oracle compatibility
+
+---
+
+## What Remains (Subtasks 1.8-1.10)
+
+### ⏸️ 1.8: CERT Validation (IN PROGRESS)
+**Purpose:** Test complete date navigation flow in Cerner CERT
 
 **Tasks:**
 - Copy from `1_cust_mp_gen_get_pdata.prg`

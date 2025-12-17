@@ -128,10 +128,36 @@
         // Enable/disable navigation buttons
         updateDateNavButtons();
 
-        // Reload data for selected date (will implement when CCL ready)
-        // reloadCurrentData();
+        // Reload data for selected date
+        reloadCurrentData();
 
         debugLog('Date changed to: ' + formatDateDisplay(date) + ' (isToday: ' + app.state.isToday + ')');
+    }
+
+    /**
+     * Reload current patient list or ER unit with new date
+     */
+    function reloadCurrentData() {
+        const app = window.PatientListApp;
+
+        // Check if patient list is selected
+        const patientListDropdown = document.getElementById('patient-list-select');
+        if (patientListDropdown && patientListDropdown.value && patientListDropdown.value !== '') {
+            debugLog(`Reloading patient list ${patientListDropdown.value} with new date`);
+            loadPatientData(patientListDropdown.value);
+            return;
+        }
+
+        // Check if ER unit is selected
+        const erUnitDropdown = document.getElementById('er-unit-select');
+        if (erUnitDropdown && erUnitDropdown.value && erUnitDropdown.value !== '') {
+            debugLog(`Reloading ER unit ${erUnitDropdown.value} with new date`);
+            loadERUnitData(erUnitDropdown.value);
+            return;
+        }
+
+        // No data loaded yet - do nothing
+        debugLog('No data loaded yet - skipping reload');
     }
 
     /**
@@ -2427,8 +2453,15 @@
 
         // Define columns for sepsis dashboard structure (16 columns - Priority hidden pending requestor input)
         // v1.33.0: Left-justified columns for text fields, center for icons/values
-        console.log('Defining demographics columns for Mobility Dashboard...');
+        console.log('Defining demographics + clinical event columns for Mobility Dashboard...');
+
+        // DEBUG: Log first patient data to see ALL fields
+        console.log('🔍 FIRST PATIENT DATA:', data[0]);
+        console.log('🔍 Has MORSE_SCORE?', data[0]?.MORSE_SCORE);
+        console.log('🔍 Has CALL_LIGHT_IN_REACH?', data[0]?.CALL_LIGHT_IN_REACH);
+
         const columns = [
+            // Demographics (8 columns)
             { data: 'PATIENT_NAME', title: 'Patient', width: 160, renderer: patientNameRenderer, className: 'htMiddle htLeft' },
             { data: 'UNIT', title: 'Unit', width: 100, className: 'htMiddle htLeft' },
             { data: 'ROOM_BED', title: 'Room/Bed', width: 100, className: 'htMiddle htLeft' },
@@ -2436,7 +2469,14 @@
             { data: 'GENDER', title: 'Gender', width: 80, className: 'htMiddle htCenter' },
             { data: 'PATIENT_CLASS', title: 'Class', width: 120, className: 'htMiddle htLeft' },
             { data: 'ADMISSION_DATE', title: 'Admitted', width: 120, className: 'htMiddle htCenter' },
-            { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' }
+            { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' },
+
+            // Clinical Events (5 columns - date-filtered)
+            { data: 'MORSE_SCORE', title: 'Morse Score', width: 100, className: 'htMiddle htCenter' },
+            { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
+            { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
+            { data: 'SCDS_APPLIED', title: 'SCDs', width: 70, className: 'htMiddle htCenter' },
+            { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' }
 
             /* SEPSIS COLUMNS - REMOVED FOR MOBILITY DASHBOARD
             { data: 'ALERT_TYPE', title: 'Alert', width: 85, renderer: alertRenderer, className: 'htMiddle htLeft' },
@@ -2484,13 +2524,14 @@
             app.state.handsontableInstance = new Handsontable(tableDiv, {
             data: data,
             columns: columns,
-            colHeaders: true,
             nestedHeaders: [
                 [
-                    { label: 'Patient Demographics', colspan: 8 }  // All 8 demographics columns
+                    { label: 'Patient Demographics', colspan: 8 },
+                    { label: 'Clinical Events (Date-Filtered)', colspan: 5 }
                 ],
                 columns.map(col => col.title)  // Column headers as second row
             ],
+            colHeaders: false,  // Using nestedHeaders instead
             width: '100%',
             height: optimalHeight, // Use calculated height to prevent scrollbar
             maxRows: data.length,
@@ -2519,12 +2560,13 @@
                 // Center-justified columns: 6-15 (all others)
                 const alignment = (col <= 5) ? 'htLeft' : 'htCenter';
 
-                // Add alternating row class for zebra striping
+                // Zebra striping
                 if (row % 2 === 0) {
                     cellProperties.className = `htMiddle ${alignment} even-row`;
                 } else {
                     cellProperties.className = `htMiddle ${alignment} odd-row`;
                 }
+
                 return cellProperties;
             }
         });
@@ -2738,10 +2780,18 @@
 
             console.log(`Patient table created with ${data.length} patients`);
         } else {
-            // Table exists: Update data only (smooth refresh - no destroy/recreate)
+            // Table exists: Update settings smoothly (now that formatForTable includes clinical fields)
             console.log(`Updating existing Handsontable with ${data.length} patients...`);
             app.state.handsontableInstance.updateSettings({
+                columns: columns,
                 data: data,
+                nestedHeaders: [
+                    [
+                        { label: 'Patient Demographics', colspan: 8 },
+                        { label: 'Clinical Events (Date-Filtered)', colspan: 5 }
+                    ],
+                    columns.map(col => col.title)
+                ],
                 height: optimalHeight,
                 maxRows: data.length,
                 mergeCells: [],  // Clear any merged cells from message display
@@ -2749,19 +2799,39 @@
                     const cellProperties = {};
                     const alignment = (col <= 5) ? 'htLeft' : 'htCenter';
 
+                    // Zebra striping
                     if (row % 2 === 0) {
                         cellProperties.className = `htMiddle ${alignment} even-row`;
                     } else {
                         cellProperties.className = `htMiddle ${alignment} odd-row`;
                     }
+
                     return cellProperties;
                 }
             });
+            app.state.handsontableInstance.render();
             console.log(`Patient table updated with ${data.length} patients`);
-        }
 
-        // Always render after create or update
-        app.state.handsontableInstance.render();
+            // Apply not-present styling directly to DOM (v1.1.0-mobility)
+            setTimeout(() => {
+                const sourceData = app.state.handsontableInstance.getSourceData();
+                console.log(`🎨 Applying not-present styling to ${sourceData.length} rows...`);
+
+                sourceData.forEach((rowData, rowIndex) => {
+                    if (rowData && rowData._notPresentOnDate) {
+                        console.log(`🟡 Row ${rowIndex} not present:`, rowData.PATIENT_NAME);
+
+                        // Find all TD elements for this row and add not-present class
+                        const rowTDs = document.querySelectorAll(`.handsontable tbody tr:nth-child(${rowIndex + 1}) td`);
+                        rowTDs.forEach(td => {
+                            if (!td.classList.contains('not-present')) {
+                                td.classList.add('not-present');
+                            }
+                        });
+                    }
+                });
+            }, 100); // Small delay to ensure DOM is ready
+        }
     }
 
     /**
@@ -3450,7 +3520,9 @@
 
             if (rawPatientData && rawPatientData.length > 0) {
                 // Process data through PatientDataService to ensure STATUS and ACUITY are included
-                const processedData = app.services.patientData.formatForTable(rawPatientData);
+                // Pass selectedDate for patient presence checking
+                const selectedDate = app.state.selectedDate || new Date();
+                const processedData = app.services.patientData.formatForTable(rawPatientData, selectedDate);
 
                 debugLog('Raw patient data:', 'debug', rawPatientData);
                 debugLog('Processed patient data:', 'debug', processedData);
@@ -3471,7 +3543,8 @@
                 try {
                     const rawPatientData = await app.services.patientList.getPatientListPatients(patientListId);
                     if (rawPatientData && rawPatientData.length > 0) {
-                        const processedData = app.services.patientData.formatForTable(rawPatientData);
+                        const selectedDate = app.state.selectedDate || new Date();
+                        const processedData = app.services.patientData.formatForTable(rawPatientData, selectedDate);
                         initializePatientTable(processedData);
                     }
                 } catch (retryError) {
@@ -3588,7 +3661,8 @@
 
             if (patients && patients.length > 0) {
                 // Process data through PatientDataService (same as patient list)
-                const processedData = app.services.patientData.formatForTable(patients);
+                const selectedDate = app.state.selectedDate || new Date();
+                const processedData = app.services.patientData.formatForTable(patients, selectedDate);
                 debugLog('Processed ER patient data');
 
                 // Apply filters before displaying

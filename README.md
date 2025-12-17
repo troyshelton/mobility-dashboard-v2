@@ -1,15 +1,39 @@
-# Inpatient Dashboard Template
+# Mobility Dashboard
 
-**Version:** v1.0.0-inpatient
-**Type:** Generic Boilerplate
-**Last Updated:** 2025-12-14
-**Source:** Copied from er-tracking-dashboard-template v1.0.0
+**Version:** v1.0.0-mobility → v2.0.0-mobility (in progress)
+**Type:** Healthcare Production Dashboard
+**Last Updated:** 2025-12-16
+**Source:** Based on er-tracking-dashboard-template v1.0.0
+
+---
+
+## Current Status
+
+**Feature:** Side Panel Historical Metric View (Clinical Leader Organizer Pattern)
+**Progress:** Planning complete, ready for implementation
+**Branch:** feature/v2.0.0-side-panel
+**Issue:** [#3](https://github.com/troyshelton/mobility-dashboard-v2/issues/3)
+
+**Stakeholder Direction (2025-12-16):**
+- ✅ Side panel pattern preferred over global date navigation
+- ✅ Click metric cell → See 3-day history for that patient
+- ✅ Matches Clinical Leader Organizer UX (familiar to clinicians)
+
+**Next Steps:**
+- 🔨 Implement Issue #3 Phase 1 (side panel for 5 clinical events)
+- 📝 CCL v05 with 3-day historical arrays
+- 🎨 Side panel UI component
+- 🧪 CERT validation
+
+**Previous Work:**
+- ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
+- ✅ Issue #2 (Presence Indicator) - Phase 1 complete, marked low priority
 
 ---
 
 ## Overview
 
-**Generic boilerplate for creating inpatient floor/unit dashboards** with patient list integration for Oracle Health Cerner MPages.
+**Mobility patient safety dashboard** with patient list integration and temporal clinical event tracking for Oracle Health Cerner MPages.
 
 This template provides a proven, production-ready foundation with:
 - ✅ **Patient List Functionality** - All 7 list types supported

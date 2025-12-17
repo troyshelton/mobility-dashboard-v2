@@ -173,9 +173,10 @@
     /**
      * Format patient data for display in Handsontable
      * @param {Array} patientData - Raw patient data
+     * @param {Date} selectedDate - Selected date for presence checking (optional)
      * @returns {Array} - Formatted data for table display
      */
-    PatientDataService.prototype.formatForTable = function(patientData) {
+    PatientDataService.prototype.formatForTable = function(patientData, selectedDate) {
         if (!Array.isArray(patientData)) {
             this._logDebug('Cannot format invalid patient data for table', 'error');
             return [];
@@ -188,7 +189,13 @@
 
         return patientData.map(patient => {
             const formatted = this.createCaseInsensitiveObject(patient);
-            
+
+            // Check if patient was present on selected date (date navigator feature)
+            // Must be calculated BEFORE return statement since we need raw admission date
+            const rawAdmissionDate = formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date;
+            const admissionDate = this.parseAdmissionDate(rawAdmissionDate);
+            const notPresentOnDate = admissionDate && selectedDate && admissionDate > selectedDate;
+
             // Map camelCase CCL fields to table format
             return {
                 PATIENT_NAME: formatted.PATIENT_NAME || formatted.PERSON_NAME || formatted.personName || 'Unknown Patient',
@@ -231,10 +238,24 @@
                 PERFUSION_ASSESSMENT: this.determinePerfusionAssessmentStatus(patient), // Conditional logic (lactate ≥ 4.0 dependency)
                 PATIENT_CLASS: formatted.PATIENT_CLASS || formatted.patientClass || 'Unknown',
                 STATUS: formatted.STATUS || 'Unknown',
-                ACUITY: formatted.ACUITY || 'Unknown', 
+                ACUITY: formatted.ACUITY || 'Unknown',
                 AGE: this.formatAge(formatted.AGE || formatted.age),
                 GENDER: formatted.GENDER || formatted.gender || formatted.sex || 'Unknown',
-                ADMISSION_DATE: this.formatDate(formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date)
+                ADMISSION_DATE: this.formatDate(formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date),
+                // Clinical Event fields (date-filtered mobility data)
+                MORSE_SCORE: patient.MORSE_SCORE || patient.morse_score || '',
+                MORSE_EVENT_DT_TM: patient.MORSE_EVENT_DT_TM || patient.morse_event_dt_tm || '',
+                CALL_LIGHT_IN_REACH: patient.CALL_LIGHT_IN_REACH || patient.call_light_in_reach || '',
+                CALL_LIGHT_DT_TM: patient.CALL_LIGHT_DT_TM || patient.call_light_dt_tm || '',
+                IV_SITES_ASSESSED: patient.IV_SITES_ASSESSED || patient.iv_sites_assessed || '',
+                IV_SITES_DT_TM: patient.IV_SITES_DT_TM || patient.iv_sites_dt_tm || '',
+                SCDS_APPLIED: patient.SCDS_APPLIED || patient.scds_applied || '',
+                SCDS_DT_TM: patient.SCDS_DT_TM || patient.scds_dt_tm || '',
+                SAFETY_NEEDS_ADDRESSED: patient.SAFETY_NEEDS_ADDRESSED || patient.safety_needs_addressed || '',
+                SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
+
+                // Flag for row styling (calculated before return statement above)
+                _notPresentOnDate: notPresentOnDate
             };
         });
     };
@@ -279,7 +300,45 @@
             return date.toString();
         }
     };
-    
+
+    /**
+     * Parse admission date string to Date object
+     * Handles format: "MM/DD/YYYY"
+     * @param {string} admissionDateStr - Admission date string
+     * @returns {Date|null} - Parsed Date object or null if invalid
+     */
+    PatientDataService.prototype.parseAdmissionDate = function(admissionDateStr) {
+        if (!admissionDateStr) {
+            return null;
+        }
+
+        try {
+            // Handle format: "03/21/2025" or "MM/DD/YYYY"
+            const parts = admissionDateStr.split('/');
+            if (parts.length === 3) {
+                const month = parseInt(parts[0]) - 1; // 0-indexed
+                const day = parseInt(parts[1]);
+                const year = parseInt(parts[2]);
+
+                const date = new Date(year, month, day);
+
+                // Validate date is real (e.g., not Feb 31)
+                if (isNaN(date.getTime())) {
+                    this._logDebug(`Invalid admission date: ${admissionDateStr}`, 'warn');
+                    return null;
+                }
+
+                return date;
+            }
+
+            this._logDebug(`Invalid admission date format: ${admissionDateStr}`, 'warn');
+            return null;
+        } catch (error) {
+            this._logDebug(`Error parsing admission date: ${error.message}`, 'error');
+            return null;
+        }
+    };
+
     /**
      * Global sepsis phase filtering function - applies to ALL sepsis interventions
      * Excludes non-sepsis phases within sepsis PowerPlans (CSF, CNS, COVID)

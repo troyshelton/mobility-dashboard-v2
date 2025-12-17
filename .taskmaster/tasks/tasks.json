@@ -5,7 +5,7 @@
         "id": 1,
         "title": "Feature: Date Navigator for Temporal Mobility Data (Issue #1)",
         "description": "Add date navigation controls to filter mobility data by specific date, allowing users to review historical assessments and interventions.",
-        "status": "pending",
+        "status": "cancelled",
         "priority": "high",
         "dependencies": [],
         "details": "Implement date navigator between header and table with Previous/Today/Next controls. Format: 'Monday, December 14, 2025'. Server-side CCL filtering with date parameter (midnight to 23:59:59). Files: index.html, styles.css, main.js, PatientListService.js, mob_get_pdata_01.prg (NEW), XMLCclRequestSimulator.js",
@@ -52,7 +52,7 @@
             "title": "Create mobility CCL program with date filtering",
             "description": "Create 1_cust_mp_mob_get_pdata_01.prg from gen_get_pdata.prg. Add SELECTED_DATE parameter, date range logic (midnight to 23:59:59), mobility data queries.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 1
           },
@@ -61,7 +61,7 @@
             "title": "Update services to pass date parameter to CCL",
             "description": "Modify PatientListService.js to call mob_get_pdata_01 with date parameter. Format date for CCL. Handle CURDATE default for today.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 1
           },
@@ -70,7 +70,7 @@
             "title": "Add date-aware mock data to simulator",
             "description": "Create getMockMobilityData() in XMLCclRequestSimulator. Generate different data based on date parameter. Test date navigation with mock data.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 1
           },
@@ -106,7 +106,7 @@
     ],
     "metadata": {
       "created": "2025-12-15T04:58:52.861Z",
-      "updated": "2025-12-15T05:16:15.552Z",
+      "updated": "2025-12-17T03:56:10.843Z",
       "description": "Tasks for master context"
     }
   }

@@ -7,22 +7,47 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [Unreleased] - v1.1.0-mobility
+## [Unreleased] - v2.0.0-mobility
 
-### Added (In Progress)
-- **Date Navigator Feature** (Issue #1) - 40% complete
-  - Date navigation controls between dropdowns and table
-  - Outlook-style layout: [Today] [<] [>] Date
-  - Previous/Next day navigation
-  - Today button to jump to current date
-  - Date display format: "Monday, December 15, 2025"
-  - Button states (enabled/disabled/highlighted)
-  - **Status:** UI complete, CCL filtering pending
-  - **Branch:** feature/v1.1.0-date-navigator
-  - **Commits:** 4861c1b, 978f6df, 5af836a, c276141, bccda60, 6c834d2, d0ff99f
+### Direction Change (2025-12-16)
+- **Stakeholder Feedback:** Clinical team prefers metric-specific historical view over global date navigation
+- **Decision:** Replace date navigator (Issue #1) with side panel pattern (Issue #3)
+- **Pattern:** Clinical Leader Organizer - click cell to see 3-day history for that metric
+
+### Added (Planning)
+- **Side Panel Historical Metric View** (Issue #3) - Planning complete, ready for implementation
+  - **Pattern:** Click clinical event cell → Side panel opens → Shows 3-day history
+  - **Metrics:** 5 clinical events (Phase 1: Morse, Call Light, IV Sites, SCDs, Safety)
+  - **UI:** Slide from right, 350-400px, backdrop overlay, 3 close methods
+  - **Data:** Pre-fetch 3 days of historical data (instant panel open)
+  - **Template System:** Handle single-value and multi-field metrics
+  - **Branch:** feature/v2.0.0-side-panel
+  - **Status:** Requirements documented, ready to implement
+
+### Archived as POC
+- **Date Navigator Feature** (Issue #1) - Not deployed based on stakeholder feedback
+  - ✅ Fully functional (tested locally + Azure CERT)
+  - ✅ Preserved in 3 locations for future reuse:
+    - POC Branch: `poc/date-navigator-demo`
+    - POC Tag: `v1.1.0-date-navigator-poc`
+    - Standalone: `/Users/troyshelton/Projects/Templates/MPage-Date-Navigator-POC/`
+  - ✅ Cataloged: `/Users/troyshelton/Projects/POC-CATALOG.md`
+  - **Reusable:** Other dashboards needing global date navigation
+  - **Features:** Outlook-style controls, CCL date filtering, patient presence indicator
+
+### Completed (Low Priority)
+- **Patient Presence Indicator** (Issue #2 Phase 1) - Complete but low priority with 3-day lookback
+  - ✅ Grayed-out rows for patients not admitted on selected date
+  - ✅ Warning icon (⚠️) before patient name
+  - ✅ Works with zebra striping
+  - ✅ Direct DOM manipulation
+  - **Status:** Available if needed, less critical with short lookback periods
 
 ### Changed
-- Date-based data filtering (server-side CCL) - In development
+- PatientDataService.formatForTable() - Added clinical event fields
+- PatientListService - Integrated date parameter for CCL calls
+- Main.js - Added reloadCurrentData() for date navigation
+- Handsontable - Nested headers with Demographics + Clinical Events groups
 
 ---
 

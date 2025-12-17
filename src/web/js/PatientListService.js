@@ -13,10 +13,22 @@
     };
 
     /**
+     * Format JavaScript Date to CCL mmddyyyy integer format
+     * @param {Date} date - JavaScript Date object
+     * @returns {number} - Integer in mmddyyyy format (e.g., 12152025)
+     */
+    function formatDateForCCL(date) {
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+        return parseInt(`${mm}${dd}${yyyy}`);
+    }
+
+    /**
      * Creates a new PatientListService
      * Uses global SIMULATOR_CONFIG to determine simulator vs production mode
      * @param {boolean} debugMode - Whether to enable debug logging
-     * @param {string|number} personId - Personnel ID override to use for fetching patient lists 
+     * @param {string|number} personId - Personnel ID override to use for fetching patient lists
      */
     function PatientListService(debugMode = true, personId = null) {
         this.debugMode = debugMode;
@@ -120,16 +132,25 @@
                     // Step 1: Get patient IDs
                     const patientIdsResponse = await simulator.simulateRequest('1_cust_mp_gen_get_pids', ['MINE', listId]);
                     
-                    // Step 2: Get patient demographics
+                    // Step 2: Get patient demographics with date filtering
                     if (patientIdsResponse && patientIdsResponse.ptlstencntrReply && patientIdsResponse.ptlstencntrReply.patients && patientIdsResponse.ptlstencntrReply.patients.length > 0) {
                         // Extract encounter IDs from the patient list response
                         const encounterIds = patientIdsResponse.ptlstencntrReply.patients.map(p => p.encntrId);
                         this._logDebug(`Got encounter IDs for list ${listId}: ${encounterIds.join(', ')}`);
-                        
-                        const patientDataResponse = await simulator.simulateRequest('1_cust_mp_gen_get_pdata', encounterIds);
-                        this._logDebug(`Got ${patientDataResponse.drec.patients.length} patients for list ${listId}`);
-                        this._logDebug(`First patient: ${patientDataResponse.drec.patients[0]?.PATIENT_NAME}`);
-                        return patientDataResponse.drec.patients || [];
+
+                        // Get selected date from global state (or use today)
+                        const selectedDate = (window.PatientListApp && window.PatientListApp.state && window.PatientListApp.state.selectedDate)
+                            ? window.PatientListApp.state.selectedDate
+                            : new Date();
+                        const dateParam = formatDateForCCL(selectedDate);
+                        this._logDebug(`Using date parameter: ${dateParam} (${selectedDate.toDateString()})`);
+
+                        const patientDataResponse = await simulator.simulateRequest('1_cust_mp_mob_get_pdata', [encounterIds, dateParam]);
+                        const drec = patientDataResponse.drec || patientDataResponse.DREC;
+                        const patients = drec?.patients || drec?.PATIENTS || [];
+                        this._logDebug(`Got ${patients.length} patients for list ${listId}`);
+                        this._logDebug(`First patient: ${patients[0]?.PATIENT_NAME}`);
+                        return patients;
                     }
                 }
                 
@@ -162,13 +183,20 @@
                             // Format encounter IDs with value() function (respiratory MPage pattern)
                             const encounterIdsForCcl = `value(${encounterIds.join(',')})`;
                             this._logDebug(`Formatted encounter IDs for CCL: ${encounterIdsForCcl}`);
-                            
+
+                            // Get selected date from global state (or use today)
+                            const selectedDate = (window.PatientListApp && window.PatientListApp.state && window.PatientListApp.state.selectedDate)
+                                ? window.PatientListApp.state.selectedDate
+                                : new Date();
+                            const dateParam = formatDateForCCL(selectedDate);
+                            this._logDebug(`Using date parameter: ${dateParam} (${selectedDate.toDateString()})`);
+
                             // Use respiratory MPage parameter pattern with rawStart
-                            const patientDataParams = ["MINE", encounterIdsForCcl];
+                            const patientDataParams = ["MINE", encounterIdsForCcl, dateParam];
                             patientDataParams.rawStart = 1; // Don't quote the value() function
-                            
+
                             const patientDataResponse = await window.sendCclRequest(
-                                '1_cust_mp_gen_get_pdata',
+                                '1_cust_mp_mob_get_pdata',
                                 patientDataParams,
                                 {
                                     debug: this.debugMode,
@@ -190,12 +218,16 @@
                                 console.log('%c═══════════════════════════════════════════════════════════', 'color: #00ff00; font-weight: bold; font-size: 14px;');
                             }
 
-                            if (patientDataResponse && patientDataResponse.drec && patientDataResponse.drec.patients) {
-                                return patientDataResponse.drec.patients;
+                            // Handle both lowercase (simulator) and uppercase (real CCL) response formats
+                            const drec = patientDataResponse.drec || patientDataResponse.DREC;
+                            const patients = drec?.patients || drec?.PATIENTS;
+
+                            if (patientDataResponse && drec && patients) {
+                                return patients;
                             } else {
                                 this._logDebug('Patient data response structure:', 'info');
                                 console.log('[PatientListService] PATIENT DATA RESPONSE:', JSON.stringify(patientDataResponse, null, 2));
-                                throw new Error('Invalid patient data format received from get_pdata - expecting drec.patients');
+                                throw new Error('Invalid patient data format received from get_pdata - expecting drec.patients or DREC.PATIENTS');
                             }
                         } else {
                             this._logDebug('No valid encounter IDs found in patient list', 'warn');
@@ -428,17 +460,24 @@
                         this._logDebug(`Extracted ${encounterIds.length} encounter IDs from ER tracking board`);
 
                         if (encounterIds.length > 0) {
-                            // Step 3: Get full patient data (reuse existing logic)
+                            // Step 3: Get full patient data with date filtering (reuse existing logic)
                             // Format encounter IDs with value() function (same as patient list pattern)
                             const encounterIdsForCcl = `value(${encounterIds.join(',')})`;
                             this._logDebug(`Formatted encounter IDs for CCL: ${encounterIdsForCcl}`);
 
+                            // Get selected date from global state (or use today)
+                            const selectedDate = (window.PatientListApp && window.PatientListApp.state && window.PatientListApp.state.selectedDate)
+                                ? window.PatientListApp.state.selectedDate
+                                : new Date();
+                            const dateParam = formatDateForCCL(selectedDate);
+                            this._logDebug(`Using date parameter: ${dateParam} (${selectedDate.toDateString()})`);
+
                             // Use respiratory MPage parameter pattern with rawStart
-                            const patientDataParams = ["MINE", encounterIdsForCcl];
+                            const patientDataParams = ["MINE", encounterIdsForCcl, dateParam];
                             patientDataParams.rawStart = 1; // Don't quote the value() function
 
                             const patientDataResponse = await window.sendCclRequest(
-                                '1_cust_mp_gen_get_pdata',
+                                '1_cust_mp_mob_get_pdata',
                                 patientDataParams,
                                 {
                                     debug: this.debugMode,
@@ -449,8 +488,12 @@
                             this._logDebug('Patient data response received');
                             console.log('[PatientListService] Patient data:', patientDataResponse);
 
-                            if (patientDataResponse && patientDataResponse.drec && patientDataResponse.drec.patients) {
-                                return patientDataResponse.drec.patients;
+                            // Handle both lowercase (simulator) and uppercase (real CCL) response formats
+                            const drec = patientDataResponse?.drec || patientDataResponse?.DREC;
+                            const patients = drec?.patients || drec?.PATIENTS;
+
+                            if (patientDataResponse && drec && patients) {
+                                return patients;
                             } else {
                                 throw new Error('Invalid patient data format received from get_pdata');
                             }

@@ -53,6 +53,9 @@
             case '1_cust_mp_gen_get_pdata':
                 return this.getMockPatientData(parameters);
 
+            case '1_cust_mp_mob_get_pdata':
+                return this.getMockMobilityPatientData(parameters);
+
             case '1_cust_mp_gen_user_info':
                 return this.getMockUserInfo(parameters);
 
@@ -97,17 +100,9 @@
                 { "personId": 22345006, "personName": "Miller, Linda B", "encntrId": 22345006, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         } else {
-            // Demo Patient List A - Original patients with countdown timer examples
+            // Demo Patient List A - Simplified to 1 patient for testing
             mockPatients = [
-                { "personId": 12345001, "personName": "Patient: 2h 50m left", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345002, "personName": "Patient: 2h 15m left", "encntrId": 12345002, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345003, "personName": "Patient: 1h 45m left", "encntrId": 12345003, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345004, "personName": "Patient: 1h 10m left", "encntrId": 12345004, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345005, "personName": "Patient: 45m left", "encntrId": 12345005, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345006, "personName": "Patient: 15m left", "encntrId": 12345006, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345007, "personName": "Patient: 5m left", "encntrId": 12345007, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345008, "personName": "Patient: OVERDUE 30m", "encntrId": 12345008, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345009, "personName": "NO SEPSIS - Control Test", "encntrId": 12345009, "priority": 0, "activeInd": 1, "filterInd": 0 }
+                { "personId": 12345001, "personName": "Test Patient (Today)", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         }
 
@@ -676,6 +671,184 @@
         };
     };
     
+    /**
+     * Mock mobility patient data with DATE-AWARE clinical events
+     * Matches 1_cust_mp_mob_get_pdata_03.prg structure
+     * @param {Array} parameters - [encounterIds, dateParam (mmddyyyy integer)]
+     */
+    XMLCclRequestSimulator.prototype.getMockMobilityPatientData = function(parameters) {
+        const encounterIds = Array.isArray(parameters[0]) ? parameters[0] : [parameters[0]];
+        const dateParam = parameters[1];
+
+        console.log(`[XMLCclRequestSimulator] Mobility data requested for date: ${dateParam}`);
+
+        // Parse date parameter to determine which mock data to return
+        const selectedDate = this.parseDateParam(dateParam);
+        const dateKey = this.formatDateKey(selectedDate);
+
+        console.log(`[XMLCclRequestSimulator] Using date key: ${dateKey} (${selectedDate.toDateString()})`);
+
+        // Calculate today and yesterday dynamically
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        const todayKey = this.formatDateKey(today);
+        const yesterdayKey = this.formatDateKey(yesterday);
+        const todayDisplay = this.formatDateDisplay(today);
+        const yesterdayDisplay = this.formatDateDisplay(yesterday);
+
+        // Date-specific clinical event values
+        const clinicalEventsByDate = {
+            '03272025': { // March 27, 2025 (test patient real data)
+                morse_score: '45',
+                morse_event_dt_tm: '03/27/2025 19:00',
+                call_light_in_reach: 'Yes',
+                call_light_dt_tm: '03/27/2025 23:00',
+                iv_sites_assessed: 'Yes',
+                iv_sites_dt_tm: '03/27/2025 22:00',
+                scds_applied: 'No',
+                scds_dt_tm: '03/27/2025 22:00',
+                safety_needs_addressed: 'Yes',
+                safety_needs_dt_tm: '03/27/2025 23:00'
+            },
+            '04192025': { // April 19, 2025 (test patient real data)
+                morse_score: '60',
+                morse_event_dt_tm: '04/19/2025 19:00',
+                call_light_in_reach: 'Yes',
+                call_light_dt_tm: '04/19/2025 22:00',
+                iv_sites_assessed: 'Yes',
+                iv_sites_dt_tm: '04/19/2025 22:00',
+                scds_applied: 'No',
+                scds_dt_tm: '04/19/2025 22:00',
+                safety_needs_addressed: 'Yes',
+                safety_needs_dt_tm: '04/19/2025 22:00'
+            },
+            [todayKey]: { // Today (dynamic)
+                morse_score: '35',
+                morse_event_dt_tm: `${todayDisplay} 19:00`,
+                call_light_in_reach: 'Yes',
+                call_light_dt_tm: `${todayDisplay} 22:00`,
+                iv_sites_assessed: 'Yes',
+                iv_sites_dt_tm: `${todayDisplay} 21:00`,
+                scds_applied: 'Yes',
+                scds_dt_tm: `${todayDisplay} 20:00`,
+                safety_needs_addressed: 'Yes',
+                safety_needs_dt_tm: `${todayDisplay} 23:00`
+            },
+            [yesterdayKey]: { // Yesterday (dynamic)
+                morse_score: '50',
+                morse_event_dt_tm: `${yesterdayDisplay} 18:00`,
+                call_light_in_reach: 'Yes',
+                call_light_dt_tm: `${yesterdayDisplay} 21:00`,
+                iv_sites_assessed: 'No',
+                iv_sites_dt_tm: `${yesterdayDisplay} 20:00`,
+                scds_applied: 'Yes',
+                scds_dt_tm: `${yesterdayDisplay} 19:00`,
+                safety_needs_addressed: 'Yes',
+                safety_needs_dt_tm: `${yesterdayDisplay} 22:00`
+            }
+        };
+
+        // Get clinical events for selected date (or blank for dates without data)
+        // Shows data for: hardcoded dates (03/27, 04/19), today, yesterday
+        // Returns blank for all other dates
+        const clinicalEvents = clinicalEventsByDate[dateKey] || {
+            morse_score: '',
+            morse_event_dt_tm: '',
+            call_light_in_reach: '',
+            call_light_dt_tm: '',
+            iv_sites_assessed: '',
+            iv_sites_dt_tm: '',
+            scds_applied: '',
+            scds_dt_tm: '',
+            safety_needs_addressed: '',
+            safety_needs_dt_tm: ''
+        };
+
+        // Mock patient demographics
+        const patients = encounterIds.map(encId => ({
+            PERSON_ID: 23224083,
+            ENCNTR_ID: parseFloat(encId),
+            PATIENT_NAME: 'MEADOWS, VIRGINIA L',
+            UNIT: 'GV3MSU',
+            ROOM_BED: '312-A',
+            AGE: '0',
+            GENDER: 'Female',
+            PATIENT_CLASS: 'Inpatient',
+            ADMISSION_DATE: '12/13/2025',
+            STATUS: 'Active',
+            FIN: '3010394309',
+            MRN: '20212659',
+            // Clinical events (date-specific)
+            MORSE_SCORE: clinicalEvents.morse_score,
+            MORSE_EVENT_DT_TM: clinicalEvents.morse_event_dt_tm,
+            CALL_LIGHT_IN_REACH: clinicalEvents.call_light_in_reach,
+            CALL_LIGHT_DT_TM: clinicalEvents.call_light_dt_tm,
+            IV_SITES_ASSESSED: clinicalEvents.iv_sites_assessed,
+            IV_SITES_DT_TM: clinicalEvents.iv_sites_dt_tm,
+            SCDS_APPLIED: clinicalEvents.scds_applied,
+            SCDS_DT_TM: clinicalEvents.scds_dt_tm,
+            SAFETY_NEEDS_ADDRESSED: clinicalEvents.safety_needs_addressed,
+            SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm
+        }));
+
+        return {
+            drec: {
+                patientCnt: patients.length,
+                program_version: 'v03',
+                program_build_date: '2025-12-15',
+                selected_date: this.formatDateDisplay(selectedDate),
+                patients: patients
+            }
+        };
+    };
+
+    /**
+     * Parse date parameter (mmddyyyy integer or Date object)
+     */
+    XMLCclRequestSimulator.prototype.parseDateParam = function(dateParam) {
+        if (!dateParam || dateParam === 'CURDATE') {
+            return new Date();
+        }
+
+        // Parse mmddyyyy integer format (e.g., 12152025)
+        const dateStr = String(dateParam);
+        const mm = parseInt(dateStr.substring(0, 2));
+        const dd = parseInt(dateStr.substring(2, 4));
+        const yyyy = parseInt(dateStr.substring(4, 8));
+
+        return new Date(yyyy, mm - 1, dd); // Month is 0-indexed
+    };
+
+    /**
+     * Format date as mmddyyyy key for lookup
+     */
+    XMLCclRequestSimulator.prototype.formatDateKey = function(date) {
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+        return `${mm}${dd}${yyyy}`;
+    };
+
+    /**
+     * Format date for display (MM/DD/YYYY)
+     */
+    XMLCclRequestSimulator.prototype.formatDateDisplay = function(date) {
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+        return `${mm}/${dd}/${yyyy}`;
+    };
+
+    /**
+     * Format datetime for clinical events (MM/DD/YYYY HH:MM)
+     */
+    XMLCclRequestSimulator.prototype.formatDateTime = function(date, time) {
+        const dateStr = this.formatDateDisplay(date);
+        return `${dateStr} ${time}`;
+    };
+
     /**
      * Mock user info matching respiratory MPage REC format
      */
