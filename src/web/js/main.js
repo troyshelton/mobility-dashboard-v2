@@ -67,98 +67,30 @@
     }
 
     /**
-     * Update date display text
+     * Parse historical datetime from CCL format to JavaScript Date
+     * CCL format: "MM/DD/YYYY HH:MM" (e.g., "01/02/2026 14:30")
+     * Issue #3: Side Panel Historical View
      */
-    function updateDateDisplay(date) {
-        const app = window.PatientListApp;
-        const display = document.getElementById('date-display');
-        if (display) {
-            let text = formatDateDisplay(date);
-            if (app.state.isToday) {
-                text += ' (Today)';
-            }
-            display.textContent = text;
+    function parseHistoricalDateTime(dateTimeString) {
+        try {
+            // Expected format: "MM/DD/YYYY HH:MM"
+            const [datePart, timePart] = dateTimeString.split(' ');
+            const [month, day, year] = datePart.split('/');
+            const [hours, minutes] = timePart.split(':');
+
+            return new Date(
+                parseInt(year),
+                parseInt(month) - 1,  // JavaScript months are 0-indexed
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes)
+            );
+        } catch (error) {
+            console.warn('Error parsing historical datetime:', dateTimeString, error);
+            return new Date(); // Fallback to current time
         }
     }
 
-    /**
-     * Update navigation button states
-     */
-    function updateDateNavButtons() {
-        const app = window.PatientListApp;
-        const nextBtn = document.getElementById('date-next');
-        const todayBtn = document.getElementById('date-today');
-
-        // Next button disabled if viewing today
-        if (nextBtn) {
-            nextBtn.disabled = app.state.isToday;
-        }
-
-        // Today button highlighted if viewing today
-        if (todayBtn) {
-            if (app.state.isToday) {
-                todayBtn.style.background = '#dbeafe';
-                todayBtn.style.borderColor = '#0066cc';
-                todayBtn.style.color = '#0066cc';
-            } else {
-                todayBtn.style.background = '#f3f4f6';
-                todayBtn.style.borderColor = '#d1d5db';
-                todayBtn.style.color = '#374151';
-            }
-        }
-    }
-
-    /**
-     * Set selected date and update UI
-     */
-    function setSelectedDate(date) {
-        const app = window.PatientListApp;
-        app.state.selectedDate = date;
-
-        // Check if viewing today
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const selected = new Date(date);
-        selected.setHours(0, 0, 0, 0);
-        app.state.isToday = (selected.getTime() === today.getTime());
-
-        // Update date display
-        updateDateDisplay(date);
-
-        // Enable/disable navigation buttons
-        updateDateNavButtons();
-
-        // Reload data for selected date
-        reloadCurrentData();
-
-        debugLog('Date changed to: ' + formatDateDisplay(date) + ' (isToday: ' + app.state.isToday + ')');
-    }
-
-    /**
-     * Reload current patient list or ER unit with new date
-     */
-    function reloadCurrentData() {
-        const app = window.PatientListApp;
-
-        // Check if patient list is selected
-        const patientListDropdown = document.getElementById('patient-list-select');
-        if (patientListDropdown && patientListDropdown.value && patientListDropdown.value !== '') {
-            debugLog(`Reloading patient list ${patientListDropdown.value} with new date`);
-            loadPatientData(patientListDropdown.value);
-            return;
-        }
-
-        // Check if ER unit is selected
-        const erUnitDropdown = document.getElementById('er-unit-select');
-        if (erUnitDropdown && erUnitDropdown.value && erUnitDropdown.value !== '') {
-            debugLog(`Reloading ER unit ${erUnitDropdown.value} with new date`);
-            loadERUnitData(erUnitDropdown.value);
-            return;
-        }
-
-        // No data loaded yet - do nothing
-        debugLog('No data loaded yet - skipping reload');
-    }
 
     /**
      * Apply patient filters based on dropdown selection (Issue #57 - FirstNet style)
@@ -252,10 +184,7 @@
         },
         state: {
             currentListId: null,
-            handsontableInstance: null,
-            currentERUnit: null,
-            selectedDate: new Date(),  // NEW (Issue #1): Currently selected date
-            isToday: true              // NEW (Issue #1): Flag if viewing today's data
+            handsontableInstance: null
         },
         initialized: false,
         init: initializeApp, // Main entry point
@@ -283,6 +212,9 @@
                 note: 'Check PatientListApp.services.patientData for last response'
             };
         },
+
+        // Date helper functions (Issue #1, #3)
+        parseHistoricalDateTime: parseHistoricalDateTime,
 
         // Tippy.js utility functions (Issue #48 - Phase 2)
         createSepsisTooltip: createSepsisTooltip,
@@ -2638,6 +2570,62 @@
             }
             });
 
+            // Clinical Event Click Handler - Side Panel Historical View (Issue #3)
+            app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
+                // Clinical event columns: 8-12 (Morse, Call Light, IV Sites, SCDs, Safety)
+                if (coords.col >= 8 && coords.col <= 12) {
+                    console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
+
+                    // Get metric template for this column
+                    const metric = getMetricByColumnIndex(coords.col);
+                    if (!metric) {
+                        console.warn('No metric template found for column:', coords.col);
+                        return;
+                    }
+
+                    // Get patient row data
+                    const sourceData = app.state.handsontableInstance.getSourceDataAtRow(coords.row);
+                    if (!sourceData) {
+                        console.warn('No patient data found for row:', coords.row);
+                        return;
+                    }
+
+                    // Extract historical data for this metric
+                    const historyData = sourceData[metric.historyField.toUpperCase()] || [];
+                    console.log(`Historical data for ${metric.label}:`, historyData);
+
+                    // Prepare patient info for panel
+                    const patientInfo = {
+                        person_name: sourceData.PATIENT_NAME,
+                        mrn: sourceData.MRN || 'N/A',
+                        unit: sourceData.UNIT,
+                        roomBed: sourceData.ROOM_BED
+                    };
+
+                    // Convert CCL datetime format to JavaScript Date objects
+                    // Handle both uppercase (real CCL) and lowercase (simulator) field names
+                    const formattedHistory = historyData.map(entry => ({
+                        datetime: entry.DATETIME_DISPLAY || entry.datetime_display ?
+                            app.parseHistoricalDateTime(entry.DATETIME_DISPLAY || entry.datetime_display) :
+                            new Date(entry.EVENT_DT_TM || entry.event_dt_tm || Date.now()),
+                        value: entry.VALUE || entry.value || ''
+                    }));
+
+                    // Get lookback period from CCL response (default 30 if not available)
+                    const lookbackDays = (app.state.handsontableInstance &&
+                                         app.state.handsontableInstance.getSourceDataAtRow(0)) ?
+                        (window.RAW_CCL_RESPONSE?.[0]?.lookback_days ||
+                         window.RAW_CCL_RESPONSE?.[0]?.LOOKBACK_DAYS || 30) : 30;
+
+                    // Open side panel with historical data and lookback period
+                    if (window.sidePanelService) {
+                        window.sidePanelService.open(patientInfo, metric.key, metric.label, formattedHistory, lookbackDays);
+                    } else {
+                        console.error('SidePanelService not loaded');
+                    }
+                }
+            });
+
             // Add CSS for consistent cell alignment (only once on table creation)
             const style = document.createElement('style');
         style.textContent = `
@@ -2812,25 +2800,6 @@
             app.state.handsontableInstance.render();
             console.log(`Patient table updated with ${data.length} patients`);
 
-            // Apply not-present styling directly to DOM (v1.1.0-mobility)
-            setTimeout(() => {
-                const sourceData = app.state.handsontableInstance.getSourceData();
-                console.log(`🎨 Applying not-present styling to ${sourceData.length} rows...`);
-
-                sourceData.forEach((rowData, rowIndex) => {
-                    if (rowData && rowData._notPresentOnDate) {
-                        console.log(`🟡 Row ${rowIndex} not present:`, rowData.PATIENT_NAME);
-
-                        // Find all TD elements for this row and add not-present class
-                        const rowTDs = document.querySelectorAll(`.handsontable tbody tr:nth-child(${rowIndex + 1}) td`);
-                        rowTDs.forEach(td => {
-                            if (!td.classList.contains('not-present')) {
-                                td.classList.add('not-present');
-                            }
-                        });
-                    }
-                });
-            }, 100); // Small delay to ensure DOM is ready
         }
     }
 
@@ -2898,9 +2867,8 @@
         }
 
         const app = window.PatientListApp;
-        // Issue #78: Support auto-refresh for both patient lists AND ER units
-        if (!app.state.currentListId && !app.state.currentERUnit) {
-            debugLog('Cannot start auto-refresh: no patient list or ER unit selected', 'warn');
+        if (!app.state.currentListId) {
+            debugLog('Cannot start auto-refresh: no patient list selected', 'warn');
             return;
         }
 
@@ -2928,10 +2896,8 @@
             nextRefreshTime = new Date(Date.now() + intervalMs);
             updateCountdownDisplay();
 
-            // Issue #78: Reload data based on what's selected (patient list OR ER unit)
-            const loadPromise = app.state.currentListId
-                ? loadPatientData(app.state.currentListId)
-                : loadERUnitData(app.state.currentERUnit);
+            // Reload patient list data
+            const loadPromise = loadPatientData(app.state.currentListId);
 
             loadPromise.then(() => {
                 debugLog('✅ Auto-refresh data loaded, restoring filters...');
@@ -3359,14 +3325,6 @@
             debugLog('Dropdown element not found!', 'error');
         }
 
-        // Issue #78: ER Units dropdown event handler
-        const erUnitDropdown = document.getElementById('er-unit-select');
-        if (erUnitDropdown) {
-            erUnitDropdown.addEventListener('change', handleERUnitChange);
-            debugLog('Event handler attached to ER unit dropdown');
-        } else {
-            debugLog('ER unit dropdown element not found!', 'error');
-        }
 
         // Setup refresh button click handler
         const refreshButton = document.getElementById('refresh-data');
@@ -3374,7 +3332,6 @@
             refreshButton.addEventListener('click', () => {
                 const app = window.PatientListApp;
 
-                // Issue #78: Support refresh for both patient lists AND ER units
                 if (app.state.currentListId) {
                     // Refresh patient list
                     debugLog('Refresh button clicked, reloading patient list');
@@ -3388,20 +3345,6 @@
                         // Restore filters after manual refresh
                         restoreFilterState(filterState);
                         debugLog('✅ Manual refresh complete, filters restored');
-                    });
-                } else if (app.state.currentERUnit) {
-                    // Refresh ER unit (Issue #78)
-                    debugLog('Refresh button clicked, reloading ER unit');
-                    debugLog(`Selected ER tracking group: ${app.state.currentERUnit}`);
-
-                    // Capture filter state before manual refresh
-                    const filterState = captureFilterState();
-
-                    // Load ER unit data
-                    loadERUnitData(app.state.currentERUnit).then(() => {
-                        // Restore filters after manual refresh
-                        restoreFilterState(filterState);
-                        debugLog('✅ Manual ER unit refresh complete, filters restored');
                     });
                 } else {
                     debugLog('Refresh clicked but no patient list selected', 'warn');
@@ -3434,44 +3377,6 @@
             });
             debugLog('Event handler attached to patient filter dropdown');
         }
-
-        // Date Navigator event handlers (Issue #1)
-        const datePrevBtn = document.getElementById('date-prev');
-        if (datePrevBtn) {
-            datePrevBtn.addEventListener('click', () => {
-                const app = window.PatientListApp;
-                const currentDate = new Date(app.state.selectedDate);
-                currentDate.setDate(currentDate.getDate() - 1);  // Go back 1 day
-                setSelectedDate(currentDate);
-                debugLog('Date navigation: Previous day clicked');
-            });
-            debugLog('Event handler attached to date-prev button');
-        }
-
-        const dateTodayBtn = document.getElementById('date-today');
-        if (dateTodayBtn) {
-            dateTodayBtn.addEventListener('click', () => {
-                setSelectedDate(new Date());  // Jump to today
-                debugLog('Date navigation: Today button clicked');
-            });
-            debugLog('Event handler attached to date-today button');
-        }
-
-        const dateNextBtn = document.getElementById('date-next');
-        if (dateNextBtn) {
-            dateNextBtn.addEventListener('click', () => {
-                const app = window.PatientListApp;
-                const currentDate = new Date(app.state.selectedDate);
-                currentDate.setDate(currentDate.getDate() + 1);  // Go forward 1 day
-                setSelectedDate(currentDate);
-                debugLog('Date navigation: Next day clicked');
-            });
-            debugLog('Event handler attached to date-next button');
-        }
-
-        // Initialize date display with today's date
-        setSelectedDate(new Date());
-        debugLog('Date navigator initialized with today\'s date');
 
         // Initialize auto-refresh if enabled in config (Issue #35, Task 8.3)
         if (window.AUTO_REFRESH_CONFIG && window.AUTO_REFRESH_CONFIG.enabled) {
@@ -3520,9 +3425,8 @@
 
             if (rawPatientData && rawPatientData.length > 0) {
                 // Process data through PatientDataService to ensure STATUS and ACUITY are included
-                // Pass selectedDate for patient presence checking
-                const selectedDate = app.state.selectedDate || new Date();
-                const processedData = app.services.patientData.formatForTable(rawPatientData, selectedDate);
+                // Format patient data for table display
+                const processedData = app.services.patientData.formatForTable(rawPatientData);
 
                 debugLog('Raw patient data:', 'debug', rawPatientData);
                 debugLog('Processed patient data:', 'debug', processedData);
@@ -3543,8 +3447,7 @@
                 try {
                     const rawPatientData = await app.services.patientList.getPatientListPatients(patientListId);
                     if (rawPatientData && rawPatientData.length > 0) {
-                        const selectedDate = app.state.selectedDate || new Date();
-                        const processedData = app.services.patientData.formatForTable(rawPatientData, selectedDate);
+                        const processedData = app.services.patientData.formatForTable(rawPatientData);
                         initializePatientTable(processedData);
                     }
                 } catch (retryError) {
@@ -3580,112 +3483,12 @@
             return;
         }
 
-        // Issue #78: Clear ER unit selection (mutual exclusion)
-        const erUnitDropdown = document.getElementById('er-unit-select');
-        if (erUnitDropdown) {
-            erUnitDropdown.value = '';
-        }
-
-        // Store selected list ID and load data
-        app.state.currentListId = selectedListId;
-        app.state.currentERUnit = null;
         await loadPatientData(selectedListId);
     }
 
     /**
      * Handle ER unit selection change (Issue #78)
      */
-    async function handleERUnitChange(event) {
-        const selectedTrackingGroup = event.target.value;
-        const app = window.PatientListApp;
-
-        debugLog('ER Unit changed: ' + selectedTrackingGroup);
-
-        // Prevent loading with undefined/null/empty values
-        if (!selectedTrackingGroup || selectedTrackingGroup === 'undefined' || selectedTrackingGroup === 'null') {
-            clearPatientTable();
-            app.state.currentERUnit = null;
-            return;
-        }
-
-        // Clear patient list selection (mutual exclusion)
-        const patientListDropdown = document.getElementById('patient-list-select');
-        if (patientListDropdown) {
-            patientListDropdown.value = '';
-        }
-
-        // Store selected ER unit and load data
-        app.state.currentERUnit = selectedTrackingGroup;
-        app.state.currentListId = null;
-        await loadERUnitData(selectedTrackingGroup);
-    }
-
-    /**
-     * Load ER unit patients (Issue #78)
-     */
-    async function loadERUnitData(trackingGroupCd) {
-        const app = window.PatientListApp;
-        const refreshButton = document.getElementById('refresh-data');
-
-        try {
-            // Start refresh animation (Issue #78: same as patient list)
-            if (refreshButton) {
-                refreshButton.classList.add('refreshing');
-                disableRefreshButton();
-            }
-
-            // Clear patient stats indicator (Issue #78: clear counts during load)
-            const statsIndicator = document.getElementById('patient-stats-indicator');
-            if (statsIndicator) {
-                statsIndicator.textContent = '';
-            }
-
-            // Show loading message in table
-            if (app.state.handsontableInstance) {
-                console.log('Showing ER loading message in table...');
-                showTableMessage('Loading ER unit patient data...');
-            } else {
-                // No table yet: Show loading message in container
-                const container = document.getElementById('patient-table-container');
-                if (container) {
-                    container.innerHTML = '<p id="loading-message" class="font-sans font-normal text-center text-slate-500 italic" style="padding: 2rem;">Loading ER unit patient data...</p>';
-                }
-            }
-
-            debugLog('Loading ER unit patients for tracking group: ' + trackingGroupCd);
-
-            // Call service to get ER patients
-            const patients = await app.services.patientList.getERUnitPatients(trackingGroupCd);
-
-            debugLog('Got ' + patients.length + ' patients for ER tracking group ' + trackingGroupCd);
-
-            if (patients && patients.length > 0) {
-                // Process data through PatientDataService (same as patient list)
-                const selectedDate = app.state.selectedDate || new Date();
-                const processedData = app.services.patientData.formatForTable(patients, selectedDate);
-                debugLog('Processed ER patient data');
-
-                // Apply filters before displaying
-                const filteredData = applyPatientFilters(processedData);
-                debugLog('Filtered ER patient data: ' + filteredData.length + ' patients');
-
-                // Display in table
-                initializePatientTable(filteredData);
-            } else {
-                showTableMessage('No patients found for selected ER unit');
-            }
-
-        } catch (error) {
-            debugLog('Error loading ER unit data: ' + error.message, 'error');
-            showTableMessage('Error loading ER unit data. Please try again.');
-        } finally {
-            // Always stop refresh animation, even on error (Issue #78)
-            if (refreshButton) {
-                refreshButton.classList.remove('refreshing');
-                enableRefreshButton();
-            }
-        }
-    }
 
     /**
      * Show loading message

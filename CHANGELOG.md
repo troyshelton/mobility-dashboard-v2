@@ -7,22 +7,26 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [Unreleased] - v2.0.0-mobility
+## [2.0.0-mobility] - 2026-01-02
 
 ### Direction Change (2025-12-16)
 - **Stakeholder Feedback:** Clinical team prefers metric-specific historical view over global date navigation
 - **Decision:** Replace date navigator (Issue #1) with side panel pattern (Issue #3)
-- **Pattern:** Clinical Leader Organizer - click cell to see 3-day history for that metric
+- **Pattern:** Clinical Leader Organizer - click cell to see historical data for that metric
 
-### Added (Planning)
-- **Side Panel Historical Metric View** (Issue #3) - Planning complete, ready for implementation
-  - **Pattern:** Click clinical event cell → Side panel opens → Shows 3-day history
+### Added (Issue #3 - Implemented)
+- **Side Panel Historical Metric View** - COMPLETE and deployed to CERT
+  - **Pattern:** Click clinical event cell → Side panel opens → Shows 30-day history
   - **Metrics:** 5 clinical events (Phase 1: Morse, Call Light, IV Sites, SCDs, Safety)
-  - **UI:** Slide from right, 350-400px, backdrop overlay, 3 close methods
-  - **Data:** Pre-fetch 3 days of historical data (instant panel open)
-  - **Template System:** Handle single-value and multi-field metrics
-  - **Branch:** feature/v2.0.0-side-panel
-  - **Status:** Requirements documented, ready to implement
+  - **UI:** Slide from right, 400px, backdrop overlay, 3 close methods (X, backdrop, ESC)
+  - **Data:** 30-day lookback (configurable via CCL prompt parameter)
+  - **Features:**
+    - Automatic sparklines for numeric data (Morse scores)
+    - Condensed spacing for clinical efficiency (~40% more entries visible)
+    - Dynamic lookback period (7, 14, 30 days configurable)
+    - Pre-built SidePanelService component
+  - **CCL:** v05 with historical arrays (VALUE, EVENT_DT_TM, DATETIME_DISPLAY)
+  - **Status:** Deployed to CERT, validated with real patient data
 
 ### Archived as POC
 - **Date Navigator Feature** (Issue #1) - Not deployed based on stakeholder feedback
@@ -35,19 +39,20 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - **Reusable:** Other dashboards needing global date navigation
   - **Features:** Outlook-style controls, CCL date filtering, patient presence indicator
 
-### Completed (Low Priority)
-- **Patient Presence Indicator** (Issue #2 Phase 1) - Complete but low priority with 3-day lookback
-  - ✅ Grayed-out rows for patients not admitted on selected date
-  - ✅ Warning icon (⚠️) before patient name
-  - ✅ Works with zebra striping
-  - ✅ Direct DOM manipulation
-  - **Status:** Available if needed, less critical with short lookback periods
-
 ### Changed
-- PatientDataService.formatForTable() - Added clinical event fields
-- PatientListService - Integrated date parameter for CCL calls
-- Main.js - Added reloadCurrentData() for date navigation
-- Handsontable - Nested headers with Demographics + Clinical Events groups
+- **PatientDataService.js** - Added MetricTemplates configuration, historical array parsing
+- **PatientListService.js** - Removed date parameter, added dynamic lookback parameter
+- **main.js** - Added click handlers, parseHistoricalDateTime helper
+- **index.html** - Integrated SidePanelService, removed date navigator and ER dropdown
+- **styles.css** - Added clickable cell styling (cursor pointer, hover effects)
+- **Config.js** - Simulator mode control for local testing
+- **XMLCclRequestSimulator.js** - Dynamic lookback, 30-day mock historical data
+
+### Removed
+- **Date Navigator** (Issue #1 archived as POC) - All UI controls, state, event handlers, CSS
+- **ER Unit Dropdown** - Placeholder from ER template, not needed for mobility dashboard
+- **Patient Presence Indicator** - Date-specific feature no longer relevant
+- Total: ~595 lines of code removed for cleaner v2.0.0 codebase
 
 ---
 

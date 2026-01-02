@@ -672,98 +672,60 @@
     };
     
     /**
-     * Mock mobility patient data with DATE-AWARE clinical events
-     * Matches 1_cust_mp_mob_get_pdata_03.prg structure
-     * @param {Array} parameters - [encounterIds, dateParam (mmddyyyy integer)]
+     * Mock mobility patient data with dynamic lookback historical arrays
+     * Matches 1_cust_mp_mob_get_pdata_05.prg structure (v2.0.0-mobility)
+     * @param {Array} parameters - [encounterIds, lookbackDays] (default 30 days)
      */
     XMLCclRequestSimulator.prototype.getMockMobilityPatientData = function(parameters) {
         const encounterIds = Array.isArray(parameters[0]) ? parameters[0] : [parameters[0]];
-        const dateParam = parameters[1];
+        const lookbackDays = parameters[1] || 30; // Default 30 days if not specified
 
-        console.log(`[XMLCclRequestSimulator] Mobility data requested for date: ${dateParam}`);
+        console.log(`[XMLCclRequestSimulator] Mobility data requested (v05 - ${lookbackDays}-day lookback from now)`);
 
-        // Parse date parameter to determine which mock data to return
-        const selectedDate = this.parseDateParam(dateParam);
-        const dateKey = this.formatDateKey(selectedDate);
+        // Always use current time for display values (most recent charting)
+        const now = new Date();
+        const nowDisplay = this.formatDateDisplay(now);
 
-        console.log(`[XMLCclRequestSimulator] Using date key: ${dateKey} (${selectedDate.toDateString()})`);
-
-        // Calculate today and yesterday dynamically
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        const todayKey = this.formatDateKey(today);
-        const yesterdayKey = this.formatDateKey(yesterday);
-        const todayDisplay = this.formatDateDisplay(today);
-        const yesterdayDisplay = this.formatDateDisplay(yesterday);
-
-        // Date-specific clinical event values
-        const clinicalEventsByDate = {
-            '03272025': { // March 27, 2025 (test patient real data)
-                morse_score: '45',
-                morse_event_dt_tm: '03/27/2025 19:00',
-                call_light_in_reach: 'Yes',
-                call_light_dt_tm: '03/27/2025 23:00',
-                iv_sites_assessed: 'Yes',
-                iv_sites_dt_tm: '03/27/2025 22:00',
-                scds_applied: 'No',
-                scds_dt_tm: '03/27/2025 22:00',
-                safety_needs_addressed: 'Yes',
-                safety_needs_dt_tm: '03/27/2025 23:00'
-            },
-            '04192025': { // April 19, 2025 (test patient real data)
-                morse_score: '60',
-                morse_event_dt_tm: '04/19/2025 19:00',
-                call_light_in_reach: 'Yes',
-                call_light_dt_tm: '04/19/2025 22:00',
-                iv_sites_assessed: 'Yes',
-                iv_sites_dt_tm: '04/19/2025 22:00',
-                scds_applied: 'No',
-                scds_dt_tm: '04/19/2025 22:00',
-                safety_needs_addressed: 'Yes',
-                safety_needs_dt_tm: '04/19/2025 22:00'
-            },
-            [todayKey]: { // Today (dynamic)
-                morse_score: '35',
-                morse_event_dt_tm: `${todayDisplay} 19:00`,
-                call_light_in_reach: 'Yes',
-                call_light_dt_tm: `${todayDisplay} 22:00`,
-                iv_sites_assessed: 'Yes',
-                iv_sites_dt_tm: `${todayDisplay} 21:00`,
-                scds_applied: 'Yes',
-                scds_dt_tm: `${todayDisplay} 20:00`,
-                safety_needs_addressed: 'Yes',
-                safety_needs_dt_tm: `${todayDisplay} 23:00`
-            },
-            [yesterdayKey]: { // Yesterday (dynamic)
-                morse_score: '50',
-                morse_event_dt_tm: `${yesterdayDisplay} 18:00`,
-                call_light_in_reach: 'Yes',
-                call_light_dt_tm: `${yesterdayDisplay} 21:00`,
-                iv_sites_assessed: 'No',
-                iv_sites_dt_tm: `${yesterdayDisplay} 20:00`,
-                scds_applied: 'Yes',
-                scds_dt_tm: `${yesterdayDisplay} 19:00`,
-                safety_needs_addressed: 'Yes',
-                safety_needs_dt_tm: `${yesterdayDisplay} 22:00`
-            }
+        // Current clinical event values (most recent from 7-day history)
+        const clinicalEvents = {
+            morse_score: '45',
+            morse_event_dt_tm: `${nowDisplay} 14:30`,
+            call_light_in_reach: 'Yes',
+            call_light_dt_tm: `${nowDisplay} 14:15`,
+            iv_sites_assessed: 'Yes - All sites intact',
+            iv_sites_dt_tm: `${nowDisplay} 13:45`,
+            scds_applied: 'Yes - Bilateral',
+            scds_dt_tm: `${nowDisplay} 14:00`,
+            safety_needs_addressed: 'Completed - No concerns',
+            safety_needs_dt_tm: `${nowDisplay} 14:20`
         };
 
-        // Get clinical events for selected date (or blank for dates without data)
-        // Shows data for: hardcoded dates (03/27, 04/19), today, yesterday
-        // Returns blank for all other dates
-        const clinicalEvents = clinicalEventsByDate[dateKey] || {
-            morse_score: '',
-            morse_event_dt_tm: '',
-            call_light_in_reach: '',
-            call_light_dt_tm: '',
-            iv_sites_assessed: '',
-            iv_sites_dt_tm: '',
-            scds_applied: '',
-            scds_dt_tm: '',
-            safety_needs_addressed: '',
-            safety_needs_dt_tm: ''
+        // Generate 7-day historical data for all metrics
+        const generateHistoricalData = (baseValue, variance, count) => {
+            const history = [];
+            const now = new Date();
+
+            for (let i = 0; i < count; i++) {
+                const daysAgo = Math.floor(i / 3); // ~3 entries per day
+                const hoursAgo = (i % 3) * 6; // Every 6 hours
+                const entryDate = new Date(now);
+                entryDate.setDate(entryDate.getDate() - daysAgo);
+                entryDate.setHours(entryDate.getHours() - hoursAgo);
+
+                const value = typeof baseValue === 'number' ?
+                    String(baseValue + Math.floor(Math.random() * variance) - variance/2) :
+                    baseValue;
+
+                history.push({
+                    value: value,
+                    event_dt_tm: entryDate.toISOString(),
+                    datetime_display: this.formatDateDisplay(entryDate) + ' ' +
+                        String(entryDate.getHours()).padStart(2, '0') + ':' +
+                        String(entryDate.getMinutes()).padStart(2, '0')
+                });
+            }
+
+            return history;
         };
 
         // Mock patient demographics
@@ -780,7 +742,7 @@
             STATUS: 'Active',
             FIN: '3010394309',
             MRN: '20212659',
-            // Clinical events (date-specific)
+            // Clinical events - Current Values (date-specific)
             MORSE_SCORE: clinicalEvents.morse_score,
             MORSE_EVENT_DT_TM: clinicalEvents.morse_event_dt_tm,
             CALL_LIGHT_IN_REACH: clinicalEvents.call_light_in_reach,
@@ -790,15 +752,22 @@
             SCDS_APPLIED: clinicalEvents.scds_applied,
             SCDS_DT_TM: clinicalEvents.scds_dt_tm,
             SAFETY_NEEDS_ADDRESSED: clinicalEvents.safety_needs_addressed,
-            SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm
+            SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
+            // Historical Arrays - 7-Day History (Issue #3)
+            morse_history: generateHistoricalData.call(this, 45, 10, 12),  // 12 entries over 7 days
+            call_light_history: generateHistoricalData.call(this, 'Yes', 0, 8),
+            iv_sites_history: generateHistoricalData.call(this, 'Yes - All sites intact', 0, 10),
+            scds_history: generateHistoricalData.call(this, 'Yes - Bilateral', 0, 6),
+            safety_needs_history: generateHistoricalData.call(this, 'Completed - No concerns', 0, 9)
         }));
 
         return {
             drec: {
                 patientCnt: patients.length,
-                program_version: 'v03',
-                program_build_date: '2025-12-15',
-                selected_date: this.formatDateDisplay(selectedDate),
+                program_version: 'v05',
+                program_build_date: '2026-01-02',
+                selected_date: this.formatDateDisplay(now),
+                lookback_days: lookbackDays,
                 patients: patients
             }
         };
@@ -813,7 +782,8 @@
         }
 
         // Parse mmddyyyy integer format (e.g., 12152025)
-        const dateStr = String(dateParam);
+        // Pad to 8 characters to handle leading zeros (e.g., 1022026 → 01022026)
+        const dateStr = String(dateParam).padStart(8, '0');
         const mm = parseInt(dateStr.substring(0, 2));
         const dd = parseInt(dateStr.substring(2, 4));
         const yyyy = parseInt(dateStr.substring(4, 8));

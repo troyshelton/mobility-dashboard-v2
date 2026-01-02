@@ -3,6 +3,58 @@
     'use strict';
     
     /**
+     * MetricTemplates - Configuration for clinical metrics and side panel display
+     * Issue #3: Side Panel Historical Metric View
+     * Maps table columns to metric metadata for historical data display
+     */
+    const MetricTemplates = {
+        morse: {
+            key: 'morse',
+            label: 'Morse Fall Risk Score',
+            currentField: 'morse_score',
+            historyField: 'morse_history',
+            columnIndex: 8
+        },
+        call_light: {
+            key: 'call_light',
+            label: 'Call Light & Personal Items Within Reach',
+            currentField: 'call_light_in_reach',
+            historyField: 'call_light_history',
+            columnIndex: 9
+        },
+        iv_sites: {
+            key: 'iv_sites',
+            label: 'IV Sites Assessed',
+            currentField: 'iv_sites_assessed',
+            historyField: 'iv_sites_history',
+            columnIndex: 10
+        },
+        scds: {
+            key: 'scds',
+            label: 'SCDs Applied',
+            currentField: 'scds_applied',
+            historyField: 'scds_history',
+            columnIndex: 11
+        },
+        safety_needs: {
+            key: 'safety_needs',
+            label: 'Psychosocial and Safety Needs Addressed',
+            currentField: 'safety_needs_addressed',
+            historyField: 'safety_needs_history',
+            columnIndex: 12
+        }
+    };
+
+    /**
+     * Get metric template by column index
+     * @param {number} columnIndex - Handsontable column index (8-12)
+     * @returns {Object|null} Metric template or null if not a metric column
+     */
+    function getMetricByColumnIndex(columnIndex) {
+        return Object.values(MetricTemplates).find(m => m.columnIndex === columnIndex) || null;
+    }
+
+    /**
      * PatientDataService - Processes and formats patient data
      * Uses global SIMULATOR_CONFIG to determine simulator vs production mode
      * @param {boolean} debugMode - Whether to enable debug logging
@@ -11,6 +63,7 @@
         this.debugMode = debugMode;
         this.debugMessages = [];
         this.lastRawCCLResponse = null; // Store raw CCL response for debugging
+        this.metricTemplates = MetricTemplates; // Expose templates
 
         if (this.debugMode) {
             const isSimulator = window.SIMULATOR_CONFIG?.enabled;
@@ -176,7 +229,7 @@
      * @param {Date} selectedDate - Selected date for presence checking (optional)
      * @returns {Array} - Formatted data for table display
      */
-    PatientDataService.prototype.formatForTable = function(patientData, selectedDate) {
+    PatientDataService.prototype.formatForTable = function(patientData) {
         if (!Array.isArray(patientData)) {
             this._logDebug('Cannot format invalid patient data for table', 'error');
             return [];
@@ -189,12 +242,6 @@
 
         return patientData.map(patient => {
             const formatted = this.createCaseInsensitiveObject(patient);
-
-            // Check if patient was present on selected date (date navigator feature)
-            // Must be calculated BEFORE return statement since we need raw admission date
-            const rawAdmissionDate = formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date;
-            const admissionDate = this.parseAdmissionDate(rawAdmissionDate);
-            const notPresentOnDate = admissionDate && selectedDate && admissionDate > selectedDate;
 
             // Map camelCase CCL fields to table format
             return {
@@ -254,8 +301,12 @@
                 SAFETY_NEEDS_ADDRESSED: patient.SAFETY_NEEDS_ADDRESSED || patient.safety_needs_addressed || '',
                 SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
 
-                // Flag for row styling (calculated before return statement above)
-                _notPresentOnDate: notPresentOnDate
+                // Historical Arrays - 7-Day History for Side Panel (Issue #3)
+                MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
+                CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],
+                IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],
+                SCDS_HISTORY: patient.scds_history || patient.SCDS_HISTORY || [],
+                SAFETY_NEEDS_HISTORY: patient.safety_needs_history || patient.SAFETY_NEEDS_HISTORY || []
             };
         });
     };
@@ -2564,5 +2615,7 @@
 
     // Expose to global scope
     window.PatientDataService = PatientDataService;
+    window.MetricTemplates = MetricTemplates;
+    window.getMetricByColumnIndex = getMetricByColumnIndex;
 
 })(window);

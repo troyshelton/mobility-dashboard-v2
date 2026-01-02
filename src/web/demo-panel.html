@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Side Panel Demo - Mobility Dashboard</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Side Panel Styles -->
+    <link rel="stylesheet" href="styles/side-panel.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .demo-container {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .demo-section {
+            margin-bottom: 2rem;
+        }
+
+        .demo-section h2 {
+            color: #495057;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .demo-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .demo-button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-info {
+            background-color: #00bcd4;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .demo-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .demo-info p {
+            margin: 0.5rem 0;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .demo-info strong {
+            color: #2c3e50;
+        }
+
+        code {
+            background-color: #e9ecef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1><i class="fas fa-sliders-h"></i> Side Panel Demo</h1>
+        <p class="subtitle">Test the side panel UI component for Issue #3</p>
+
+        <!-- Demo Section 1: Numeric Metrics with Sparklines -->
+        <div class="demo-section">
+            <h2><i class="fas fa-chart-line"></i> Numeric Metrics (with Sparklines)</h2>
+            <div class="button-group">
+                <button class="demo-button btn-primary" onclick="openMorseScore()">
+                    <i class="fas fa-balance-scale"></i> Morse Fall Risk Score
+                </button>
+                <button class="demo-button btn-primary" onclick="openBMAT()">
+                    <i class="fas fa-brain"></i> BMAT Score
+                </button>
+                <button class="demo-button btn-primary" onclick="openPainScore()">
+                    <i class="fas fa-thermometer-half"></i> Pain Score (0-10)
+                </button>
+            </div>
+        </div>
+
+        <!-- Demo Section 2: Non-Numeric Clinical Events -->
+        <div class="demo-section">
+            <h2><i class="fas fa-clipboard-check"></i> Non-Numeric Clinical Events</h2>
+            <div class="button-group">
+                <button class="demo-button btn-success" onclick="openCallLight()">
+                    <i class="fas fa-phone"></i> Call Light in Reach
+                </button>
+                <button class="demo-button btn-info" onclick="openIVSites()">
+                    <i class="fas fa-syringe"></i> IV Sites Assessed
+                </button>
+                <button class="demo-button btn-warning" onclick="openSCDs()">
+                    <i class="fas fa-heartbeat"></i> SCDs Applied
+                </button>
+                <button class="demo-button btn-danger" onclick="openSafety()">
+                    <i class="fas fa-shield-alt"></i> Safety Needs
+                </button>
+            </div>
+        </div>
+
+        <!-- Demo Section 3: Complex Multi-Field Metrics -->
+        <div class="demo-section">
+            <h2><i class="fas fa-walking"></i> Complex Multi-Field Examples</h2>
+            <div class="button-group">
+                <button class="demo-button btn-primary" onclick="openActivitiesNumeric()">
+                    <i class="fas fa-ruler"></i> Activities - Distance Only (with sparkline)
+                </button>
+                <button class="demo-button btn-info" onclick="openActivitiesComplex()">
+                    <i class="fas fa-list-ul"></i> Activities - Multi-Field (no sparkline)
+                </button>
+            </div>
+        </div>
+
+        <!-- Demo Section 4: Edge Cases & Volume Tests -->
+        <div class="demo-section">
+            <h2><i class="fas fa-flask"></i> Edge Cases & Volume Tests</h2>
+            <div class="button-group">
+                <button class="demo-button btn-info" onclick="openEmptyHistory()">
+                    <i class="fas fa-inbox"></i> Empty History
+                </button>
+                <button class="demo-button btn-info" onclick="openSingleNumeric()">
+                    <i class="fas fa-file"></i> Single Numeric Entry
+                </button>
+                <button class="demo-button btn-info" onclick="openSingleText()">
+                    <i class="fas fa-file-alt"></i> Single Text Entry
+                </button>
+                <button class="demo-button btn-info" onclick="openManyNumeric()">
+                    <i class="fas fa-chart-line"></i> Many Numeric (12 entries)
+                </button>
+                <button class="demo-button btn-info" onclick="openManyText()">
+                    <i class="fas fa-list"></i> Many Text (12 entries)
+                </button>
+            </div>
+        </div>
+
+        <!-- Demo Info -->
+        <div class="demo-info">
+            <p><strong><i class="fas fa-info-circle"></i> How to Use:</strong></p>
+            <p>• Click any button above to open the side panel with sample data</p>
+            <p>• Test the three close methods: <code>× button</code>, <code>click backdrop</code>, or <code>press ESC</code></p>
+            <p>• Resize browser window to test responsive behavior</p>
+            <p>• Open browser console (F12) to see event logs</p>
+        </div>
+    </div>
+
+    <!-- Side Panel Service -->
+    <script src="js/SidePanelService.js"></script>
+
+    <!-- Demo Scripts -->
+    <script>
+        // Mock patient data
+        const mockPatient = {
+            person_name: 'DOE, JOHN',
+            mrn: '12345678',
+            unit: '3E',
+            roomBed: 'Room 305-A'
+        };
+
+        // Helper to create mock history data
+        function createMockHistory(count, valueGenerator) {
+            const history = [];
+            const now = new Date();
+
+            for (let i = 0; i < count; i++) {
+                const date = new Date(now);
+                date.setHours(date.getHours() - (i * 6)); // Every 6 hours
+
+                history.push({
+                    datetime: date,
+                    value: valueGenerator(i)
+                });
+            }
+
+            return history;
+        }
+
+        // Numeric Metric Demos (with Sparklines)
+        function openMorseScore() {
+            // Declining trend (improving)
+            const history = createMockHistory(8, (i) => `${50 - (i * 3)}`);
+            sidePanelService.open(mockPatient, 'morse', 'Morse Fall Risk Score', history);
+        }
+
+        function openBMAT() {
+            // Fluctuating trend
+            const scores = [28, 26, 27, 25, 26, 24, 25, 23];
+            const history = createMockHistory(8, (i) => `${scores[i]}`);
+            sidePanelService.open(mockPatient, 'bmat', 'BMAT Cognitive Score', history);
+        }
+
+        function openPainScore() {
+            // Improving pain trend
+            const scores = [8, 7, 6, 5, 4, 3, 2, 2];
+            const history = createMockHistory(8, (i) => `${scores[i]}`);
+            sidePanelService.open(mockPatient, 'pain', 'Pain Score (0-10)', history);
+        }
+
+        // Complex Multi-Field Demos
+        function openActivitiesNumeric() {
+            // Option 1: Just numeric distance values - SHOWS sparkline
+            const distances = [75, 50, 100, 85, 60, 120, 90, 110];
+            const history = createMockHistory(8, (i) => `${distances[i]}`);
+            sidePanelService.open(mockPatient, 'activities', 'Activities - Distance (feet)', history);
+        }
+
+        function openActivitiesComplex() {
+            // Option 2: Complex multi-field data - NO sparkline
+            const activities = [
+                'Walking - 75 feet\nEffort: Moderate\nAssistance: 1 person',
+                'Chair to bed transfer\nEffort: Minimal\nAssistance: 1 person',
+                'Walking - 100 feet\nEffort: Moderate\nAssistance: Independent',
+                'Bathroom transfer\nEffort: Moderate\nAssistance: 2 persons',
+                'Walking - 60 feet\nEffort: Heavy\nAssistance: 1 person + walker',
+                'Bed to chair transfer\nEffort: Minimal\nAssistance: 1 person',
+                'Walking - 120 feet\nEffort: Light\nAssistance: Independent',
+                'Standing at bedside\nEffort: Moderate\nAssistance: 1 person'
+            ];
+            const history = createMockHistory(8, (i) => activities[i]);
+            sidePanelService.open(mockPatient, 'activities', 'Activities - Full Details', history);
+        }
+
+        // Non-Numeric Clinical Event Demos
+        function openCallLight() {
+            const history = createMockHistory(4, (i) => i % 2 === 0 ? 'Yes' : 'No');
+            sidePanelService.open(mockPatient, 'call_light', 'Call Light in Reach', history);
+        }
+
+        function openIVSites() {
+            const history = createMockHistory(6, (i) => 'Yes - All sites intact');
+            sidePanelService.open(mockPatient, 'iv_sites', 'IV Sites Assessed', history);
+        }
+
+        function openSCDs() {
+            const history = createMockHistory(3, (i) => 'Yes - Bilateral');
+            sidePanelService.open(mockPatient, 'scds', 'SCDs Applied', history);
+        }
+
+        function openSafety() {
+            const history = createMockHistory(4, (i) => 'Completed - No concerns');
+            sidePanelService.open(mockPatient, 'safety_needs', 'Psychosocial and Safety Needs', history);
+        }
+
+        // Edge Case Demos
+        function openEmptyHistory() {
+            sidePanelService.open(mockPatient, 'test', 'Empty History Test', []);
+        }
+
+        function openSingleNumeric() {
+            const history = [{
+                datetime: new Date(),
+                value: '45'
+            }];
+            sidePanelService.open(mockPatient, 'test', 'Single Numeric Entry', history);
+        }
+
+        function openSingleText() {
+            const history = [{
+                datetime: new Date(),
+                value: 'Yes - Completed'
+            }];
+            sidePanelService.open(mockPatient, 'test', 'Single Text Entry', history);
+        }
+
+        function openManyNumeric() {
+            // Many numeric entries - SHOULD show sparkline
+            const history = createMockHistory(12, (i) => `${Math.floor(Math.random() * 50) + 20}`);
+            sidePanelService.open(mockPatient, 'test', 'Many Numeric Entries (with sparkline)', history);
+        }
+
+        function openManyText() {
+            // Many text entries - NO sparkline
+            const textValues = [
+                'Yes - All items within reach',
+                'Yes - Patient able to reach',
+                'No - Items repositioned',
+                'Yes - Confirmed with patient',
+                'Yes - Call light tested',
+                'Yes - All safety items present',
+                'No - Needed assistance',
+                'Yes - Patient demonstrates understanding',
+                'Yes - Items secured',
+                'Yes - Safety check completed',
+                'Yes - Patient education provided',
+                'Yes - All protocols followed'
+            ];
+            const history = createMockHistory(12, (i) => textValues[i]);
+            sidePanelService.open(mockPatient, 'test', 'Many Text Entries (no sparkline)', history);
+        }
+
+        console.log('✅ Demo page loaded - Click buttons to test side panel');
+    </script>
+</body>
+</html>
