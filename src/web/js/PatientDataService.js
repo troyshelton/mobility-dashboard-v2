@@ -13,48 +13,74 @@
             label: 'BMAT (Brief Mobility Assessment)',
             currentField: 'bmat_level',
             historyField: 'bmat_history',
-            columnIndex: 8
+            columnIndex: 8,
+            dataType: 'simple',
+            valueField: 'VALUE'
         },
         morse: {
             key: 'morse',
             label: 'Morse Fall Risk Score',
             currentField: 'morse_score',
             historyField: 'morse_history',
-            columnIndex: 9
+            columnIndex: 9,
+            dataType: 'simple',
+            valueField: 'VALUE'
         },
         call_light: {
             key: 'call_light',
             label: 'Call Light & Personal Items Within Reach',
             currentField: 'call_light_in_reach',
             historyField: 'call_light_history',
-            columnIndex: 10
+            columnIndex: 10,
+            dataType: 'simple',
+            valueField: 'VALUE'
         },
         iv_sites: {
             key: 'iv_sites',
             label: 'IV Sites Assessed',
             currentField: 'iv_sites_assessed',
             historyField: 'iv_sites_history',
-            columnIndex: 11
+            columnIndex: 11,
+            dataType: 'simple',
+            valueField: 'VALUE'
         },
         scds: {
             key: 'scds',
             label: 'SCDs Applied',
             currentField: 'scds_applied',
             historyField: 'scds_history',
-            columnIndex: 12
+            columnIndex: 12,
+            dataType: 'simple',
+            valueField: 'VALUE'
         },
         safety_needs: {
             key: 'safety_needs',
             label: 'Psychosocial and Safety Needs Addressed',
             currentField: 'safety_needs_addressed',
             historyField: 'safety_needs_history',
-            columnIndex: 13
+            columnIndex: 13,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        activity_precautions: {
+            key: 'activity_precautions',
+            label: 'Activity Precautions',
+            currentField: 'active_precaution_count',
+            historyField: 'activity_precautions',
+            columnIndex: 14,
+            dataType: 'complex',
+            fieldMapping: {
+                primary: 'PRECAUTION_NAME',
+                secondary: 'ORDER_DETAIL',
+                datetime: 'DATETIME_DISPLAY',
+                status: 'ORDER_STATUS'
+            }
         }
     };
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (8-13)
+     * @param {number} columnIndex - Handsontable column index (8-14)
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {
@@ -309,14 +335,16 @@
                 SCDS_DT_TM: patient.SCDS_DT_TM || patient.scds_dt_tm || '',
                 SAFETY_NEEDS_ADDRESSED: patient.SAFETY_NEEDS_ADDRESSED || patient.safety_needs_addressed || '',
                 SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
+                ACTIVE_PRECAUTION_COUNT: patient.ACTIVE_PRECAUTION_COUNT || patient.active_precaution_count || 0,
 
-                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5)
+                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5, #7)
                 BMAT_HISTORY: patient.bmat_history || patient.BMAT_HISTORY || [],
                 MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
                 CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],
                 IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],
                 SCDS_HISTORY: patient.scds_history || patient.SCDS_HISTORY || [],
-                SAFETY_NEEDS_HISTORY: patient.safety_needs_history || patient.SAFETY_NEEDS_HISTORY || []
+                SAFETY_NEEDS_HISTORY: patient.safety_needs_history || patient.SAFETY_NEEDS_HISTORY || [],
+                ACTIVITY_PRECAUTIONS: patient.activity_precautions || patient.ACTIVITY_PRECAUTIONS || []
             };
         });
     };

@@ -755,8 +755,53 @@
             SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
             BMAT_LEVEL: '3',
             BMAT_DT_TM: `${nowDisplay} 09:00`,
-            // Historical Arrays - 30-Day History (Issue #3, #5)
+            ACTIVE_PRECAUTION_COUNT: 7,
+            // Historical Arrays - 30-Day History (Issue #3, #5, #7)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
+            activity_precautions: [
+                {
+                    PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',
+                    ORDER_DETAIL: 'toe touch weight-bearing',
+                    DATETIME_DISPLAY: `${nowDisplay} 14:59`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    PRECAUTION_NAME: 'Miami J Cervical Collar',
+                    ORDER_DETAIL: 'Stop date 01/02/26 15:00:00 EST',
+                    DATETIME_DISPLAY: `${nowDisplay} 14:59`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    PRECAUTION_NAME: 'Hip Precautions Anterior Approach',
+                    ORDER_DETAIL: 'non weight-bearing',
+                    DATETIME_DISPLAY: `${nowDisplay} 14:59`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    PRECAUTION_NAME: 'Hip Precautions Posterior Approach',
+                    ORDER_DETAIL: 'partial weight-bearing',
+                    DATETIME_DISPLAY: `${nowDisplay} 15:00`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    PRECAUTION_NAME: 'Weight Bearing Status, Upper Extremity',
+                    ORDER_DETAIL: 'weight bearing as tolerated',
+                    DATETIME_DISPLAY: `${nowDisplay} 14:59`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    PRECAUTION_NAME: 'Thoracolumbar Spine Restrictions',
+                    ORDER_DETAIL: 'Stop date 01/02/26 15:00:00 EST',
+                    DATETIME_DISPLAY: `${nowDisplay} 15:00`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    PRECAUTION_NAME: 'Cervical Spine Restrictions',
+                    ORDER_DETAIL: 'Stop date 01/02/26 15:00:00 EST',
+                    DATETIME_DISPLAY: `${nowDisplay} 15:00`,
+                    ORDER_STATUS: 'Ordered'
+                }
+            ],
             morse_history: generateHistoricalData.call(this, 45, 10, 12),  // 12 entries
             call_light_history: generateHistoricalData.call(this, 'Yes', 0, 8),
             iv_sites_history: generateHistoricalData.call(this, 'Yes - All sites intact', 0, 10),
@@ -767,7 +812,7 @@
         return {
             drec: {
                 patientCnt: patients.length,
-                program_version: 'v06',
+                program_version: 'v07',
                 program_build_date: '2026-01-02',
                 selected_date: this.formatDateDisplay(now),
                 lookback_days: lookbackDays,

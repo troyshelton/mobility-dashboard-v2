@@ -2409,7 +2409,8 @@
             { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
             { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
             { data: 'SCDS_APPLIED', title: 'SCDs', width: 70, className: 'htMiddle htCenter' },
-            { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' }
+            { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' },
+            { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' }
 
             /* SEPSIS COLUMNS - REMOVED FOR MOBILITY DASHBOARD
             { data: 'ALERT_TYPE', title: 'Alert', width: 85, renderer: alertRenderer, className: 'htMiddle htLeft' },
@@ -2460,7 +2461,7 @@
             nestedHeaders: [
                 [
                     { label: 'Patient Demographics', colspan: 8 },
-                    { label: 'Clinical Events (Date-Filtered)', colspan: 6 }
+                    { label: 'Clinical Events (Date-Filtered)', colspan: 7 }
                 ],
                 columns.map(col => col.title)  // Column headers as second row
             ],
@@ -2571,10 +2572,10 @@
             }
             });
 
-            // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5)
+            // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7)
             app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
-                // Clinical event columns: 8-13 (BMAT, Morse, Call Light, IV Sites, SCDs, Safety)
-                if (coords.col >= 8 && coords.col <= 13) {
+                // Clinical event columns: 8-14 (BMAT, Morse, Call Light, IV Sites, SCDs, Safety, Precautions)
+                if (coords.col >= 8 && coords.col <= 14) {
                     console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
 
                     // Get metric template for this column
@@ -2604,13 +2605,34 @@
                     };
 
                     // Convert CCL datetime format to JavaScript Date objects
-                    // Handle both uppercase (real CCL) and lowercase (simulator) field names
-                    const formattedHistory = historyData.map(entry => ({
-                        datetime: entry.DATETIME_DISPLAY || entry.datetime_display ?
+                    // Handle both simple (value) and complex (multi-field) data types
+                    const formattedHistory = historyData.map(entry => {
+                        const datetime = entry.DATETIME_DISPLAY || entry.datetime_display ?
                             app.parseHistoricalDateTime(entry.DATETIME_DISPLAY || entry.datetime_display) :
-                            new Date(entry.EVENT_DT_TM || entry.event_dt_tm || Date.now()),
-                        value: entry.VALUE || entry.value || ''
-                    }));
+                            new Date(entry.EVENT_DT_TM || entry.event_dt_tm || Date.now());
+
+                        let value;
+                        if (metric.dataType === 'complex') {
+                            // Complex data: Format multiple fields as multi-line string
+                            const fields = metric.fieldMapping;
+                            const parts = [];
+                            if (entry[fields.primary] || entry[fields.primary.toLowerCase()]) {
+                                parts.push(entry[fields.primary] || entry[fields.primary.toLowerCase()]);
+                            }
+                            if (entry[fields.secondary] || entry[fields.secondary.toLowerCase()]) {
+                                parts.push(entry[fields.secondary] || entry[fields.secondary.toLowerCase()]);
+                            }
+                            if (entry[fields.status] || entry[fields.status.toLowerCase()]) {
+                                parts.push(`Status: ${entry[fields.status] || entry[fields.status.toLowerCase()]}`);
+                            }
+                            value = parts.join('\n');
+                        } else {
+                            // Simple data: Just the value
+                            value = entry.VALUE || entry.value || '';
+                        }
+
+                        return { datetime, value };
+                    });
 
                     // Get lookback period from CCL response (default 30 if not available)
                     const lookbackDays = (app.state.handsontableInstance &&
@@ -2777,7 +2799,7 @@
                 nestedHeaders: [
                     [
                         { label: 'Patient Demographics', colspan: 8 },
-                        { label: 'Clinical Events (Date-Filtered)', colspan: 6 }
+                        { label: 'Clinical Events (Date-Filtered)', colspan: 7 }
                     ],
                     columns.map(col => col.title)
                 ],
