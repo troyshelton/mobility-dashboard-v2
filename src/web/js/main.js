@@ -50,6 +50,49 @@
     // REMOVED: meetsSepsisCriteria function (sepsis-specific logic removed for mobility dashboard)
 
     /**
+     * Date Navigator Functions (Issue #1)
+     */
+
+    /**
+     * Format date for display: "Monday, December 15, 2025"
+     */
+    function formatDateDisplay(date) {
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    /**
+     * Parse historical datetime from CCL format to JavaScript Date
+     * CCL format: "MM/DD/YYYY HH:MM" (e.g., "01/02/2026 14:30")
+     * Issue #3: Side Panel Historical View
+     */
+    function parseHistoricalDateTime(dateTimeString) {
+        try {
+            // Expected format: "MM/DD/YYYY HH:MM"
+            const [datePart, timePart] = dateTimeString.split(' ');
+            const [month, day, year] = datePart.split('/');
+            const [hours, minutes] = timePart.split(':');
+
+            return new Date(
+                parseInt(year),
+                parseInt(month) - 1,  // JavaScript months are 0-indexed
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes)
+            );
+        } catch (error) {
+            console.warn('Error parsing historical datetime:', dateTimeString, error);
+            return new Date(); // Fallback to current time
+        }
+    }
+
+
+    /**
      * Apply patient filters based on dropdown selection (Issue #57 - FirstNet style)
      */
     function applyPatientFilters(patients) {
@@ -169,6 +212,9 @@
                 note: 'Check PatientListApp.services.patientData for last response'
             };
         },
+
+        // Date helper functions (Issue #1, #3)
+        parseHistoricalDateTime: parseHistoricalDateTime,
 
         // Tippy.js utility functions (Issue #48 - Phase 2)
         createSepsisTooltip: createSepsisTooltip,
@@ -2339,8 +2385,15 @@
 
         // Define columns for sepsis dashboard structure (16 columns - Priority hidden pending requestor input)
         // v1.33.0: Left-justified columns for text fields, center for icons/values
-        console.log('Defining demographics columns for Mobility Dashboard...');
+        console.log('Defining demographics + clinical event columns for Mobility Dashboard...');
+
+        // DEBUG: Log first patient data to see ALL fields
+        console.log('🔍 FIRST PATIENT DATA:', data[0]);
+        console.log('🔍 Has MORSE_SCORE?', data[0]?.MORSE_SCORE);
+        console.log('🔍 Has CALL_LIGHT_IN_REACH?', data[0]?.CALL_LIGHT_IN_REACH);
+
         const columns = [
+            // Demographics (8 columns)
             { data: 'PATIENT_NAME', title: 'Patient', width: 160, renderer: patientNameRenderer, className: 'htMiddle htLeft' },
             { data: 'UNIT', title: 'Unit', width: 100, className: 'htMiddle htLeft' },
             { data: 'ROOM_BED', title: 'Room/Bed', width: 100, className: 'htMiddle htLeft' },
@@ -2348,7 +2401,14 @@
             { data: 'GENDER', title: 'Gender', width: 80, className: 'htMiddle htCenter' },
             { data: 'PATIENT_CLASS', title: 'Class', width: 120, className: 'htMiddle htLeft' },
             { data: 'ADMISSION_DATE', title: 'Admitted', width: 120, className: 'htMiddle htCenter' },
-            { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' }
+            { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' },
+
+            // Clinical Events (5 columns - date-filtered)
+            { data: 'MORSE_SCORE', title: 'Morse Score', width: 100, className: 'htMiddle htCenter' },
+            { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
+            { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
+            { data: 'SCDS_APPLIED', title: 'SCDs', width: 70, className: 'htMiddle htCenter' },
+            { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' }
 
             /* SEPSIS COLUMNS - REMOVED FOR MOBILITY DASHBOARD
             { data: 'ALERT_TYPE', title: 'Alert', width: 85, renderer: alertRenderer, className: 'htMiddle htLeft' },
@@ -2396,13 +2456,14 @@
             app.state.handsontableInstance = new Handsontable(tableDiv, {
             data: data,
             columns: columns,
-            colHeaders: true,
             nestedHeaders: [
                 [
-                    { label: 'Patient Demographics', colspan: 8 }  // All 8 demographics columns
+                    { label: 'Patient Demographics', colspan: 8 },
+                    { label: 'Clinical Events (Date-Filtered)', colspan: 5 }
                 ],
                 columns.map(col => col.title)  // Column headers as second row
             ],
+            colHeaders: false,  // Using nestedHeaders instead
             width: '100%',
             height: optimalHeight, // Use calculated height to prevent scrollbar
             maxRows: data.length,
@@ -2431,12 +2492,13 @@
                 // Center-justified columns: 6-15 (all others)
                 const alignment = (col <= 5) ? 'htLeft' : 'htCenter';
 
-                // Add alternating row class for zebra striping
+                // Zebra striping
                 if (row % 2 === 0) {
                     cellProperties.className = `htMiddle ${alignment} even-row`;
                 } else {
                     cellProperties.className = `htMiddle ${alignment} odd-row`;
                 }
+
                 return cellProperties;
             }
         });
@@ -2506,6 +2568,62 @@
                     }
                 }
             }
+            });
+
+            // Clinical Event Click Handler - Side Panel Historical View (Issue #3)
+            app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
+                // Clinical event columns: 8-12 (Morse, Call Light, IV Sites, SCDs, Safety)
+                if (coords.col >= 8 && coords.col <= 12) {
+                    console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
+
+                    // Get metric template for this column
+                    const metric = getMetricByColumnIndex(coords.col);
+                    if (!metric) {
+                        console.warn('No metric template found for column:', coords.col);
+                        return;
+                    }
+
+                    // Get patient row data
+                    const sourceData = app.state.handsontableInstance.getSourceDataAtRow(coords.row);
+                    if (!sourceData) {
+                        console.warn('No patient data found for row:', coords.row);
+                        return;
+                    }
+
+                    // Extract historical data for this metric
+                    const historyData = sourceData[metric.historyField.toUpperCase()] || [];
+                    console.log(`Historical data for ${metric.label}:`, historyData);
+
+                    // Prepare patient info for panel
+                    const patientInfo = {
+                        person_name: sourceData.PATIENT_NAME,
+                        mrn: sourceData.MRN || 'N/A',
+                        unit: sourceData.UNIT,
+                        roomBed: sourceData.ROOM_BED
+                    };
+
+                    // Convert CCL datetime format to JavaScript Date objects
+                    // Handle both uppercase (real CCL) and lowercase (simulator) field names
+                    const formattedHistory = historyData.map(entry => ({
+                        datetime: entry.DATETIME_DISPLAY || entry.datetime_display ?
+                            app.parseHistoricalDateTime(entry.DATETIME_DISPLAY || entry.datetime_display) :
+                            new Date(entry.EVENT_DT_TM || entry.event_dt_tm || Date.now()),
+                        value: entry.VALUE || entry.value || ''
+                    }));
+
+                    // Get lookback period from CCL response (default 30 if not available)
+                    const lookbackDays = (app.state.handsontableInstance &&
+                                         app.state.handsontableInstance.getSourceDataAtRow(0)) ?
+                        (window.RAW_CCL_RESPONSE?.[0]?.lookback_days ||
+                         window.RAW_CCL_RESPONSE?.[0]?.LOOKBACK_DAYS || 30) : 30;
+
+                    // Open side panel with historical data and lookback period
+                    if (window.sidePanelService) {
+                        window.sidePanelService.open(patientInfo, metric.key, metric.label, formattedHistory, lookbackDays);
+                    } else {
+                        console.error('SidePanelService not loaded');
+                    }
+                }
             });
 
             // Add CSS for consistent cell alignment (only once on table creation)
@@ -2650,10 +2768,18 @@
 
             console.log(`Patient table created with ${data.length} patients`);
         } else {
-            // Table exists: Update data only (smooth refresh - no destroy/recreate)
+            // Table exists: Update settings smoothly (now that formatForTable includes clinical fields)
             console.log(`Updating existing Handsontable with ${data.length} patients...`);
             app.state.handsontableInstance.updateSettings({
+                columns: columns,
                 data: data,
+                nestedHeaders: [
+                    [
+                        { label: 'Patient Demographics', colspan: 8 },
+                        { label: 'Clinical Events (Date-Filtered)', colspan: 5 }
+                    ],
+                    columns.map(col => col.title)
+                ],
                 height: optimalHeight,
                 maxRows: data.length,
                 mergeCells: [],  // Clear any merged cells from message display
@@ -2661,19 +2787,20 @@
                     const cellProperties = {};
                     const alignment = (col <= 5) ? 'htLeft' : 'htCenter';
 
+                    // Zebra striping
                     if (row % 2 === 0) {
                         cellProperties.className = `htMiddle ${alignment} even-row`;
                     } else {
                         cellProperties.className = `htMiddle ${alignment} odd-row`;
                     }
+
                     return cellProperties;
                 }
             });
+            app.state.handsontableInstance.render();
             console.log(`Patient table updated with ${data.length} patients`);
-        }
 
-        // Always render after create or update
-        app.state.handsontableInstance.render();
+        }
     }
 
     /**
@@ -2740,9 +2867,8 @@
         }
 
         const app = window.PatientListApp;
-        // Issue #78: Support auto-refresh for both patient lists AND ER units
-        if (!app.state.currentListId && !app.state.currentERUnit) {
-            debugLog('Cannot start auto-refresh: no patient list or ER unit selected', 'warn');
+        if (!app.state.currentListId) {
+            debugLog('Cannot start auto-refresh: no patient list selected', 'warn');
             return;
         }
 
@@ -2770,10 +2896,8 @@
             nextRefreshTime = new Date(Date.now() + intervalMs);
             updateCountdownDisplay();
 
-            // Issue #78: Reload data based on what's selected (patient list OR ER unit)
-            const loadPromise = app.state.currentListId
-                ? loadPatientData(app.state.currentListId)
-                : loadERUnitData(app.state.currentERUnit);
+            // Reload patient list data
+            const loadPromise = loadPatientData(app.state.currentListId);
 
             loadPromise.then(() => {
                 debugLog('✅ Auto-refresh data loaded, restoring filters...');
@@ -3201,14 +3325,6 @@
             debugLog('Dropdown element not found!', 'error');
         }
 
-        // Issue #78: ER Units dropdown event handler
-        const erUnitDropdown = document.getElementById('er-unit-select');
-        if (erUnitDropdown) {
-            erUnitDropdown.addEventListener('change', handleERUnitChange);
-            debugLog('Event handler attached to ER unit dropdown');
-        } else {
-            debugLog('ER unit dropdown element not found!', 'error');
-        }
 
         // Setup refresh button click handler
         const refreshButton = document.getElementById('refresh-data');
@@ -3216,7 +3332,6 @@
             refreshButton.addEventListener('click', () => {
                 const app = window.PatientListApp;
 
-                // Issue #78: Support refresh for both patient lists AND ER units
                 if (app.state.currentListId) {
                     // Refresh patient list
                     debugLog('Refresh button clicked, reloading patient list');
@@ -3230,20 +3345,6 @@
                         // Restore filters after manual refresh
                         restoreFilterState(filterState);
                         debugLog('✅ Manual refresh complete, filters restored');
-                    });
-                } else if (app.state.currentERUnit) {
-                    // Refresh ER unit (Issue #78)
-                    debugLog('Refresh button clicked, reloading ER unit');
-                    debugLog(`Selected ER tracking group: ${app.state.currentERUnit}`);
-
-                    // Capture filter state before manual refresh
-                    const filterState = captureFilterState();
-
-                    // Load ER unit data
-                    loadERUnitData(app.state.currentERUnit).then(() => {
-                        // Restore filters after manual refresh
-                        restoreFilterState(filterState);
-                        debugLog('✅ Manual ER unit refresh complete, filters restored');
                     });
                 } else {
                     debugLog('Refresh clicked but no patient list selected', 'warn');
@@ -3324,6 +3425,7 @@
 
             if (rawPatientData && rawPatientData.length > 0) {
                 // Process data through PatientDataService to ensure STATUS and ACUITY are included
+                // Format patient data for table display
                 const processedData = app.services.patientData.formatForTable(rawPatientData);
 
                 debugLog('Raw patient data:', 'debug', rawPatientData);
@@ -3381,111 +3483,12 @@
             return;
         }
 
-        // Issue #78: Clear ER unit selection (mutual exclusion)
-        const erUnitDropdown = document.getElementById('er-unit-select');
-        if (erUnitDropdown) {
-            erUnitDropdown.value = '';
-        }
-
-        // Store selected list ID and load data
-        app.state.currentListId = selectedListId;
-        app.state.currentERUnit = null;
         await loadPatientData(selectedListId);
     }
 
     /**
      * Handle ER unit selection change (Issue #78)
      */
-    async function handleERUnitChange(event) {
-        const selectedTrackingGroup = event.target.value;
-        const app = window.PatientListApp;
-
-        debugLog('ER Unit changed: ' + selectedTrackingGroup);
-
-        // Prevent loading with undefined/null/empty values
-        if (!selectedTrackingGroup || selectedTrackingGroup === 'undefined' || selectedTrackingGroup === 'null') {
-            clearPatientTable();
-            app.state.currentERUnit = null;
-            return;
-        }
-
-        // Clear patient list selection (mutual exclusion)
-        const patientListDropdown = document.getElementById('patient-list-select');
-        if (patientListDropdown) {
-            patientListDropdown.value = '';
-        }
-
-        // Store selected ER unit and load data
-        app.state.currentERUnit = selectedTrackingGroup;
-        app.state.currentListId = null;
-        await loadERUnitData(selectedTrackingGroup);
-    }
-
-    /**
-     * Load ER unit patients (Issue #78)
-     */
-    async function loadERUnitData(trackingGroupCd) {
-        const app = window.PatientListApp;
-        const refreshButton = document.getElementById('refresh-data');
-
-        try {
-            // Start refresh animation (Issue #78: same as patient list)
-            if (refreshButton) {
-                refreshButton.classList.add('refreshing');
-                disableRefreshButton();
-            }
-
-            // Clear patient stats indicator (Issue #78: clear counts during load)
-            const statsIndicator = document.getElementById('patient-stats-indicator');
-            if (statsIndicator) {
-                statsIndicator.textContent = '';
-            }
-
-            // Show loading message in table
-            if (app.state.handsontableInstance) {
-                console.log('Showing ER loading message in table...');
-                showTableMessage('Loading ER unit patient data...');
-            } else {
-                // No table yet: Show loading message in container
-                const container = document.getElementById('patient-table-container');
-                if (container) {
-                    container.innerHTML = '<p id="loading-message" class="font-sans font-normal text-center text-slate-500 italic" style="padding: 2rem;">Loading ER unit patient data...</p>';
-                }
-            }
-
-            debugLog('Loading ER unit patients for tracking group: ' + trackingGroupCd);
-
-            // Call service to get ER patients
-            const patients = await app.services.patientList.getERUnitPatients(trackingGroupCd);
-
-            debugLog('Got ' + patients.length + ' patients for ER tracking group ' + trackingGroupCd);
-
-            if (patients && patients.length > 0) {
-                // Process data through PatientDataService (same as patient list)
-                const processedData = app.services.patientData.formatForTable(patients);
-                debugLog('Processed ER patient data');
-
-                // Apply filters before displaying
-                const filteredData = applyPatientFilters(processedData);
-                debugLog('Filtered ER patient data: ' + filteredData.length + ' patients');
-
-                // Display in table
-                initializePatientTable(filteredData);
-            } else {
-                showTableMessage('No patients found for selected ER unit');
-            }
-
-        } catch (error) {
-            debugLog('Error loading ER unit data: ' + error.message, 'error');
-            showTableMessage('Error loading ER unit data. Please try again.');
-        } finally {
-            // Always stop refresh animation, even on error (Issue #78)
-            if (refreshButton) {
-                refreshButton.classList.remove('refreshing');
-                enableRefreshButton();
-            }
-        }
-    }
 
     /**
      * Show loading message

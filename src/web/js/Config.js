@@ -8,12 +8,12 @@
      * - enabled: true  = Use mock data (development/testing)
      * - enabled: false = Use real CCL programs (Cerner production)
      */
-    const simulatorDefault = true; // Simulator mode enabled for local testing
+    const simulatorDefault = false; // Simulator mode disabled for CERT testing
 
-    // Simulator mode ENABLED for local testing
-    // For CERT/Production: Set to false via admin commands
+    // Simulator mode DISABLED for CERT testing with real CCL v05
+    // CCL v05 compiled with dynamic lookback parameter
     window.SIMULATOR_CONFIG = {
-        enabled: true  // ENABLED - use mock data for local testing
+        enabled: false  // DISABLED - using real CCL data
     };
 
     console.log(`[Config] SIMULATOR_CONFIG initialized with enabled=${window.SIMULATOR_CONFIG.enabled} (simulator mode - using mock data)`);

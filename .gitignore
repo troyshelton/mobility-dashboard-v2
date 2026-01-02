@@ -51,7 +51,8 @@ node_modules/
 *.sln
 *.sw?
 
+.taskmaster/tasks/task_*.txt
+
 # Task files
 # tasks.json
 # tasks/ 
-.taskmaster/tasks/task_*.txt

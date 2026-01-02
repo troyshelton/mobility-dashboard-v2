@@ -1,15 +1,48 @@
-# Inpatient Dashboard Template
+# Mobility Dashboard
 
-**Version:** v1.0.0-inpatient
-**Type:** Generic Boilerplate
-**Last Updated:** 2025-12-14
-**Source:** Copied from er-tracking-dashboard-template v1.0.0
+**Version:** v2.0.0-mobility
+**Type:** Healthcare Production Dashboard
+**Last Updated:** 2026-01-02
+**Source:** Based on er-tracking-dashboard-template v1.0.0
+
+---
+
+## Current Status
+
+**Feature:** Side Panel Historical Metric View (Clinical Leader Organizer Pattern)
+**Status:** ✅ COMPLETE - Deployed to CERT and Validated
+**Branch:** feature/v2.0.0-side-panel
+**Issue:** [#3](https://github.com/troyshelton/mobility-dashboard-v2/issues/3) - Open
+
+**Implementation Complete (2026-01-02):**
+- ✅ CCL v05 with 30-day historical arrays (dynamic lookback parameter)
+- ✅ Side panel UI component (slide-in, backdrop, 3 close methods)
+- ✅ Click handlers for 5 clinical events
+- ✅ Automatic sparklines for numeric data
+- ✅ Condensed spacing for clinical efficiency
+- ✅ CERT validated with real patient data
+
+**CERT Environment:**
+- **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
+- **CCL:** v05 compiled in Cerner CERT
+- **Status:** Working with real clinical event data
+
+**Next Steps:**
+- 📝 Complete documentation sync
+- 🔀 Create Pull Request for code review
+- 🏷️ Tag v2.0.0-mobility release
+- 📊 Stakeholder demonstration
+
+**Completed Work:**
+- ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
+- ✅ Issue #2 (Presence Indicator) - Removed (not needed with historical view)
+- ✅ Issue #3 (Side Panel) - COMPLETE and deployed
 
 ---
 
 ## Overview
 
-**Generic boilerplate for creating inpatient floor/unit dashboards** with patient list integration for Oracle Health Cerner MPages.
+**Mobility patient safety dashboard** with patient list integration and temporal clinical event tracking for Oracle Health Cerner MPages.
 
 This template provides a proven, production-ready foundation with:
 - ✅ **Patient List Functionality** - All 7 list types supported

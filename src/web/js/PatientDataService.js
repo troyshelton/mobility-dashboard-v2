@@ -3,6 +3,58 @@
     'use strict';
     
     /**
+     * MetricTemplates - Configuration for clinical metrics and side panel display
+     * Issue #3: Side Panel Historical Metric View
+     * Maps table columns to metric metadata for historical data display
+     */
+    const MetricTemplates = {
+        morse: {
+            key: 'morse',
+            label: 'Morse Fall Risk Score',
+            currentField: 'morse_score',
+            historyField: 'morse_history',
+            columnIndex: 8
+        },
+        call_light: {
+            key: 'call_light',
+            label: 'Call Light & Personal Items Within Reach',
+            currentField: 'call_light_in_reach',
+            historyField: 'call_light_history',
+            columnIndex: 9
+        },
+        iv_sites: {
+            key: 'iv_sites',
+            label: 'IV Sites Assessed',
+            currentField: 'iv_sites_assessed',
+            historyField: 'iv_sites_history',
+            columnIndex: 10
+        },
+        scds: {
+            key: 'scds',
+            label: 'SCDs Applied',
+            currentField: 'scds_applied',
+            historyField: 'scds_history',
+            columnIndex: 11
+        },
+        safety_needs: {
+            key: 'safety_needs',
+            label: 'Psychosocial and Safety Needs Addressed',
+            currentField: 'safety_needs_addressed',
+            historyField: 'safety_needs_history',
+            columnIndex: 12
+        }
+    };
+
+    /**
+     * Get metric template by column index
+     * @param {number} columnIndex - Handsontable column index (8-12)
+     * @returns {Object|null} Metric template or null if not a metric column
+     */
+    function getMetricByColumnIndex(columnIndex) {
+        return Object.values(MetricTemplates).find(m => m.columnIndex === columnIndex) || null;
+    }
+
+    /**
      * PatientDataService - Processes and formats patient data
      * Uses global SIMULATOR_CONFIG to determine simulator vs production mode
      * @param {boolean} debugMode - Whether to enable debug logging
@@ -11,6 +63,7 @@
         this.debugMode = debugMode;
         this.debugMessages = [];
         this.lastRawCCLResponse = null; // Store raw CCL response for debugging
+        this.metricTemplates = MetricTemplates; // Expose templates
 
         if (this.debugMode) {
             const isSimulator = window.SIMULATOR_CONFIG?.enabled;
@@ -173,6 +226,7 @@
     /**
      * Format patient data for display in Handsontable
      * @param {Array} patientData - Raw patient data
+     * @param {Date} selectedDate - Selected date for presence checking (optional)
      * @returns {Array} - Formatted data for table display
      */
     PatientDataService.prototype.formatForTable = function(patientData) {
@@ -188,7 +242,7 @@
 
         return patientData.map(patient => {
             const formatted = this.createCaseInsensitiveObject(patient);
-            
+
             // Map camelCase CCL fields to table format
             return {
                 PATIENT_NAME: formatted.PATIENT_NAME || formatted.PERSON_NAME || formatted.personName || 'Unknown Patient',
@@ -231,10 +285,28 @@
                 PERFUSION_ASSESSMENT: this.determinePerfusionAssessmentStatus(patient), // Conditional logic (lactate ≥ 4.0 dependency)
                 PATIENT_CLASS: formatted.PATIENT_CLASS || formatted.patientClass || 'Unknown',
                 STATUS: formatted.STATUS || 'Unknown',
-                ACUITY: formatted.ACUITY || 'Unknown', 
+                ACUITY: formatted.ACUITY || 'Unknown',
                 AGE: this.formatAge(formatted.AGE || formatted.age),
                 GENDER: formatted.GENDER || formatted.gender || formatted.sex || 'Unknown',
-                ADMISSION_DATE: this.formatDate(formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date)
+                ADMISSION_DATE: this.formatDate(formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date),
+                // Clinical Event fields (date-filtered mobility data)
+                MORSE_SCORE: patient.MORSE_SCORE || patient.morse_score || '',
+                MORSE_EVENT_DT_TM: patient.MORSE_EVENT_DT_TM || patient.morse_event_dt_tm || '',
+                CALL_LIGHT_IN_REACH: patient.CALL_LIGHT_IN_REACH || patient.call_light_in_reach || '',
+                CALL_LIGHT_DT_TM: patient.CALL_LIGHT_DT_TM || patient.call_light_dt_tm || '',
+                IV_SITES_ASSESSED: patient.IV_SITES_ASSESSED || patient.iv_sites_assessed || '',
+                IV_SITES_DT_TM: patient.IV_SITES_DT_TM || patient.iv_sites_dt_tm || '',
+                SCDS_APPLIED: patient.SCDS_APPLIED || patient.scds_applied || '',
+                SCDS_DT_TM: patient.SCDS_DT_TM || patient.scds_dt_tm || '',
+                SAFETY_NEEDS_ADDRESSED: patient.SAFETY_NEEDS_ADDRESSED || patient.safety_needs_addressed || '',
+                SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
+
+                // Historical Arrays - 7-Day History for Side Panel (Issue #3)
+                MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
+                CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],
+                IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],
+                SCDS_HISTORY: patient.scds_history || patient.SCDS_HISTORY || [],
+                SAFETY_NEEDS_HISTORY: patient.safety_needs_history || patient.SAFETY_NEEDS_HISTORY || []
             };
         });
     };
@@ -279,7 +351,45 @@
             return date.toString();
         }
     };
-    
+
+    /**
+     * Parse admission date string to Date object
+     * Handles format: "MM/DD/YYYY"
+     * @param {string} admissionDateStr - Admission date string
+     * @returns {Date|null} - Parsed Date object or null if invalid
+     */
+    PatientDataService.prototype.parseAdmissionDate = function(admissionDateStr) {
+        if (!admissionDateStr) {
+            return null;
+        }
+
+        try {
+            // Handle format: "03/21/2025" or "MM/DD/YYYY"
+            const parts = admissionDateStr.split('/');
+            if (parts.length === 3) {
+                const month = parseInt(parts[0]) - 1; // 0-indexed
+                const day = parseInt(parts[1]);
+                const year = parseInt(parts[2]);
+
+                const date = new Date(year, month, day);
+
+                // Validate date is real (e.g., not Feb 31)
+                if (isNaN(date.getTime())) {
+                    this._logDebug(`Invalid admission date: ${admissionDateStr}`, 'warn');
+                    return null;
+                }
+
+                return date;
+            }
+
+            this._logDebug(`Invalid admission date format: ${admissionDateStr}`, 'warn');
+            return null;
+        } catch (error) {
+            this._logDebug(`Error parsing admission date: ${error.message}`, 'error');
+            return null;
+        }
+    };
+
     /**
      * Global sepsis phase filtering function - applies to ALL sepsis interventions
      * Excludes non-sepsis phases within sepsis PowerPlans (CSF, CNS, COVID)
@@ -2505,5 +2615,7 @@
 
     // Expose to global scope
     window.PatientDataService = PatientDataService;
+    window.MetricTemplates = MetricTemplates;
+    window.getMetricByColumnIndex = getMetricByColumnIndex;
 
 })(window);

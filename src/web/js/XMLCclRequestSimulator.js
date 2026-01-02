@@ -53,6 +53,9 @@
             case '1_cust_mp_gen_get_pdata':
                 return this.getMockPatientData(parameters);
 
+            case '1_cust_mp_mob_get_pdata':
+                return this.getMockMobilityPatientData(parameters);
+
             case '1_cust_mp_gen_user_info':
                 return this.getMockUserInfo(parameters);
 
@@ -97,17 +100,9 @@
                 { "personId": 22345006, "personName": "Miller, Linda B", "encntrId": 22345006, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         } else {
-            // Demo Patient List A - Original patients with countdown timer examples
+            // Demo Patient List A - Simplified to 1 patient for testing
             mockPatients = [
-                { "personId": 12345001, "personName": "Patient: 2h 50m left", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345002, "personName": "Patient: 2h 15m left", "encntrId": 12345002, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345003, "personName": "Patient: 1h 45m left", "encntrId": 12345003, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345004, "personName": "Patient: 1h 10m left", "encntrId": 12345004, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345005, "personName": "Patient: 45m left", "encntrId": 12345005, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345006, "personName": "Patient: 15m left", "encntrId": 12345006, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345007, "personName": "Patient: 5m left", "encntrId": 12345007, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345008, "personName": "Patient: OVERDUE 30m", "encntrId": 12345008, "priority": 0, "activeInd": 1, "filterInd": 0 },
-                { "personId": 12345009, "personName": "NO SEPSIS - Control Test", "encntrId": 12345009, "priority": 0, "activeInd": 1, "filterInd": 0 }
+                { "personId": 12345001, "personName": "Test Patient (Today)", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         }
 
@@ -676,6 +671,154 @@
         };
     };
     
+    /**
+     * Mock mobility patient data with dynamic lookback historical arrays
+     * Matches 1_cust_mp_mob_get_pdata_05.prg structure (v2.0.0-mobility)
+     * @param {Array} parameters - [encounterIds, lookbackDays] (default 30 days)
+     */
+    XMLCclRequestSimulator.prototype.getMockMobilityPatientData = function(parameters) {
+        const encounterIds = Array.isArray(parameters[0]) ? parameters[0] : [parameters[0]];
+        const lookbackDays = parameters[1] || 30; // Default 30 days if not specified
+
+        console.log(`[XMLCclRequestSimulator] Mobility data requested (v05 - ${lookbackDays}-day lookback from now)`);
+
+        // Always use current time for display values (most recent charting)
+        const now = new Date();
+        const nowDisplay = this.formatDateDisplay(now);
+
+        // Current clinical event values (most recent from 7-day history)
+        const clinicalEvents = {
+            morse_score: '45',
+            morse_event_dt_tm: `${nowDisplay} 14:30`,
+            call_light_in_reach: 'Yes',
+            call_light_dt_tm: `${nowDisplay} 14:15`,
+            iv_sites_assessed: 'Yes - All sites intact',
+            iv_sites_dt_tm: `${nowDisplay} 13:45`,
+            scds_applied: 'Yes - Bilateral',
+            scds_dt_tm: `${nowDisplay} 14:00`,
+            safety_needs_addressed: 'Completed - No concerns',
+            safety_needs_dt_tm: `${nowDisplay} 14:20`
+        };
+
+        // Generate 7-day historical data for all metrics
+        const generateHistoricalData = (baseValue, variance, count) => {
+            const history = [];
+            const now = new Date();
+
+            for (let i = 0; i < count; i++) {
+                const daysAgo = Math.floor(i / 3); // ~3 entries per day
+                const hoursAgo = (i % 3) * 6; // Every 6 hours
+                const entryDate = new Date(now);
+                entryDate.setDate(entryDate.getDate() - daysAgo);
+                entryDate.setHours(entryDate.getHours() - hoursAgo);
+
+                const value = typeof baseValue === 'number' ?
+                    String(baseValue + Math.floor(Math.random() * variance) - variance/2) :
+                    baseValue;
+
+                history.push({
+                    value: value,
+                    event_dt_tm: entryDate.toISOString(),
+                    datetime_display: this.formatDateDisplay(entryDate) + ' ' +
+                        String(entryDate.getHours()).padStart(2, '0') + ':' +
+                        String(entryDate.getMinutes()).padStart(2, '0')
+                });
+            }
+
+            return history;
+        };
+
+        // Mock patient demographics
+        const patients = encounterIds.map(encId => ({
+            PERSON_ID: 23224083,
+            ENCNTR_ID: parseFloat(encId),
+            PATIENT_NAME: 'MEADOWS, VIRGINIA L',
+            UNIT: 'GV3MSU',
+            ROOM_BED: '312-A',
+            AGE: '0',
+            GENDER: 'Female',
+            PATIENT_CLASS: 'Inpatient',
+            ADMISSION_DATE: '12/13/2025',
+            STATUS: 'Active',
+            FIN: '3010394309',
+            MRN: '20212659',
+            // Clinical events - Current Values (date-specific)
+            MORSE_SCORE: clinicalEvents.morse_score,
+            MORSE_EVENT_DT_TM: clinicalEvents.morse_event_dt_tm,
+            CALL_LIGHT_IN_REACH: clinicalEvents.call_light_in_reach,
+            CALL_LIGHT_DT_TM: clinicalEvents.call_light_dt_tm,
+            IV_SITES_ASSESSED: clinicalEvents.iv_sites_assessed,
+            IV_SITES_DT_TM: clinicalEvents.iv_sites_dt_tm,
+            SCDS_APPLIED: clinicalEvents.scds_applied,
+            SCDS_DT_TM: clinicalEvents.scds_dt_tm,
+            SAFETY_NEEDS_ADDRESSED: clinicalEvents.safety_needs_addressed,
+            SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
+            // Historical Arrays - 7-Day History (Issue #3)
+            morse_history: generateHistoricalData.call(this, 45, 10, 12),  // 12 entries over 7 days
+            call_light_history: generateHistoricalData.call(this, 'Yes', 0, 8),
+            iv_sites_history: generateHistoricalData.call(this, 'Yes - All sites intact', 0, 10),
+            scds_history: generateHistoricalData.call(this, 'Yes - Bilateral', 0, 6),
+            safety_needs_history: generateHistoricalData.call(this, 'Completed - No concerns', 0, 9)
+        }));
+
+        return {
+            drec: {
+                patientCnt: patients.length,
+                program_version: 'v05',
+                program_build_date: '2026-01-02',
+                selected_date: this.formatDateDisplay(now),
+                lookback_days: lookbackDays,
+                patients: patients
+            }
+        };
+    };
+
+    /**
+     * Parse date parameter (mmddyyyy integer or Date object)
+     */
+    XMLCclRequestSimulator.prototype.parseDateParam = function(dateParam) {
+        if (!dateParam || dateParam === 'CURDATE') {
+            return new Date();
+        }
+
+        // Parse mmddyyyy integer format (e.g., 12152025)
+        // Pad to 8 characters to handle leading zeros (e.g., 1022026 → 01022026)
+        const dateStr = String(dateParam).padStart(8, '0');
+        const mm = parseInt(dateStr.substring(0, 2));
+        const dd = parseInt(dateStr.substring(2, 4));
+        const yyyy = parseInt(dateStr.substring(4, 8));
+
+        return new Date(yyyy, mm - 1, dd); // Month is 0-indexed
+    };
+
+    /**
+     * Format date as mmddyyyy key for lookup
+     */
+    XMLCclRequestSimulator.prototype.formatDateKey = function(date) {
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+        return `${mm}${dd}${yyyy}`;
+    };
+
+    /**
+     * Format date for display (MM/DD/YYYY)
+     */
+    XMLCclRequestSimulator.prototype.formatDateDisplay = function(date) {
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+        return `${mm}/${dd}/${yyyy}`;
+    };
+
+    /**
+     * Format datetime for clinical events (MM/DD/YYYY HH:MM)
+     */
+    XMLCclRequestSimulator.prototype.formatDateTime = function(date, time) {
+        const dateStr = this.formatDateDisplay(date);
+        return `${dateStr} ${time}`;
+    };
+
     /**
      * Mock user info matching respiratory MPage REC format
      */

@@ -1,0 +1,877 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Feature: Date Navigator for Temporal Mobility Data (Issue #1)",
+        "description": "Add date navigation controls to filter mobility data by specific date, allowing users to review historical assessments and interventions.",
+        "status": "cancelled",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Implement date navigator between header and table with Previous/Today/Next controls. Format: 'Monday, December 14, 2025'. Server-side CCL filtering with date parameter (midnight to 23:59:59). Files: index.html, styles.css, main.js, PatientListService.js, mob_get_pdata_01.prg (NEW), XMLCclRequestSimulator.js",
+        "testStrategy": "Test UI display, backward/forward navigation, Today button, CCL date parameter, mock data with different dates",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add date navigator HTML and CSS",
+            "description": "Add date navigator div between header and main. Include Previous/Today/Next buttons, date display span. Add CSS styling for buttons.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Add date state management to main.js",
+            "description": "Add selectedDate and isToday to app state. Create setSelectedDate(), formatDateDisplay(), updateDateDisplay(), updateDateNavButtons() functions.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Add date navigation event handlers",
+            "description": "Wire up Previous button (subtract 1 day), Today button (jump to current), Next button (add 1 day). Create reloadCurrentData() function.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "🛑 VALIDATION: Test date navigator UI in browser",
+            "description": "Verify date navigator displays correctly, buttons work, date format correct, Today indicator shows. STOP and get approval before proceeding to CCL.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Create mobility CCL program with date filtering",
+            "description": "Create 1_cust_mp_mob_get_pdata_01.prg from gen_get_pdata.prg. Add SELECTED_DATE parameter, date range logic (midnight to 23:59:59), mobility data queries.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Update services to pass date parameter to CCL",
+            "description": "Modify PatientListService.js to call mob_get_pdata_01 with date parameter. Format date for CCL. Handle CURDATE default for today.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 7,
+            "title": "Add date-aware mock data to simulator",
+            "description": "Create getMockMobilityData() in XMLCclRequestSimulator. Generate different data based on date parameter. Test date navigation with mock data.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 8,
+            "title": "🛑 VALIDATION: Test complete date navigation flow",
+            "description": "Test all scenarios: initial load (today), backward navigation, Today button, forward navigation. Verify data changes per date. STOP and get approval.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 9,
+            "title": "Update documentation",
+            "description": "Update README.md with date navigator feature. Update CHANGELOG.md with v1.1.0 entry. Document date filtering approach.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 10,
+            "title": "🛑 VALIDATION: Create Pull Request for code review",
+            "description": "Create PR with description, reference Issue #1. Show code changes for review. STOP and wait for PR approval before merging.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "title": "Setup & Planning",
+        "description": "Verify environment and confirm implementation approach for Issue #3",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Verify on correct branch (feature/v2.0.0-side-panel)",
+            "description": "Confirm we're on the correct feature branch for Issue #3 implementation",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:10:35.740Z"
+          },
+          {
+            "id": 2,
+            "title": "Review Issue #3 requirements",
+            "description": "Review GitHub Issue #3 to confirm all requirements understood",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:10:49.431Z"
+          },
+          {
+            "id": 3,
+            "title": "Confirm current CCL version (v04)",
+            "description": "Verify current CCL program version before creating v05",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:12:46.292Z"
+          },
+          {
+            "id": 4,
+            "title": "🛑 VALIDATION: Confirm implementation approach with user",
+            "description": "Show implementation plan and get user approval to proceed",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:28:47.936Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T13:28:47.936Z"
+      },
+      {
+        "id": "3",
+        "title": "CCL Enhancement (v05 with Historical Arrays)",
+        "description": "Modify CCL to return 3-day historical data for all clinical events",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create 1_cust_mp_mob_get_pdata_05.prg (copy from v04)",
+            "description": "Create new CCL program file by copying v04 as starting point",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:30:12.969Z"
+          },
+          {
+            "id": 2,
+            "title": "Add historical array structures to record definition",
+            "description": "Add morse_history[*], call_light_history[*], iv_sites_history[*], scds_history[*], safety_history[*]",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:32:56.323Z"
+          },
+          {
+            "id": 3,
+            "title": "Modify clinical event queries to fetch 3-day range",
+            "description": "Date filter: DATEADD(CURDATE, -2, 3) to SYSDATE",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T13:33:44.520Z"
+          },
+          {
+            "id": 4,
+            "title": "Populate historical arrays (all entries, not just latest)",
+            "description": "Loop through all entries and store in historical arrays",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:02:35.743Z"
+          },
+          {
+            "id": 5,
+            "title": "Test CCL syntax (no compilation yet)",
+            "description": "Validate CCL syntax locally before CERT compilation",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:03:04.021Z"
+          },
+          {
+            "id": 6,
+            "title": "🛑 CODE REVIEW: Show CCL changes to user before CERT compilation",
+            "description": "Show git diff of CCL changes and explain modifications",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:05:26.287Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T14:05:26.287Z"
+      },
+      {
+        "id": "4",
+        "title": "Frontend - Side Panel Component",
+        "description": "Create reusable side panel UI component with open/close mechanics",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create src/web/js/SidePanelService.js",
+            "description": "SidePanel class with open(), close(), render() methods and event listeners",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:07:50.493Z"
+          },
+          {
+            "id": 2,
+            "title": "Add side panel HTML structure to index.html",
+            "description": "Panel container, header, body, footer elements",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:09:42.658Z"
+          },
+          {
+            "id": 3,
+            "title": "Add side panel CSS to styles.css",
+            "description": "Width: 350-400px, slide-in animation (0.3s), backdrop overlay styling",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:09:42.736Z"
+          },
+          {
+            "id": 4,
+            "title": "Test side panel open/close mechanics (empty panel)",
+            "description": "Verify X button, backdrop click, ESC key all work correctly",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:09:42.807Z"
+          },
+          {
+            "id": 5,
+            "title": "🛑 CODE REVIEW: Show side panel component code to user",
+            "description": "Show SidePanelService.js, HTML, CSS changes with explanation",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:11:36.601Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T14:11:36.601Z"
+      },
+      {
+        "id": "5",
+        "title": "Frontend - Template System",
+        "description": "Create metric-specific rendering templates for 5 clinical events",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create template configuration object (MetricTemplates)",
+            "description": "Define templates for 5 metrics with title and render() functions",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:15:50.511Z"
+          },
+          {
+            "id": 2,
+            "title": "Create template rendering logic in SidePanelService",
+            "description": "Handle single-value metrics and empty state",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:15:50.573Z"
+          },
+          {
+            "id": 3,
+            "title": "Test template rendering with mock data",
+            "description": "Verify all 5 metric templates render correctly",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:15:50.643Z"
+          },
+          {
+            "id": 4,
+            "title": "🛑 CODE REVIEW: Show template system code to user",
+            "description": "Show MetricTemplates configuration and rendering logic",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:15:50.716Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T14:15:50.716Z"
+      },
+      {
+        "id": "6",
+        "title": "Frontend - Click Handlers & Data Integration",
+        "description": "Wire up click events and integrate historical data from CCL",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Modify PatientDataService.js to parse historical arrays from CCL",
+            "description": "Extract historical data from CCL response",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:17:17.312Z"
+          },
+          {
+            "id": 2,
+            "title": "Store historical data in table row metadata",
+            "description": "Attach historical data to each table row for access on click",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:17:17.371Z"
+          },
+          {
+            "id": 3,
+            "title": "Add click handlers to clinical event cells (columns 8-12)",
+            "description": "Extract patient data and metric type on click",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:25:48.024Z"
+          },
+          {
+            "id": 4,
+            "title": "Update main.js to initialize click handlers",
+            "description": "Wire up click handlers during table initialization",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:25:48.090Z"
+          },
+          {
+            "id": 5,
+            "title": "Add cursor pointer styling to clickable cells",
+            "description": "Visual indicator that cells are clickable",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:27:06.280Z"
+          },
+          {
+            "id": 6,
+            "title": "🛑 CODE REVIEW: Show integration code to user",
+            "description": "Show PatientDataService, click handlers, main.js changes",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:28:29.142Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T14:28:29.142Z"
+      },
+      {
+        "id": "7",
+        "title": "Local Testing & Validation",
+        "description": "Validate complete functionality with simulator and mock data",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Update XMLCclRequestSimulator with 3-day mock historical data",
+            "description": "Generate realistic 3-day historical data for all 5 metrics",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T14:32:20.312Z"
+          },
+          {
+            "id": 2,
+            "title": "Test side panel opens on cell click",
+            "description": "Verify click handlers trigger side panel",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Test historical data displays correctly (descending order)",
+            "description": "Verify data shows most recent first",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Test all 5 metrics with different data patterns",
+            "description": "Verify each metric type renders correctly",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Test all 3 close methods (X, backdrop, ESC)",
+            "description": "Verify all close mechanisms work",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Test empty state rendering",
+            "description": "Verify 'No data for past 3 days' displays correctly",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 7,
+            "title": "Verify no console errors",
+            "description": "Check browser console for any errors",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 8,
+            "title": "🛑 VALIDATION: User tests locally and approves functionality",
+            "description": "User validates complete local functionality before CERT deployment",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:30:17.451Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T16:30:17.508Z"
+      },
+      {
+        "id": "8",
+        "title": "CERT Deployment & Validation",
+        "description": "Deploy to Azure CERT with real CCL data and validate",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Disable simulator mode (Config.js)",
+            "description": "Switch to real CCL mode for CERT testing",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:30:40.657Z"
+          },
+          {
+            "id": 2,
+            "title": "🛑 DEPLOYMENT VERIFICATION: Show deployment command and destination",
+            "description": "Show full az storage command with source, destination, account - wait for approval",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:33:30.979Z"
+          },
+          {
+            "id": 3,
+            "title": "Deploy to Azure CERT (after approval)",
+            "description": "Execute deployment after destination verification",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:33:31.055Z"
+          },
+          {
+            "id": 4,
+            "title": "Compile CCL v05 in Cerner CERT environment",
+            "description": "Compile and test new CCL program in CERT",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:46:58.835Z"
+          },
+          {
+            "id": 5,
+            "title": "Test with real patient data in CERT",
+            "description": "Verify functionality with real clinical data",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:46:58.899Z"
+          },
+          {
+            "id": 6,
+            "title": "Verify historical data loads correctly",
+            "description": "Confirm 3-day data retrieval works",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:46:59.005Z"
+          },
+          {
+            "id": 7,
+            "title": "Verify all 5 metrics work with real data",
+            "description": "Test each metric with actual patient data",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:46:59.087Z"
+          },
+          {
+            "id": 8,
+            "title": "🛑 VALIDATION: User validates CERT deployment",
+            "description": "User confirms CERT deployment successful and functional",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:48:19.168Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T16:48:19.168Z"
+      },
+      {
+        "id": "9",
+        "title": "Documentation Sync",
+        "description": "Update CHANGELOG.md, README.md, CLAUDE.md for v2.0.0-mobility",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "🛑 SUB-WORKFLOW: Execute TASKMASTER-DOC-SYNC.md",
+            "description": "Run complete documentation sync workflow (updates CHANGELOG.md, README.md, CLAUDE.md with v2.0.0-mobility, includes 2 validation gates)",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 9,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:53:10.978Z"
+          }
+        ],
+        "updatedAt": "2026-01-02T16:53:10.978Z"
+      },
+      {
+        "id": "10",
+        "title": "Push Feature Branch & Create Pull Request",
+        "description": "Create PR for code review and merge to main",
+        "details": "",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Commit all changes with descriptive message",
+            "description": "Commit all Issue #3 implementation changes",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined",
+            "updatedAt": "2026-01-02T16:53:28.362Z"
+          },
+          {
+            "id": 2,
+            "title": "Push feature branch to GitHub",
+            "description": "Push feature/v2.0.0-side-panel to remote",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Create Pull Request",
+            "description": "Create PR with summary, closes #3, changes made, testing checklist",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "🛑 VALIDATION: User reviews PR description",
+            "description": "User reviews and approves PR description before proceeding",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-01-02T16:53:28.362Z"
+      },
+      {
+        "id": "11",
+        "title": "PR Review, Approval & Merge",
+        "description": "Review, approve, and merge PR with full code review",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "🛑 VALIDATION: User reviews code in PR (self-approval for solo)",
+            "description": "User reviews all code changes in PR interface",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Merge Pull Request (squash commits)",
+            "description": "Merge approved PR to main branch",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Verify remote feature branch auto-deleted",
+            "description": "Confirm GitHub auto-deleted the feature branch",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "12",
+        "title": "Release Tagging",
+        "description": "Tag v2.0.0-mobility release with proper references",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Checkout main branch and pull latest",
+            "description": "Switch to main and get latest merged code",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Create annotated tag v2.0.0-mobility",
+            "description": "Tag with message including Closes #3 and PR reference",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Create GitHub Release with CHANGELOG notes",
+            "description": "Create GitHub Release using gh release create",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Push tags to GitHub",
+            "description": "Push all tags to remote repository",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "13",
+        "title": "Workflow Completion",
+        "description": "Verify completion and show audit trail summary",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Verify Issue #3 auto-closed via PR",
+            "description": "Confirm GitHub issue shows closed via PR merge",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Delete local feature branch",
+            "description": "Clean up local feature branch",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "🛑 VALIDATION: Show completion summary with audit trail",
+            "description": "Display complete workflow summary with GitHub links and audit trail",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined"
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-01-02T16:53:28.363Z",
+      "taskCount": 13,
+      "completedCount": 8,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}
