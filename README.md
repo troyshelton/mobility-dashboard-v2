@@ -27,10 +27,10 @@
 - **Status:** Working with real clinical event data
 
 **Next Steps:**
-- 📝 Complete documentation sync
-- 🔀 Create Pull Request for code review
-- 🏷️ Tag v2.0.0-mobility release
-- 📊 Stakeholder demonstration
+- 📊 Stakeholder demonstration of Activity Precautions
+- 📋 Select next feature from open issues (#8, #9, #10, #11)
+- 🔧 Complete TLSO/LSO braces (pending CERT order placement)
+- 🚀 Plan v2.3.0 or v3.0.0 release
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
