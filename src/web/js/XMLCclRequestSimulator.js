@@ -753,8 +753,11 @@
             SCDS_DT_TM: clinicalEvents.scds_dt_tm,
             SAFETY_NEEDS_ADDRESSED: clinicalEvents.safety_needs_addressed,
             SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
-            // Historical Arrays - 7-Day History (Issue #3)
-            morse_history: generateHistoricalData.call(this, 45, 10, 12),  // 12 entries over 7 days
+            BMAT_LEVEL: '3',
+            BMAT_DT_TM: `${nowDisplay} 09:00`,
+            // Historical Arrays - 30-Day History (Issue #3, #5)
+            bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
+            morse_history: generateHistoricalData.call(this, 45, 10, 12),  // 12 entries
             call_light_history: generateHistoricalData.call(this, 'Yes', 0, 8),
             iv_sites_history: generateHistoricalData.call(this, 'Yes - All sites intact', 0, 10),
             scds_history: generateHistoricalData.call(this, 'Yes - Bilateral', 0, 6),
@@ -764,7 +767,7 @@
         return {
             drec: {
                 patientCnt: patients.length,
-                program_version: 'v05',
+                program_version: 'v06',
                 program_build_date: '2026-01-02',
                 selected_date: this.formatDateDisplay(now),
                 lookback_days: lookbackDays,

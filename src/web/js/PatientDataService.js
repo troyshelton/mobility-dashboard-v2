@@ -8,46 +8,53 @@
      * Maps table columns to metric metadata for historical data display
      */
     const MetricTemplates = {
+        bmat: {
+            key: 'bmat',
+            label: 'BMAT (Brief Mobility Assessment)',
+            currentField: 'bmat_level',
+            historyField: 'bmat_history',
+            columnIndex: 8
+        },
         morse: {
             key: 'morse',
             label: 'Morse Fall Risk Score',
             currentField: 'morse_score',
             historyField: 'morse_history',
-            columnIndex: 8
+            columnIndex: 9
         },
         call_light: {
             key: 'call_light',
             label: 'Call Light & Personal Items Within Reach',
             currentField: 'call_light_in_reach',
             historyField: 'call_light_history',
-            columnIndex: 9
+            columnIndex: 10
         },
         iv_sites: {
             key: 'iv_sites',
             label: 'IV Sites Assessed',
             currentField: 'iv_sites_assessed',
             historyField: 'iv_sites_history',
-            columnIndex: 10
+            columnIndex: 11
         },
         scds: {
             key: 'scds',
             label: 'SCDs Applied',
             currentField: 'scds_applied',
             historyField: 'scds_history',
-            columnIndex: 11
+            columnIndex: 12
         },
         safety_needs: {
             key: 'safety_needs',
             label: 'Psychosocial and Safety Needs Addressed',
             currentField: 'safety_needs_addressed',
             historyField: 'safety_needs_history',
-            columnIndex: 12
+            columnIndex: 13
         }
     };
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (8-12)
+     * @param {number} columnIndex - Handsontable column index (8-13)
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {
@@ -290,6 +297,8 @@
                 GENDER: formatted.GENDER || formatted.gender || formatted.sex || 'Unknown',
                 ADMISSION_DATE: this.formatDate(formatted.ADMISSION_DATE || formatted.admissionDate || formatted.admission_date),
                 // Clinical Event fields (date-filtered mobility data)
+                BMAT_LEVEL: patient.BMAT_LEVEL || patient.bmat_level || '',
+                BMAT_DT_TM: patient.BMAT_DT_TM || patient.bmat_dt_tm || '',
                 MORSE_SCORE: patient.MORSE_SCORE || patient.morse_score || '',
                 MORSE_EVENT_DT_TM: patient.MORSE_EVENT_DT_TM || patient.morse_event_dt_tm || '',
                 CALL_LIGHT_IN_REACH: patient.CALL_LIGHT_IN_REACH || patient.call_light_in_reach || '',
@@ -301,7 +310,8 @@
                 SAFETY_NEEDS_ADDRESSED: patient.SAFETY_NEEDS_ADDRESSED || patient.safety_needs_addressed || '',
                 SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
 
-                // Historical Arrays - 7-Day History for Side Panel (Issue #3)
+                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5)
+                BMAT_HISTORY: patient.bmat_history || patient.BMAT_HISTORY || [],
                 MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
                 CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],
                 IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],
