@@ -885,12 +885,13 @@ body {
    Issue #3 - Side Panel Historical View
    ============================================ */
 
-/* Cursor pointer for clinical event columns (8-12) */
-.handsontable tbody tr td:nth-child(9),  /* Morse Score */
-.handsontable tbody tr td:nth-child(10), /* Call Light */
-.handsontable tbody tr td:nth-child(11), /* IV Sites */
-.handsontable tbody tr td:nth-child(12), /* SCDs */
-.handsontable tbody tr td:nth-child(13)  /* Safety Needs */
+/* Cursor pointer for clinical event columns (8-13) */
+.handsontable tbody tr td:nth-child(9),  /* BMAT */
+.handsontable tbody tr td:nth-child(10), /* Morse Score */
+.handsontable tbody tr td:nth-child(11), /* Call Light */
+.handsontable tbody tr td:nth-child(12), /* IV Sites */
+.handsontable tbody tr td:nth-child(13), /* SCDs */
+.handsontable tbody tr td:nth-child(14)  /* Safety Needs */
 {
   cursor: pointer !important;
 }
@@ -900,6 +901,7 @@ body {
 .handsontable tbody tr td:nth-child(10):hover,
 .handsontable tbody tr td:nth-child(11):hover,
 .handsontable tbody tr td:nth-child(12):hover,
-.handsontable tbody tr td:nth-child(13):hover {
+.handsontable tbody tr td:nth-child(13):hover,
+.handsontable tbody tr td:nth-child(14):hover {
   background-color: rgba(33, 150, 243, 0.08) !important;
 }

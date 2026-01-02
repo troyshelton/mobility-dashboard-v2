@@ -10,8 +10,8 @@
      */
     const simulatorDefault = false; // Simulator mode disabled for CERT testing
 
-    // Simulator mode DISABLED for CERT testing with real CCL v05
-    // CCL v05 compiled with dynamic lookback parameter
+    // Simulator mode DISABLED for CERT testing with real CCL v06
+    // CCL v06 compiled with BMAT parsing
     window.SIMULATOR_CONFIG = {
         enabled: false  // DISABLED - using real CCL data
     };
