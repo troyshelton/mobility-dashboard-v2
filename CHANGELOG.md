@@ -7,6 +7,32 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.2.0-mobility] - 2026-01-02
+
+### Added (Issue #7 - Activity Precautions)
+- **Activity Precautions Column** - Shows count of active patient restrictions
+  - 7 precaution types: Weight Bearing, Hip Precautions, Spine Restrictions, Cervical Collar
+  - Click to view detailed precaution list in side panel
+  - Multi-line display: Name, Order Details, Date/Time, Status
+  - **CCL v07:** SELECT 4 for order detection using UAR_GET_CODE_BY
+  - **Enhanced Template System:** Supports simple (value) and complex (multi-field) data types
+  - **Pending:** TLSO and LSO Brace Activity (need CERT order placement)
+
+---
+
+## [2.1.0-mobility] - 2026-01-02
+
+### Added (Issue #5 - BMAT)
+- **BMAT Column** - Brief Mobility Assessment Tool
+  - Displays mobility level (1-4)
+  - Progressive assessment: Sit & Shake → Stretch & Point → Stand → Walk
+  - Parses level from 4 test event results
+  - Click to view 30-day mobility level history with sparkline
+  - **CCL v06:** SELECT 3 for BMAT parsing with findstring logic
+  - **Frontend:** Column 8 (before Morse Score), automatic sparkline
+
+---
+
 ## [2.0.0-mobility] - 2026-01-02
 
 ### Direction Change (2025-12-16)

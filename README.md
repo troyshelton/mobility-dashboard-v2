@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.0.0-mobility
+**Version:** v2.2.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-02
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -9,10 +9,9 @@
 
 ## Current Status
 
-**Feature:** Side Panel Historical Metric View (Clinical Leader Organizer Pattern)
+**Latest:** Activity Precautions with Enhanced Template System
 **Status:** ✅ COMPLETE - Deployed to CERT and Validated
-**Branch:** feature/v2.0.0-side-panel
-**Issue:** [#3](https://github.com/troyshelton/mobility-dashboard-v2/issues/3) - Open
+**Issues:** #3 (Side Panel), #5 (BMAT), #7 (Activity Precautions) - All CLOSED
 
 **Implementation Complete (2026-01-02):**
 - ✅ CCL v05 with 30-day historical arrays (dynamic lookback parameter)
