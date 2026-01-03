@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.3.0-mobility
+**Version:** v2.4.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-02
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -9,30 +9,30 @@
 
 ## Current Status
 
-**Latest:** Baseline Mobility Column from PowerForm
+**Latest:** Toileting Method Column from I-View Documentation
 **Status:** ✅ COMPLETE - Deployed to CERT and Validated
-**Issues:** #3 (Side Panel), #5 (BMAT), #7 (Activity Precautions), #8 (Baseline) - All CLOSED
+**Issues:** #3 (Side Panel), #5 (BMAT), #7 (Activity Precautions), #8 (Baseline), #9 (Toileting) - All CLOSED
 
 **Implementation Complete (2026-01-02):**
-- ✅ CCL v08 with 7 clinical events (dynamic lookback parameter)
+- ✅ CCL v09 with 8 clinical events (dynamic lookback parameter)
 - ✅ Side panel UI component (slide-in, backdrop, 3 close methods)
-- ✅ Click handlers for 7 clinical events + Activity Precautions
+- ✅ Click handlers for 8 clinical events + Activity Precautions
 - ✅ Baseline Mobility from PowerForm (column 9)
+- ✅ Toileting Method from I-View documentation (column 10)
 - ✅ Automatic sparklines for numeric data
 - ✅ Condensed spacing for clinical efficiency
 - ✅ CERT validated with real patient data
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
-- **CCL:** v08 compiled in Cerner CERT
-- **Status:** Working with real clinical event data + baseline mobility
+- **CCL:** v09 compiled in Cerner CERT
+- **Status:** Working with real clinical event data + baseline + toileting
 
 **Next Steps:**
-- 📊 Stakeholder demonstration of Baseline Mobility
-- 📋 Validate edge case with clinical team (multiple baseline entries)
-- 📋 Select next feature from open issues (#9, #10, #11)
+- 📊 Stakeholder demonstration of Toileting Method
+- 📋 Select next feature from open issues (#10, #11)
 - 🔧 Complete TLSO/LSO braces (pending CERT order placement)
-- 🚀 Plan v2.4.0 or v3.0.0 release
+- 🚀 Plan v2.5.0 or v3.0.0 release
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)

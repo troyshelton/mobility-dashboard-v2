@@ -10,8 +10,8 @@
      */
     const simulatorDefault = true; // Simulator mode enabled for local testing
 
-    // Simulator mode DISABLED for CERT testing with Baseline Mobility (Issue #8)
-    // Will use real CCL v08 data from Cerner
+    // Simulator mode DISABLED for CERT testing with Toileting Method (Issue #9)
+    // Will use real CCL v09 data from Cerner
     window.SIMULATOR_CONFIG = {
         enabled: false  // DISABLED - using real CCL data
     };

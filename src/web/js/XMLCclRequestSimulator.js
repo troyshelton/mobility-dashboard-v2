@@ -757,8 +757,10 @@
             BMAT_DT_TM: `${nowDisplay} 09:00`,
             BASELINE_LEVEL: '4',
             BASELINE_DT_TM: `${nowDisplay} 08:00`,
+            TOILETING_METHOD: 'Bedside commode, Independent',
+            TOILETING_DT_TM: `${nowDisplay} 14:00`,
             ACTIVE_PRECAUTION_COUNT: 7,
-            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8)
+            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
             baseline_history: [
                 {
@@ -766,6 +768,20 @@
                     DATETIME_DISPLAY: `${nowDisplay} 08:00`
                 }
             ],  // Typically 1 entry (admission baseline)
+            toileting_history: [
+                {
+                    VALUE: 'Bedside commode, Independent',
+                    DATETIME_DISPLAY: `${nowDisplay} 14:00`
+                },
+                {
+                    VALUE: 'Assisted to BR, Using Bedpan',
+                    DATETIME_DISPLAY: `${nowDisplay} 10:00`
+                },
+                {
+                    VALUE: 'Bedside commode, Independent, Using Urinal',
+                    DATETIME_DISPLAY: `${nowDisplay} 06:00`
+                }
+            ],  // Multiple entries (documented throughout day)
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',
