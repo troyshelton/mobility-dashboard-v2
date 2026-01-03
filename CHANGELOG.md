@@ -7,6 +7,28 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.4.0-mobility] - 2026-01-02
+
+### Added (Issue #9 - Toileting Method)
+- **Toileting Method Column** - Shows how patient uses restroom from I-View documentation
+  - Data Source: I-View "Toileting Offered ADL" nursing documentation
+  - Event: "Toileting Offered ADL" (event_cd 279864735.00)
+  - Display Format: Full text with ellipsis truncation in table (100px width)
+  - Side Panel: Complete text for all 30-day history entries
+  - Examples: "Bedside commode, Independent, Assisted to BR, Using Bedpan, Using Urinal", "Sleeping"
+  - **CCL v09:** Added to SELECT 2 (no parsing - stores full text)
+  - **Frontend:** Column 10 (after Baseline), htLeft alignment
+  - **Frequent Updates:** Multiple entries per day showing toileting method changes
+  - **Fix:** Corrected event name from "Toileting Offered" to "Toileting Offered ADL"
+
+### Changed
+- **PatientDataService.js** - Added toileting MetricTemplate, updated column indexes (10-16)
+- **main.js** - Added Toileting column, updated click handler range (8-16)
+- **XMLCclRequestSimulator.js** - Added 3 toileting history entries for mock testing
+- **Config.js** - Disabled simulator mode for CERT testing
+
+---
+
 ## [2.3.0-mobility] - 2026-01-02
 
 ### Added (Issue #8 - Baseline Mobility)

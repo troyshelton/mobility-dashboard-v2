@@ -26,12 +26,21 @@
             dataType: 'simple',
             valueField: 'VALUE'
         },
+        toileting: {
+            key: 'toileting',
+            label: 'Toileting Method',
+            currentField: 'toileting_method',
+            historyField: 'toileting_history',
+            columnIndex: 10,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
         morse: {
             key: 'morse',
             label: 'Morse Fall Risk Score',
             currentField: 'morse_score',
             historyField: 'morse_history',
-            columnIndex: 10,
+            columnIndex: 11,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -40,7 +49,7 @@
             label: 'Call Light & Personal Items Within Reach',
             currentField: 'call_light_in_reach',
             historyField: 'call_light_history',
-            columnIndex: 11,
+            columnIndex: 12,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -49,7 +58,7 @@
             label: 'IV Sites Assessed',
             currentField: 'iv_sites_assessed',
             historyField: 'iv_sites_history',
-            columnIndex: 12,
+            columnIndex: 13,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -58,7 +67,7 @@
             label: 'SCDs Applied',
             currentField: 'scds_applied',
             historyField: 'scds_history',
-            columnIndex: 13,
+            columnIndex: 14,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -67,7 +76,7 @@
             label: 'Psychosocial and Safety Needs Addressed',
             currentField: 'safety_needs_addressed',
             historyField: 'safety_needs_history',
-            columnIndex: 14,
+            columnIndex: 15,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -76,7 +85,7 @@
             label: 'Activity Precautions',
             currentField: 'active_precaution_count',
             historyField: 'activity_precautions',
-            columnIndex: 15,
+            columnIndex: 16,
             dataType: 'complex',
             fieldMapping: {
                 primary: 'PRECAUTION_NAME',
@@ -89,7 +98,7 @@
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (8-15)
+     * @param {number} columnIndex - Handsontable column index (8-16)
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {
@@ -336,6 +345,8 @@
                 BMAT_DT_TM: patient.BMAT_DT_TM || patient.bmat_dt_tm || '',
                 BASELINE_LEVEL: patient.BASELINE_LEVEL || patient.baseline_level || '',
                 BASELINE_DT_TM: patient.BASELINE_DT_TM || patient.baseline_dt_tm || '',
+                TOILETING_METHOD: patient.TOILETING_METHOD || patient.toileting_method || '',
+                TOILETING_DT_TM: patient.TOILETING_DT_TM || patient.toileting_dt_tm || '',
                 MORSE_SCORE: patient.MORSE_SCORE || patient.morse_score || '',
                 MORSE_EVENT_DT_TM: patient.MORSE_EVENT_DT_TM || patient.morse_event_dt_tm || '',
                 CALL_LIGHT_IN_REACH: patient.CALL_LIGHT_IN_REACH || patient.call_light_in_reach || '',
@@ -348,9 +359,10 @@
                 SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
                 ACTIVE_PRECAUTION_COUNT: patient.ACTIVE_PRECAUTION_COUNT || patient.active_precaution_count || 0,
 
-                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5, #7, #8)
+                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5, #7, #8, #9)
                 BMAT_HISTORY: patient.bmat_history || patient.BMAT_HISTORY || [],
                 BASELINE_HISTORY: patient.baseline_history || patient.BASELINE_HISTORY || [],
+                TOILETING_HISTORY: patient.toileting_history || patient.TOILETING_HISTORY || [],
                 MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
                 CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],
                 IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],
