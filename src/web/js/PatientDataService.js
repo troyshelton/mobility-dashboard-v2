@@ -8,57 +8,22 @@
      * Maps table columns to metric metadata for historical data display
      */
     const MetricTemplates = {
-        bmat: {
-            key: 'bmat',
-            label: 'BMAT (Brief Mobility Assessment)',
-            currentField: 'bmat_level',
-            historyField: 'bmat_history',
-            columnIndex: 8,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
+        // Assessments Group
         baseline: {
             key: 'baseline',
             label: 'Baseline Mobility',
             currentField: 'baseline_level',
             historyField: 'baseline_history',
+            columnIndex: 8,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        bmat: {
+            key: 'bmat',
+            label: 'BMAT (Brief Mobility Assessment)',
+            currentField: 'bmat_level',
+            historyField: 'bmat_history',
             columnIndex: 9,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        toileting: {
-            key: 'toileting',
-            label: 'Toileting Method',
-            currentField: 'toileting_method',
-            historyField: 'toileting_history',
-            columnIndex: 10,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        pt_transfer: {
-            key: 'pt_transfer',
-            label: 'PT Transfer (Bed to Chair)',
-            currentField: 'pt_transfer_assist',
-            historyField: 'pt_transfer_history',
-            columnIndex: 11,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        ot_transfer: {
-            key: 'ot_transfer',
-            label: 'OT Transfer (Bed to Chair)',
-            currentField: 'ot_transfer_assist',
-            historyField: 'ot_transfer_history',
-            columnIndex: 12,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        ambulation: {
-            key: 'ambulation',
-            label: 'Ambulation Distance',
-            currentField: 'ambulation_distance',
-            historyField: 'ambulation_history',
-            columnIndex: 13,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -67,16 +32,17 @@
             label: 'Morse Fall Risk Score',
             currentField: 'morse_score',
             historyField: 'morse_history',
-            columnIndex: 14,
+            columnIndex: 10,
             dataType: 'simple',
             valueField: 'VALUE'
         },
+        // Fall Prevention Interventions Group
         call_light: {
             key: 'call_light',
             label: 'Call Light & Personal Items Within Reach',
             currentField: 'call_light_in_reach',
             historyField: 'call_light_history',
-            columnIndex: 15,
+            columnIndex: 11,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -85,7 +51,7 @@
             label: 'IV Sites Assessed',
             currentField: 'iv_sites_assessed',
             historyField: 'iv_sites_history',
-            columnIndex: 16,
+            columnIndex: 12,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -94,7 +60,7 @@
             label: 'SCDs Applied',
             currentField: 'scds_applied',
             historyField: 'scds_history',
-            columnIndex: 17,
+            columnIndex: 13,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -103,7 +69,7 @@
             label: 'Psychosocial and Safety Needs Addressed',
             currentField: 'safety_needs_addressed',
             historyField: 'safety_needs_history',
-            columnIndex: 18,
+            columnIndex: 14,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -112,7 +78,7 @@
             label: 'Activity Precautions',
             currentField: 'active_precaution_count',
             historyField: 'activity_precautions',
-            columnIndex: 19,
+            columnIndex: 15,
             dataType: 'complex',
             fieldMapping: {
                 primary: 'PRECAUTION_NAME',
@@ -120,6 +86,44 @@
                 datetime: 'DATETIME_DISPLAY',
                 status: 'ORDER_STATUS'
             }
+        },
+        toileting: {
+            key: 'toileting',
+            label: 'Toileting Method',
+            currentField: 'toileting_method',
+            historyField: 'toileting_history',
+            columnIndex: 16,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        // Ambulation Group
+        ambulation: {
+            key: 'ambulation',
+            label: 'Ambulation Distance',
+            currentField: 'ambulation_distance',
+            historyField: 'ambulation_history',
+            columnIndex: 17,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        // PT/OT Group
+        pt_transfer: {
+            key: 'pt_transfer',
+            label: 'PT Transfer (Bed to Chair)',
+            currentField: 'pt_transfer_assist',
+            historyField: 'pt_transfer_history',
+            columnIndex: 18,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        ot_transfer: {
+            key: 'ot_transfer',
+            label: 'OT Transfer (Bed to Chair)',
+            currentField: 'ot_transfer_assist',
+            historyField: 'ot_transfer_history',
+            columnIndex: 19,
+            dataType: 'simple',
+            valueField: 'VALUE'
         }
     };
 

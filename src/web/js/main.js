@@ -2403,19 +2403,23 @@
             { data: 'ADMISSION_DATE', title: 'Admitted', width: 120, className: 'htMiddle htCenter' },
             { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' },
 
-            // Clinical Events (11 columns - date-filtered, Issue #16: Added Ambulation Distance)
-            { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, className: 'htMiddle htCenter' },
+            // Clinical Events (11 columns - Issue #18: Reorganized with group headers)
+            // Assessments Group (3 columns)
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
-            { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
-            { data: 'PT_TRANSFER_ASSIST', title: 'PT Transfer', width: 100, className: 'htMiddle htLeft' },
-            { data: 'OT_TRANSFER_ASSIST', title: 'OT Transfer', width: 100, className: 'htMiddle htLeft' },
-            { data: 'AMBULATION_DISTANCE', title: 'Amb Dist', width: 80, className: 'htMiddle htCenter' },
-            { data: 'MORSE_SCORE', title: 'Morse Score', width: 100, className: 'htMiddle htCenter' },
+            { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, className: 'htMiddle htCenter' },
+            { data: 'MORSE_SCORE', title: 'Morse', width: 80, className: 'htMiddle htCenter' },
+            // Fall Prevention Interventions Group (6 columns)
             { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
             { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
             { data: 'SCDS_APPLIED', title: 'SCDs', width: 70, className: 'htMiddle htCenter' },
             { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' },
-            { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' }
+            { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
+            { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
+            // Ambulation Group (1 column)
+            { data: 'AMBULATION_DISTANCE', title: 'Amb Dist', width: 80, className: 'htMiddle htCenter' },
+            // PT/OT Group (2 columns)
+            { data: 'PT_TRANSFER_ASSIST', title: 'PT Transfer', width: 100, className: 'htMiddle htLeft' },
+            { data: 'OT_TRANSFER_ASSIST', title: 'OT Transfer', width: 100, className: 'htMiddle htLeft' }
 
             /* SEPSIS COLUMNS - REMOVED FOR MOBILITY DASHBOARD
             { data: 'ALERT_TYPE', title: 'Alert', width: 85, renderer: alertRenderer, className: 'htMiddle htLeft' },
@@ -2465,8 +2469,11 @@
             columns: columns,
             nestedHeaders: [
                 [
-                    { label: 'Patient Demographics', colspan: 8 },
-                    { label: 'Clinical Events (Date-Filtered)', colspan: 7 }
+                    { label: 'Demographics', colspan: 8 },
+                    { label: 'Assessments', colspan: 3 },
+                    { label: 'Fall Prevention Interventions', colspan: 6 },
+                    { label: 'Ambulation', colspan: 1 },
+                    { label: 'PT / OT', colspan: 2 }
                 ],
                 columns.map(col => col.title)  // Column headers as second row
             ],
@@ -2803,8 +2810,11 @@
                 data: data,
                 nestedHeaders: [
                     [
-                        { label: 'Patient Demographics', colspan: 8 },
-                        { label: 'Clinical Events (Date-Filtered)', colspan: 7 }
+                        { label: 'Demographics', colspan: 8 },
+                        { label: 'Assessments', colspan: 3 },
+                        { label: 'Fall Prevention Interventions', colspan: 6 },
+                        { label: 'Ambulation', colspan: 1 },
+                        { label: 'PT / OT', colspan: 2 }
                     ],
                     columns.map(col => col.title)
                 ],
