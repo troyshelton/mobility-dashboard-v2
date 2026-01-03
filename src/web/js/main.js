@@ -2403,8 +2403,9 @@
             { data: 'ADMISSION_DATE', title: 'Admitted', width: 120, className: 'htMiddle htCenter' },
             { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' },
 
-            // Clinical Events (6 columns - date-filtered, Issue #5: Added BMAT)
+            // Clinical Events (7 columns - date-filtered, Issue #8: Added Baseline Mobility)
             { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, className: 'htMiddle htCenter' },
+            { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
             { data: 'MORSE_SCORE', title: 'Morse Score', width: 100, className: 'htMiddle htCenter' },
             { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
             { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
@@ -2574,8 +2575,8 @@
 
             // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7)
             app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
-                // Clinical event columns: 8-14 (BMAT, Morse, Call Light, IV Sites, SCDs, Safety, Precautions)
-                if (coords.col >= 8 && coords.col <= 14) {
+                // Clinical event columns: 8-15 (BMAT, Baseline, Morse, Call Light, IV Sites, SCDs, Safety, Precautions)
+                if (coords.col >= 8 && coords.col <= 15) {
                     console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
 
                     // Get metric template for this column

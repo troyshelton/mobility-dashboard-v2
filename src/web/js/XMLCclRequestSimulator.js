@@ -755,9 +755,17 @@
             SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
             BMAT_LEVEL: '3',
             BMAT_DT_TM: `${nowDisplay} 09:00`,
+            BASELINE_LEVEL: '4',
+            BASELINE_DT_TM: `${nowDisplay} 08:00`,
             ACTIVE_PRECAUTION_COUNT: 7,
-            // Historical Arrays - 30-Day History (Issue #3, #5, #7)
+            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
+            baseline_history: [
+                {
+                    VALUE: '(Level 4) No limitation with walking',
+                    DATETIME_DISPLAY: `${nowDisplay} 08:00`
+                }
+            ],  // Typically 1 entry (admission baseline)
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

@@ -7,6 +7,28 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.3.0-mobility] - 2026-01-02
+
+### Added (Issue #8 - Baseline Mobility)
+- **Baseline Mobility Column** - Shows patient's baseline functional assessment level (1-4)
+  - Data Source: PowerForm "Baseline Functional Assessment"
+  - Event: "Baseline Mobility" (event_cd 8339925023.00)
+  - Display Format: Numeric level (1, 2, 3, or 4) in table
+  - Side Panel: Full text "(Level X) description"
+  - Example: "(Level 4) No limitation with walking"
+  - **CCL v08:** Added to SELECT 2 for efficient querying
+  - **Parsing Logic:** Extract level from "(Level X)" pattern
+  - **Frontend:** Column 9 (after BMAT), MetricTemplate configuration
+  - **Edge Case:** Multiple entries supported (documented for clinical validation)
+
+### Changed
+- **PatientDataService.js** - Added baseline MetricTemplate, updated column indexes
+- **main.js** - Added Baseline column, updated click handler range (8-15)
+- **XMLCclRequestSimulator.js** - Added baseline mock data
+- **Config.js** - Disabled simulator mode for CERT testing
+
+---
+
 ## [2.2.0-mobility] - 2026-01-02
 
 ### Added (Issue #7 - Activity Precautions)
