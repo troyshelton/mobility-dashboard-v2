@@ -1,6 +1,6 @@
 # Project: Mobility Dashboard
 
-**Current Version:** v2.5.0-mobility
+**Current Version:** v2.6.0-mobility
 **Date:** 2026-01-02
 **Project Type:** Healthcare Production ⚠️
 **Enforcement:** Mandatory Workflows Required

@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.5.0-mobility
+**Version:** v2.6.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-02
 **Source:** Based on er-tracking-dashboard-template v1.0.0
