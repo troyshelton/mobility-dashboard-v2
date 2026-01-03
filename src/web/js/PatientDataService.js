@@ -53,12 +53,21 @@
             dataType: 'simple',
             valueField: 'VALUE'
         },
+        ambulation: {
+            key: 'ambulation',
+            label: 'Ambulation Distance',
+            currentField: 'ambulation_distance',
+            historyField: 'ambulation_history',
+            columnIndex: 13,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
         morse: {
             key: 'morse',
             label: 'Morse Fall Risk Score',
             currentField: 'morse_score',
             historyField: 'morse_history',
-            columnIndex: 13,
+            columnIndex: 14,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -67,7 +76,7 @@
             label: 'Call Light & Personal Items Within Reach',
             currentField: 'call_light_in_reach',
             historyField: 'call_light_history',
-            columnIndex: 14,
+            columnIndex: 15,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -76,7 +85,7 @@
             label: 'IV Sites Assessed',
             currentField: 'iv_sites_assessed',
             historyField: 'iv_sites_history',
-            columnIndex: 15,
+            columnIndex: 16,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -85,7 +94,7 @@
             label: 'SCDs Applied',
             currentField: 'scds_applied',
             historyField: 'scds_history',
-            columnIndex: 16,
+            columnIndex: 17,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -94,7 +103,7 @@
             label: 'Psychosocial and Safety Needs Addressed',
             currentField: 'safety_needs_addressed',
             historyField: 'safety_needs_history',
-            columnIndex: 17,
+            columnIndex: 18,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -103,7 +112,7 @@
             label: 'Activity Precautions',
             currentField: 'active_precaution_count',
             historyField: 'activity_precautions',
-            columnIndex: 18,
+            columnIndex: 19,
             dataType: 'complex',
             fieldMapping: {
                 primary: 'PRECAUTION_NAME',
@@ -116,7 +125,7 @@
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (8-18)
+     * @param {number} columnIndex - Handsontable column index (8-19)
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {
@@ -369,6 +378,8 @@
                 PT_TRANSFER_DT_TM: patient.PT_TRANSFER_DT_TM || patient.pt_transfer_dt_tm || '',
                 OT_TRANSFER_ASSIST: patient.OT_TRANSFER_ASSIST || patient.ot_transfer_assist || '',
                 OT_TRANSFER_DT_TM: patient.OT_TRANSFER_DT_TM || patient.ot_transfer_dt_tm || '',
+                AMBULATION_DISTANCE: patient.AMBULATION_DISTANCE || patient.ambulation_distance || '',
+                AMBULATION_DT_TM: patient.AMBULATION_DT_TM || patient.ambulation_dt_tm || '',
                 MORSE_SCORE: patient.MORSE_SCORE || patient.morse_score || '',
                 MORSE_EVENT_DT_TM: patient.MORSE_EVENT_DT_TM || patient.morse_event_dt_tm || '',
                 CALL_LIGHT_IN_REACH: patient.CALL_LIGHT_IN_REACH || patient.call_light_in_reach || '',
@@ -387,6 +398,7 @@
                 TOILETING_HISTORY: patient.toileting_history || patient.TOILETING_HISTORY || [],
                 PT_TRANSFER_HISTORY: patient.pt_transfer_history || patient.PT_TRANSFER_HISTORY || [],
                 OT_TRANSFER_HISTORY: patient.ot_transfer_history || patient.OT_TRANSFER_HISTORY || [],
+                AMBULATION_HISTORY: patient.ambulation_history || patient.AMBULATION_HISTORY || [],
                 MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
                 CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],
                 IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],

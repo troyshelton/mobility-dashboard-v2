@@ -763,8 +763,10 @@
             PT_TRANSFER_DT_TM: `${nowDisplay} 16:25`,
             OT_TRANSFER_ASSIST: 'Max A',
             OT_TRANSFER_DT_TM: `${nowDisplay} 16:28`,
+            AMBULATION_DISTANCE: '100',
+            AMBULATION_DT_TM: `${nowDisplay} 10:15`,
             ACTIVE_PRECAUTION_COUNT: 7,
-            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9, #10, #11)
+            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9, #10, #11, #16)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
             baseline_history: [
                 {
@@ -800,6 +802,20 @@
                     DATETIME_DISPLAY: `${nowDisplay} 16:28`
                 }
             ],  // OT assessments (periodic)
+            ambulation_history: [
+                {
+                    VALUE: '100',
+                    DATETIME_DISPLAY: `${nowDisplay} 10:15`
+                },
+                {
+                    VALUE: '75',
+                    DATETIME_DISPLAY: `${nowDisplay} 12:00`
+                },
+                {
+                    VALUE: '50',
+                    DATETIME_DISPLAY: `${nowDisplay} 13:00`
+                }
+            ],  // Ambulation distances (feet) - numeric with sparkline
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

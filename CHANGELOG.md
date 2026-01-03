@@ -7,6 +7,32 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.6.0-mobility] - 2026-01-03
+
+### Added (Issue #16 - Ambulation Distance)
+- **Ambulation Distance Column** - Shows how far patient ambulated in feet
+  - Event: "Ambulation Distance" (event_cd 269481201.00 - hardcoded)
+  - Type: Numeric with units (feet)
+  - Values: 100, 75, 50 (numeric progression)
+  - Display: Numeric value (80px width, center aligned)
+  - Side Panel: Historical distances with sparkline visualization
+  - **CCL v11:** Added to SELECT 2 with hardcoded event_cd (no unique CKI)
+  - **Frontend:** Column 13 (after OT Transfer)
+  - **Sparkline:** Automatic for numeric data
+
+### Changed
+- **CCL:** Fixed Morse Score event name ("Morse Fall Risk Score" → "Morse Fall Score")
+- **PatientDataService.js** - Added ambulation MetricTemplate, updated column indexes (14-19)
+- **main.js** - Added Ambulation Distance column, updated click handler range (8-19)
+- **XMLCclRequestSimulator.js** - Added ambulation mock data (100, 75, 50) with sparkline
+- **Config.js** - Disabled simulator mode for CERT testing
+
+### Technical Notes
+- **Hardcoded Event Code:** Used 269481201.00 instead of uar_get_code_by() due to non-unique display name
+- **Lesson:** When uar_get_code_by() returns -1.00 (ambiguous), use hardcoded event_cd
+
+---
+
 ## [2.5.0-mobility] - 2026-01-02
 
 ### Added (Issues #10 & #11 - PT/OT Transfer Assessments)
