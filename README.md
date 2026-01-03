@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.4.0-mobility
+**Version:** v2.5.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-02
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -9,30 +9,31 @@
 
 ## Current Status
 
-**Latest:** Toileting Method Column from I-View Documentation
+**Latest:** PT/OT Transfer Assessments from PowerForm Discrete Grids
 **Status:** ✅ COMPLETE - Deployed to CERT and Validated
-**Issues:** #3 (Side Panel), #5 (BMAT), #7 (Activity Precautions), #8 (Baseline), #9 (Toileting) - All CLOSED
+**Issues:** #3, #5, #7, #8, #9, #10, #11 - All CLOSED
 
 **Implementation Complete (2026-01-02):**
-- ✅ CCL v09 with 8 clinical events (dynamic lookback parameter)
+- ✅ CCL v10 with 10 clinical events + PowerForm discrete grid navigation
 - ✅ Side panel UI component (slide-in, backdrop, 3 close methods)
-- ✅ Click handlers for 8 clinical events + Activity Precautions
+- ✅ PT Transfer from PT Acute Evaluation (column 11)
+- ✅ OT Transfer from OT Acute Evaluation (column 12)
+- ✅ 4-level PowerForm hierarchy pattern (PowerForm → Section → Grid → Event)
 - ✅ Baseline Mobility from PowerForm (column 9)
 - ✅ Toileting Method from I-View documentation (column 10)
 - ✅ Automatic sparklines for numeric data
-- ✅ Condensed spacing for clinical efficiency
-- ✅ CERT validated with real patient data
+- ✅ CERT validated with real PT/OT assessment data
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
-- **CCL:** v09 compiled in Cerner CERT
-- **Status:** Working with real clinical event data + baseline + toileting
+- **CCL:** v10 compiled in Cerner CERT
+- **Status:** Working with 10 clinical events + PowerForm discrete grids
 
 **Next Steps:**
-- 📊 Stakeholder demonstration of Toileting Method
-- 📋 Select next feature from open issues (#10, #11)
+- 📊 Stakeholder demonstration of PT/OT Transfers
+- 🔧 Add PT/OT comments (v2.6.0 - requires ce_event_note pattern)
 - 🔧 Complete TLSO/LSO braces (pending CERT order placement)
-- 🚀 Plan v2.5.0 or v3.0.0 release
+- 🚀 Plan v2.6.0 release
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)

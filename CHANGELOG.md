@@ -7,6 +7,45 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.5.0-mobility] - 2026-01-02
+
+### Added (Issues #10 & #11 - PT/OT Transfer Assessments)
+- **PT Transfer Column** - Shows Physical Therapy transfer assist level from PT Acute Evaluation
+  - Data Source: PT Acute Evaluation PowerForm → Mobility Section → Discrete Grid
+  - Field: "Transfer Bed to and From Chair Rehab" (event_cd 4348328.00)
+  - Assist Levels: Complete I, Mod I, Supervision, Min A, Mod A, Max A, Total A
+  - Display: Assist level with ellipsis truncation (100px width)
+  - Side Panel: Historical PT assessments with full text
+  - **CCL v10:** SELECT 5 with 4-level PowerForm discrete grid navigation
+  - **Pattern:** dcp_forms_activity → dcp_forms_activity_comp → 4 clinical_event levels
+  - **Tables:** dcp_forms_ref, dcp_forms_activity, dcp_forms_activity_comp, clinical_event (4 levels)
+
+- **OT Transfer Column** - Shows Occupational Therapy transfer assist level from OT Acute Evaluation
+  - Data Source: OT Acute Evaluation PowerForm → Mobility Section → Discrete Grid
+  - Same field and event_cd as PT, distinguished by PowerForm name
+  - **CCL v10:** SELECT 6 with same 4-level pattern
+  - **Fix:** Changed field name from assist_level to value for side panel compatibility
+
+### Technical Achievements
+- **PowerForm Discrete Grid Navigation:** Solved 4-level hierarchy pattern
+  - Level 1: PowerForm root (view_level = 1)
+  - Level 2: Section (event_title_text = "Mobility")
+  - Level 3: Discrete Grid container (event_cd = 2214520.00)
+  - Level 4: Actual event (event_cd = 4348328.00)
+- **No Outer Joins:** Inner joins only for efficiency
+- **Documented Pattern:** Created CCL_POWERFORM_DISCRETE_GRID_PATTERN.md reference
+
+### Changed
+- **PatientDataService.js** - Added pt_transfer and ot_transfer MetricTemplates, updated column indexes (11-18)
+- **main.js** - Added PT and OT columns, updated click handler range (8-18)
+- **XMLCclRequestSimulator.js** - Added PT/OT mock data with history
+- **Config.js** - Disabled simulator mode for CERT testing
+
+### Deferred
+- **Comments (SELECT 7 & 8):** Deferred to v2.6.0 - requires ce_event_note + long_blob with compression handling
+
+---
+
 ## [2.4.0-mobility] - 2026-01-02
 
 ### Added (Issue #9 - Toileting Method)
