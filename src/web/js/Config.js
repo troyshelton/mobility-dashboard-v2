@@ -10,8 +10,8 @@
      */
     const simulatorDefault = true; // Simulator mode enabled for local testing
 
-    // Simulator mode DISABLED for CERT testing with Ambulation Distance (Issue #16)
-    // Will use real CCL v11 data from Cerner
+    // Simulator mode DISABLED for CERT - Ready for stakeholder demo (Issue #18)
+    // Column reorganization with professional group headers
     window.SIMULATOR_CONFIG = {
         enabled: false  // DISABLED - using real CCL data
     };

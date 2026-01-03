@@ -7,6 +7,29 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.7.0-mobility] - 2026-01-03
+
+### Changed (Issue #18 - Column Reorganization for Stakeholder Demo)
+- **Professional Column Organization** - Reorganized 11 clinical event columns into logical groups
+- **Nested Group Headers:**
+  - Demographics (8 columns)
+  - Assessments (3 columns): Baseline, BMAT, Morse
+  - Fall Prevention Interventions (6 columns): Call Light, IV Sites, SCDs, Safety, Precautions, Toileting
+  - Ambulation (1 column): Amb Dist
+  - PT / OT (2 columns): PT Transfer, OT Transfer
+- **Column Reordering:** Moved columns to match clinical workflow
+- **MetricTemplates:** Updated all column indexes to match new order
+- **Fixed:** Nested headers appear on both initial load and patient list refresh
+- **Purpose:** Professional presentation for Tuesday stakeholder demonstration
+
+### Rationale
+- **Assessments Together:** Baseline, BMAT, Morse (what we measure)
+- **Interventions Together:** All fall prevention nursing actions
+- **Mobility Separated:** Ambulation as distinct category
+- **Therapy Together:** PT and OT assessments grouped
+
+---
+
 ## [2.6.0-mobility] - 2026-01-03
 
 ### Added (Issue #16 - Ambulation Distance)
