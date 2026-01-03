@@ -759,8 +759,12 @@
             BASELINE_DT_TM: `${nowDisplay} 08:00`,
             TOILETING_METHOD: 'Bedside commode, Independent',
             TOILETING_DT_TM: `${nowDisplay} 14:00`,
+            PT_TRANSFER_ASSIST: 'Mod A',
+            PT_TRANSFER_DT_TM: `${nowDisplay} 16:25`,
+            OT_TRANSFER_ASSIST: 'Max A',
+            OT_TRANSFER_DT_TM: `${nowDisplay} 16:28`,
             ACTIVE_PRECAUTION_COUNT: 7,
-            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9)
+            // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9, #10, #11)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
             baseline_history: [
                 {
@@ -782,6 +786,20 @@
                     DATETIME_DISPLAY: `${nowDisplay} 06:00`
                 }
             ],  // Multiple entries (documented throughout day)
+            pt_transfer_history: [
+                {
+                    VALUE: 'Mod A',
+                    COMMENT: '',
+                    DATETIME_DISPLAY: `${nowDisplay} 16:25`
+                }
+            ],  // PT assessments (periodic)
+            ot_transfer_history: [
+                {
+                    VALUE: 'Max A',
+                    COMMENT: '',
+                    DATETIME_DISPLAY: `${nowDisplay} 16:28`
+                }
+            ],  // OT assessments (periodic)
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

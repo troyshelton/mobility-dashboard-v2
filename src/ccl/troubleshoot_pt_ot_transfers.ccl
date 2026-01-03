@@ -1,0 +1,83 @@
+;===============================================================================
+; Troubleshooting Query: PT/OT Transfer Data
+; Purpose: Debug PowerForm discrete grid queries for specific patient
+; Usage: Replace ENCNTR_ID and PERSON_ID with test patient values
+;===============================================================================
+
+; Test patient: ZZTEST, ZZSEPSISTWO
+; ENCNTR_ID: 114259401
+; PERSON_ID: 25581750
+
+;===============================================================================
+; Query PT Transfer Data
+;===============================================================================
+SELECT
+	forms_activity_id = dfa_pt.dcp_forms_activity_id
+	, powerform_name = dfa_pt.description
+	, form_dt_tm = format(dfa_pt.form_dt_tm, "MM/DD/YYYY HH:MM;;Q")
+	, form_status_cd = dfa_pt.form_status_cd
+	, form_status = uar_get_code_display(dfa_pt.form_status_cd)
+	, dfc_parent_id = dfc_pt.parent_entity_id
+	, c1_event_id = c1_pt.event_id
+	, c1_title = c1_pt.event_title_text
+	, c1_view_level = c1_pt.view_level
+	, c2_event_id = c2_pt.event_id
+	, c2_title = c2_pt.event_title_text
+	, c2_parent_id = c2_pt.parent_event_id
+	, c2_view_level = c2_pt.view_level
+	, c3_event_id = c3_pt.event_id
+	, c3_title = c3_pt.event_title_text
+	, c3_display = c3_pt.event_display
+	, c3_event_cd = c3_pt.event_cd
+	, c3_parent_id = c3_pt.parent_event_id
+	, assist_level = c3_pt.result_val
+	, c3_view_level = c3_pt.view_level
+FROM
+	dcp_forms_activity dfa_pt
+	, dcp_forms_activity_comp dfc_pt
+	, clinical_event c1_pt
+	, clinical_event c2_pt
+	, clinical_event c3_pt
+
+PLAN dfa_pt
+	WHERE dfa_pt.encntr_id = 114259401  ; Replace with your test ENCNTR_ID
+	AND dfa_pt.person_id = 25581750     ; Replace with your test PERSON_ID
+	AND dfa_pt.dcp_forms_ref_id = (
+		SELECT dcp_forms_ref_id
+		FROM dcp_forms_ref
+		WHERE description = "PT Acute Evaluation"
+		AND active_ind = 1
+	)
+	AND dfa_pt.active_ind = 1
+
+JOIN dfc_pt
+	WHERE dfc_pt.dcp_forms_activity_id = outerjoin(dfa_pt.dcp_forms_activity_id)
+	AND dfc_pt.component_cd = outerjoin(10891.00)
+	AND dfc_pt.parent_entity_name = outerjoin("CLINICAL_EVENT")
+
+JOIN c1_pt
+	WHERE c1_pt.event_id = outerjoin(dfc_pt.parent_entity_id)
+	AND c1_pt.valid_until_dt_tm > outerjoin(SYSDATE)
+	AND c1_pt.view_level = outerjoin(1)
+
+JOIN c2_pt
+	WHERE c2_pt.parent_event_id = outerjoin(c1_pt.event_id)
+	AND c2_pt.valid_until_dt_tm > outerjoin(SYSDATE)
+
+JOIN c3_pt
+	WHERE c3_pt.parent_event_id = outerjoin(c2_pt.event_id)
+	AND c3_pt.event_cd = outerjoin(4348328.00)
+	; Uncomment to filter to specific row:
+	;AND c3_pt.event_title_text = outerjoin("Transfer Bed to and From Chair")
+	AND c3_pt.valid_until_dt_tm > outerjoin(SYSDATE)
+	AND c3_pt.view_level = outerjoin(1)
+
+WITH TIME = 60
+
+;===============================================================================
+; Query OT Transfer Data
+;===============================================================================
+; Same pattern, replace "PT Acute Evaluation" with "OT Acute Evaluation"
+;===============================================================================
+
+go
