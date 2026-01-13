@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.9.0-mobility
+**Version:** v2.10.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-13
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -9,25 +9,24 @@
 
 ## Current Status
 
-**Latest:** v2.9.0 Handsontable Font Color Fix
+**Latest:** v2.10.0 Transfer Type & Patient Position Activity (Issue #24)
 **Status:** ✅ CERT Validated - Pending Production Deployment
-**Issue:** #22 (Font Color Fix) - CLOSED
+**Issue:** #24 - Transfer Type & Position Activity
 
-**v2.9.0 Change (2026-01-13):**
-- ✅ Override Handsontable read-only gray text (#777) to black (#000)
+**v2.10.0 Changes (2026-01-13):**
+- ✅ Added Transfer Type column (iView documentation)
+- ✅ Added Patient Position Activity column (iView documentation)
+- ✅ Reorganized columns under "Mobility Activity" group header
+- ✅ Hidden 5 demographic columns (Age, Gender, Class, Admitted, Status)
+- ✅ CCL v14 with uar_get_code_by pattern for event codes
 - ✅ CERT deployed and validated
 
-**⏳ PENDING: Production Deployment**
-```
-Source:      src/web/*
-Destination: I:\custom\mpages\mobility_dashboard\
-Method:      Manual copy via Citrix
-Changed:     styles.css only
-```
+**Column Layout (13 columns):**
+| Demographics (3) | Assessments (3) | Mobility Activity (5) | PT/OT (2) |
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
-- **CCL:** v12 compiled in Cerner CERT
+- **CCL:** v14 compiled in Cerner CERT
 - **Status:** v2.9.0 deployed and validated
 
 **Completed Work:**

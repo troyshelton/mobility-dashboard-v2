@@ -772,6 +772,11 @@
             OT_TRANSFER_DT_TM: `${nowDisplay} 16:28`,
             AMBULATION_DISTANCE: '100',
             AMBULATION_DT_TM: `${nowDisplay} 10:15`,
+            // Issue #24 - Transfer Type & Position Activity (v2.10.0)
+            TRANSFER_TYPE: '1 person lift',
+            TRANSFER_TYPE_DT_TM: `${nowDisplay} 13:13`,
+            POSITION_ACTIVITY: 'Turn & positioned - left, Log roll',
+            POSITION_ACTIVITY_DT_TM: `${nowDisplay} 12:59`,
             ACTIVE_PRECAUTION_COUNT: 7,
             // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9, #10, #11, #16)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
@@ -846,6 +851,31 @@
                     PERFORMED_POSITION: 'Cardiac Rehab Specialist'
                 }
             ],  // Ambulation distances (feet) - numeric with sparkline + personnel
+            // Issue #24 - Transfer Type & Position Activity History (v2.10.0)
+            transfer_type_history: [
+                {
+                    VALUE: '1 person lift',
+                    DATETIME_DISPLAY: `${nowDisplay} 13:13`
+                },
+                {
+                    VALUE: '2 person lift',
+                    DATETIME_DISPLAY: `${nowDisplay} 08:00`
+                }
+            ],  // Transfer type (how many people needed)
+            position_activity_history: [
+                {
+                    VALUE: 'Turn & positioned - left, Log roll',
+                    DATETIME_DISPLAY: `${nowDisplay} 12:59`
+                },
+                {
+                    VALUE: 'Turn & positioned - right',
+                    DATETIME_DISPLAY: `${nowDisplay} 10:30`
+                },
+                {
+                    VALUE: 'Independent',
+                    DATETIME_DISPLAY: `${nowDisplay} 06:00`
+                }
+            ],  // Patient positioning (turning/repositioning)
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

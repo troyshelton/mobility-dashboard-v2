@@ -7,6 +7,41 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.10.0-mobility] - 2026-01-13
+
+### Added (Issue #24 - Transfer Type & Patient Position Activity)
+- **Transfer Type Column** - Shows patient transfer method from iView documentation
+  - Event: "Transfer Type" (event_cd via uar_get_code_by)
+  - Values: "1 person lift", "2 person lift", "Hoyer lift", etc.
+  - Display: Full text (100px width, left aligned)
+  - Side Panel: 30-day historical transfer type entries
+  - **CCL v14:** Added to SELECT 2 with uar_get_code_by pattern
+
+- **Patient Position Activity Column** - Shows patient positioning from iView documentation
+  - Event: "Patient Position Activity" (event_cd via uar_get_code_by)
+  - Values: "Turn & positioned - left, Log roll", "Turn & positioned - right", "Independent"
+  - Display: Full text (120px width, left aligned)
+  - Side Panel: 30-day historical position activity entries
+  - **CCL v14:** Added to SELECT 2 with uar_get_code_by pattern
+
+### Changed
+- **Column Reorganization** - Grouped under "Mobility Activity" header
+  - Demographics (3): Patient, Unit, Room/Bed
+  - Assessments (3): Baseline, BMAT, Morse
+  - Mobility Activity (5): Precautions, Toileting, Amb Dist, Transfer Type, Position
+  - PT/OT (2): PT Transfer, OT Transfer
+- **Hidden Demographics** - Removed Age, Gender, Class, Admitted, Status columns per clinician feedback
+- **PatientDataService.js** - Added transfer_type and position_activity MetricTemplates, updated all column indexes
+- **main.js** - Reorganized columns, updated nested headers, adjusted click handler range (3-12)
+- **XMLCclRequestSimulator.js** - Added transfer type and position activity mock data with history
+- **CCL v14** - Used `value(uar_get_code_by("DISPLAY", 72, "Event Name"))` pattern for event code lookup
+
+### Technical Notes
+- **CCL Pattern:** Changed from hardcoded event codes to `uar_get_code_by()` with `value()` wrapper for compile-time evaluation
+- **Column Index Shift:** All MetricTemplates column indexes shifted by 5 after hiding demographic columns
+
+---
+
 ## [2.9.0-mobility] - 2026-01-13
 
 ### Fixed (Issue #22)
