@@ -60,7 +60,7 @@
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // Ambulation Group
+        // Ambulation Group - v2.8.0: Added personnel tracking (Issue #20)
         ambulation: {
             key: 'ambulation',
             label: 'Ambulation Distance',
@@ -68,7 +68,10 @@
             historyField: 'ambulation_history',
             columnIndex: 13,
             dataType: 'simple',
-            valueField: 'VALUE'
+            valueField: 'VALUE',
+            hasPersonnel: true,  // v2.8.0: Shows who documented (PT, OT, Nursing, Cardiac Rehab)
+            personnelField: 'PERFORMED_BY',
+            positionField: 'PERFORMED_POSITION'
         },
         // PT/OT Group
         pt_transfer: {

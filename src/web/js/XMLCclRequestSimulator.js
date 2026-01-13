@@ -802,20 +802,27 @@
                     DATETIME_DISPLAY: `${nowDisplay} 16:28`
                 }
             ],  // OT assessments (periodic)
+            // v2.8.0: Added PERFORMED_BY and PERFORMED_POSITION for personnel tracking (Issue #20)
             ambulation_history: [
                 {
                     VALUE: '100',
-                    DATETIME_DISPLAY: `${nowDisplay} 10:15`
+                    DATETIME_DISPLAY: `${nowDisplay} 10:15`,
+                    PERFORMED_BY: 'Smith, Jennifer RN',
+                    PERFORMED_POSITION: 'Registered Nurse'
                 },
                 {
                     VALUE: '75',
-                    DATETIME_DISPLAY: `${nowDisplay} 12:00`
+                    DATETIME_DISPLAY: `${nowDisplay} 12:00`,
+                    PERFORMED_BY: 'Johnson, Michael PT',
+                    PERFORMED_POSITION: 'Physical Therapist'
                 },
                 {
                     VALUE: '50',
-                    DATETIME_DISPLAY: `${nowDisplay} 13:00`
+                    DATETIME_DISPLAY: `${nowDisplay} 13:00`,
+                    PERFORMED_BY: 'Davis, Sarah',
+                    PERFORMED_POSITION: 'Cardiac Rehab Specialist'
                 }
-            ],  // Ambulation distances (feet) - numeric with sparkline
+            ],  // Ambulation distances (feet) - numeric with sparkline + personnel
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

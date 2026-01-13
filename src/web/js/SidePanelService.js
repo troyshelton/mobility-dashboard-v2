@@ -191,17 +191,34 @@ class SidePanelService {
       </div>
     ` : '';
 
-    const historyHTML = historyData.map(entry => `
-      <div class="history-entry">
-        <div class="history-datetime">
-          <i class="far fa-clock"></i>
-          ${this._formatDateTime(entry.datetime)}
+    const historyHTML = historyData.map(entry => {
+      // v2.8.0: Check for personnel info (Issue #20 - who documented ambulation)
+      const hasPersonnel = entry.performed_by || entry.PERFORMED_BY;
+      const performedBy = entry.performed_by || entry.PERFORMED_BY || '';
+      const performedPosition = entry.performed_position || entry.PERFORMED_POSITION || '';
+
+      // Build personnel display if available
+      const personnelHTML = hasPersonnel ? `
+        <div class="history-personnel">
+          <i class="fas fa-user-nurse"></i>
+          <span class="personnel-name">${performedBy}</span>
+          ${performedPosition ? `<span class="personnel-position">(${performedPosition})</span>` : ''}
         </div>
-        <div class="history-value">
-          ${entry.value}
+      ` : '';
+
+      return `
+        <div class="history-entry">
+          <div class="history-datetime">
+            <i class="far fa-clock"></i>
+            ${this._formatDateTime(entry.datetime)}
+          </div>
+          <div class="history-value">
+            ${entry.value}
+          </div>
+          ${personnelHTML}
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     contentDiv.innerHTML = `
       ${sparklineHTML}

@@ -2639,7 +2639,15 @@
                             value = entry.VALUE || entry.value || '';
                         }
 
-                        return { datetime, value };
+                        // v2.8.0: Include personnel info if available (Issue #20)
+                        const result = { datetime, value };
+                        if (entry.PERFORMED_BY || entry.performed_by) {
+                            result.performed_by = entry.PERFORMED_BY || entry.performed_by;
+                        }
+                        if (entry.PERFORMED_POSITION || entry.performed_position) {
+                            result.performed_position = entry.PERFORMED_POSITION || entry.performed_position;
+                        }
+                        return result;
                     });
 
                     // Get lookback period from CCL response (default 30 if not available)
