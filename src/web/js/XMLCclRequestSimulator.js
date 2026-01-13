@@ -100,9 +100,12 @@
                 { "personId": 22345006, "personName": "Miller, Linda B", "encntrId": 22345006, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         } else {
-            // Demo Patient List A - Simplified to 1 patient for testing
+            // Demo Patient List A - v2.8.0: Multiple patients to test BMAT/Morse color coding
             mockPatients = [
-                { "personId": 12345001, "personName": "Test Patient (Today)", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 }
+                { "personId": 12345001, "personName": "BMAT Level 1 (Red)", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 },
+                { "personId": 12345002, "personName": "BMAT Level 2 (Orange)", "encntrId": 12345002, "priority": 0, "activeInd": 1, "filterInd": 0 },
+                { "personId": 12345003, "personName": "BMAT Level 3 (Gray)", "encntrId": 12345003, "priority": 0, "activeInd": 1, "filterInd": 0 },
+                { "personId": 12345004, "personName": "BMAT Level 4 (Green)", "encntrId": 12345004, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         }
 
@@ -729,7 +732,11 @@
         };
 
         // Mock patient demographics
-        const patients = encounterIds.map(encId => ({
+        // v2.8.0: Vary BMAT levels to test color coding (Issue #20)
+        const bmatLevels = ['1', '2', '3', '4', '1', '2']; // Cycle through levels
+        const morseScores = ['15', '35', '45', '55']; // Vary Morse: 15=green, 35/45=orange, 55=red
+
+        const patients = encounterIds.map((encId, index) => ({
             PERSON_ID: 23224083,
             ENCNTR_ID: parseFloat(encId),
             PATIENT_NAME: 'MEADOWS, VIRGINIA L',
@@ -743,7 +750,7 @@
             FIN: '3010394309',
             MRN: '20212659',
             // Clinical events - Current Values (date-specific)
-            MORSE_SCORE: clinicalEvents.morse_score,
+            MORSE_SCORE: morseScores[index % morseScores.length],
             MORSE_EVENT_DT_TM: clinicalEvents.morse_event_dt_tm,
             CALL_LIGHT_IN_REACH: clinicalEvents.call_light_in_reach,
             CALL_LIGHT_DT_TM: clinicalEvents.call_light_dt_tm,
@@ -753,7 +760,7 @@
             SCDS_DT_TM: clinicalEvents.scds_dt_tm,
             SAFETY_NEEDS_ADDRESSED: clinicalEvents.safety_needs_addressed,
             SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
-            BMAT_LEVEL: '3',
+            BMAT_LEVEL: bmatLevels[index % bmatLevels.length],
             BMAT_DT_TM: `${nowDisplay} 09:00`,
             BASELINE_LEVEL: '4',
             BASELINE_DT_TM: `${nowDisplay} 08:00`,

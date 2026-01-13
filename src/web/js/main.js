@@ -2383,6 +2383,92 @@
             return td;
         }
 
+        /**
+         * BMAT Level Renderer - v2.8.0 Issue #20
+         * Color codes BMAT levels 1-4 for visual risk identification
+         * Colors from clinician-approved illness severity scale:
+         *   Level 1 (most dependent) = Red
+         *   Level 2 (dependent) = Orange/Yellow
+         *   Level 3 (needs assistance) = Gray
+         *   Level 4 (independent) = Green
+         */
+        function bmatLevelRenderer(instance, td, row, col, prop, value, cellProperties) {
+            // v2.8.0: BMAT color coding (Issue #20)
+            // Clear cell first
+            td.innerHTML = '';
+
+            if (value === null || value === undefined || value === '') {
+                return td;
+            }
+
+            // Parse the level number (handle "1", "2", "3", "4" or "(Level 1)", etc.)
+            const levelMatch = String(value).match(/(\d)/);
+            const level = levelMatch ? parseInt(levelMatch[1]) : null;
+
+            // Color mapping based on illness severity scale
+            let color;
+            switch (level) {
+                case 1:
+                    color = '#dc3545'; // Red - most dependent/unstable
+                    break;
+                case 2:
+                    color = '#fd7e14'; // Orange - dependent/watch
+                    break;
+                case 3:
+                    color = '#6c757d'; // Gray - needs assistance/stable
+                    break;
+                case 4:
+                    color = '#28a745'; // Green - independent/discharging
+                    break;
+                default:
+                    color = '#000000'; // Black - unknown level
+            }
+
+            // Use span with inline styles to override Handsontable CSS
+            td.innerHTML = `<span style="color: ${color} !important; font-weight: 600;">${value}</span>`;
+            td.style.textAlign = 'center';
+            td.style.verticalAlign = 'middle';
+
+            return td;
+        }
+
+        /**
+         * Morse Fall Risk Score Renderer - v2.8.0 Issue #20
+         * Color codes Morse score using standard 3-level risk scale:
+         *   0-24 = Green (low risk)
+         *   25-50 = Orange (moderate risk)
+         *   51+ = Red (high risk)
+         */
+        function morseScoreRenderer(instance, td, row, col, prop, value, cellProperties) {
+            // v2.8.0: Morse color coding (Issue #20)
+            td.innerHTML = '';
+
+            if (value === null || value === undefined || value === '') {
+                return td;
+            }
+
+            // Parse score as number
+            const score = parseInt(value, 10);
+
+            // Color based on standard Morse Fall Scale risk levels
+            let color;
+            if (score >= 51) {
+                color = '#dc3545'; // Red - high risk
+            } else if (score >= 25) {
+                color = '#fd7e14'; // Orange - moderate risk
+            } else {
+                color = '#28a745'; // Green - low risk
+            }
+
+            // Use span with inline styles (bold for moderate/high risk)
+            const fontWeight = (score >= 25) ? '600' : 'normal';
+            td.innerHTML = `<span style="color: ${color} !important; font-weight: ${fontWeight};">${value}</span>`;
+            td.style.textAlign = 'center';
+            td.style.verticalAlign = 'middle';
+
+            return td;
+        }
+
         // Define columns for sepsis dashboard structure (16 columns - Priority hidden pending requestor input)
         // v1.33.0: Left-justified columns for text fields, center for icons/values
         console.log('Defining demographics + clinical event columns for Mobility Dashboard...');
@@ -2406,8 +2492,8 @@
             // Clinical Events (11 columns - Issue #18: Reorganized with group headers)
             // Assessments Group (3 columns)
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
-            { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, className: 'htMiddle htCenter' },
-            { data: 'MORSE_SCORE', title: 'Morse', width: 80, className: 'htMiddle htCenter' },
+            { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, renderer: bmatLevelRenderer, className: 'htMiddle htCenter' },
+            { data: 'MORSE_SCORE', title: 'Morse', width: 80, renderer: morseScoreRenderer, className: 'htMiddle htCenter' },
             // Fall Prevention Group (2 columns) - v2.8.0: Removed Call Light, IV Sites, SCDs, Safety per clinician feedback
             { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
             { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
