@@ -36,13 +36,27 @@
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // Mobility Activity Group (columns 6-10) - v2.10.0: Reorganized per clinician feedback
+        // Mobility Activity Group (columns 6-11) - v2.11.0: Added Activity Orders (Issue #27)
+        activity_orders: {
+            key: 'activity_orders',
+            label: 'Activity Orders',
+            currentField: 'activity_order_count',
+            historyField: 'activity_orders',
+            columnIndex: 6,
+            dataType: 'complex',
+            fieldMapping: {
+                primary: 'ORDER_NAME',
+                secondary: 'ORDER_DETAIL',
+                datetime: 'DATETIME_DISPLAY',
+                status: 'ORDER_STATUS'
+            }
+        },
         activity_precautions: {
             key: 'activity_precautions',
             label: 'Activity Precautions',
             currentField: 'active_precaution_count',
             historyField: 'activity_precautions',
-            columnIndex: 6,
+            columnIndex: 7,
             dataType: 'complex',
             fieldMapping: {
                 primary: 'PRECAUTION_NAME',
@@ -56,7 +70,7 @@
             label: 'Toileting Method',
             currentField: 'toileting_method',
             historyField: 'toileting_history',
-            columnIndex: 7,
+            columnIndex: 8,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -65,7 +79,7 @@
             label: 'Ambulation Distance',
             currentField: 'ambulation_distance',
             historyField: 'ambulation_history',
-            columnIndex: 8,
+            columnIndex: 9,
             dataType: 'simple',
             valueField: 'VALUE',
             hasPersonnel: true,  // v2.8.0: Shows who documented (PT, OT, Nursing, Cardiac Rehab)
@@ -77,7 +91,7 @@
             label: 'Transfer Type',
             currentField: 'transfer_type',
             historyField: 'transfer_type_history',
-            columnIndex: 9,
+            columnIndex: 10,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -86,17 +100,17 @@
             label: 'Patient Position Activity',
             currentField: 'position_activity',
             historyField: 'position_activity_history',
-            columnIndex: 10,
+            columnIndex: 11,
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // PT/OT Group (columns 11-12)
+        // PT/OT Group (columns 12-13)
         pt_transfer: {
             key: 'pt_transfer',
             label: 'PT Transfer (Bed to Chair)',
             currentField: 'pt_transfer_assist',
             historyField: 'pt_transfer_history',
-            columnIndex: 11,
+            columnIndex: 12,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -105,7 +119,7 @@
             label: 'OT Transfer (Bed to Chair)',
             currentField: 'ot_transfer_assist',
             historyField: 'ot_transfer_history',
-            columnIndex: 12,
+            columnIndex: 13,
             dataType: 'simple',
             valueField: 'VALUE'
         }
@@ -113,7 +127,7 @@
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (3-12) - v2.10.0: Shifted after removing 5 demo cols
+     * @param {number} columnIndex - Handsontable column index (3-13) - v2.11.0: Added Activity Orders column
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {
@@ -383,9 +397,11 @@
                 SCDS_DT_TM: patient.SCDS_DT_TM || patient.scds_dt_tm || '',
                 SAFETY_NEEDS_ADDRESSED: patient.SAFETY_NEEDS_ADDRESSED || patient.safety_needs_addressed || '',
                 SAFETY_NEEDS_DT_TM: patient.SAFETY_NEEDS_DT_TM || patient.safety_needs_dt_tm || '',
+                // Issue #27 - Activity Orders (v2.11.0)
+                ACTIVITY_ORDER_COUNT: patient.ACTIVITY_ORDER_COUNT || patient.activity_order_count || 0,
                 ACTIVE_PRECAUTION_COUNT: patient.ACTIVE_PRECAUTION_COUNT || patient.active_precaution_count || 0,
 
-                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5, #7, #8, #9, #10, #11)
+                // Historical Arrays - 30-Day History for Side Panel (Issue #3, #5, #7, #8, #9, #10, #11, #27)
                 BMAT_HISTORY: patient.bmat_history || patient.BMAT_HISTORY || [],
                 BASELINE_HISTORY: patient.baseline_history || patient.BASELINE_HISTORY || [],
                 TOILETING_HISTORY: patient.toileting_history || patient.TOILETING_HISTORY || [],
@@ -400,6 +416,8 @@
                 IV_SITES_HISTORY: patient.iv_sites_history || patient.IV_SITES_HISTORY || [],
                 SCDS_HISTORY: patient.scds_history || patient.SCDS_HISTORY || [],
                 SAFETY_NEEDS_HISTORY: patient.safety_needs_history || patient.SAFETY_NEEDS_HISTORY || [],
+                // Issue #27 - Activity Orders (v2.11.0)
+                ACTIVITY_ORDERS: patient.activity_orders || patient.ACTIVITY_ORDERS || [],
                 ACTIVITY_PRECAUTIONS: patient.activity_precautions || patient.ACTIVITY_PRECAUTIONS || []
             };
         });
