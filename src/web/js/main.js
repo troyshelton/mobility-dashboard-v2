@@ -2580,9 +2580,8 @@
             // v1.33.0: Apply left/center alignment based on column
             cells: function(row, col) {
                 const cellProperties = {};
-                // Left-justified columns: 0-2 (Patient, Unit, Room/Bed) - v2.10.0: Removed Age, Gender, Class, Admitted, Status
-                // Center-justified columns: 3-12 (all clinical columns)
-                const alignment = (col <= 2) ? 'htLeft' : 'htCenter';
+                // Left: Demographics (0-2) and PT/OT (12-13), Center: all others (Issue #31)
+                const alignment = (col <= 2 || col >= 12) ? 'htLeft' : 'htCenter';
 
                 // Zebra striping
                 if (row % 2 === 0) {
@@ -2915,7 +2914,8 @@
                 mergeCells: [],  // Clear any merged cells from message display
                 cells: function(row, col) {  // Restore normal cell styling
                     const cellProperties = {};
-                    const alignment = (col <= 5) ? 'htLeft' : 'htCenter';
+                    // Left: Demographics (0-2) and PT/OT (12-13), Center: all others (Issue #31)
+                    const alignment = (col <= 2 || col >= 12) ? 'htLeft' : 'htCenter';
 
                     // Zebra striping
                     if (row % 2 === 0) {
