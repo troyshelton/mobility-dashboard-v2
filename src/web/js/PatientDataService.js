@@ -8,13 +8,13 @@
      * Maps table columns to metric metadata for historical data display
      */
     const MetricTemplates = {
-        // Assessments Group
+        // Assessments Group (columns 3-5) - v2.10.0: Shifted after removing 5 demographic columns
         baseline: {
             key: 'baseline',
             label: 'Baseline Mobility',
             currentField: 'baseline_level',
             historyField: 'baseline_history',
-            columnIndex: 8,
+            columnIndex: 3,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -23,7 +23,7 @@
             label: 'BMAT (Brief Mobility Assessment)',
             currentField: 'bmat_level',
             historyField: 'bmat_history',
-            columnIndex: 9,
+            columnIndex: 4,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -32,17 +32,17 @@
             label: 'Morse Fall Risk Score',
             currentField: 'morse_score',
             historyField: 'morse_history',
-            columnIndex: 10,
+            columnIndex: 5,
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // Fall Prevention Group - v2.8.0: Removed Call Light, IV Sites, SCDs, Safety per clinician feedback
+        // Mobility Activity Group (columns 6-10) - v2.10.0: Reorganized per clinician feedback
         activity_precautions: {
             key: 'activity_precautions',
             label: 'Activity Precautions',
             currentField: 'active_precaution_count',
             historyField: 'activity_precautions',
-            columnIndex: 11,
+            columnIndex: 6,
             dataType: 'complex',
             fieldMapping: {
                 primary: 'PRECAUTION_NAME',
@@ -56,30 +56,47 @@
             label: 'Toileting Method',
             currentField: 'toileting_method',
             historyField: 'toileting_history',
-            columnIndex: 12,
+            columnIndex: 7,
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // Ambulation Group - v2.8.0: Added personnel tracking (Issue #20)
         ambulation: {
             key: 'ambulation',
             label: 'Ambulation Distance',
             currentField: 'ambulation_distance',
             historyField: 'ambulation_history',
-            columnIndex: 13,
+            columnIndex: 8,
             dataType: 'simple',
             valueField: 'VALUE',
             hasPersonnel: true,  // v2.8.0: Shows who documented (PT, OT, Nursing, Cardiac Rehab)
             personnelField: 'PERFORMED_BY',
             positionField: 'PERFORMED_POSITION'
         },
-        // PT/OT Group
+        transfer_type: {
+            key: 'transfer_type',
+            label: 'Transfer Type',
+            currentField: 'transfer_type',
+            historyField: 'transfer_type_history',
+            columnIndex: 9,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        position_activity: {
+            key: 'position_activity',
+            label: 'Patient Position Activity',
+            currentField: 'position_activity',
+            historyField: 'position_activity_history',
+            columnIndex: 10,
+            dataType: 'simple',
+            valueField: 'VALUE'
+        },
+        // PT/OT Group (columns 11-12)
         pt_transfer: {
             key: 'pt_transfer',
             label: 'PT Transfer (Bed to Chair)',
             currentField: 'pt_transfer_assist',
             historyField: 'pt_transfer_history',
-            columnIndex: 14,
+            columnIndex: 11,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -88,7 +105,7 @@
             label: 'OT Transfer (Bed to Chair)',
             currentField: 'ot_transfer_assist',
             historyField: 'ot_transfer_history',
-            columnIndex: 15,
+            columnIndex: 12,
             dataType: 'simple',
             valueField: 'VALUE'
         }
@@ -96,7 +113,7 @@
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (8-15)
+     * @param {number} columnIndex - Handsontable column index (3-12) - v2.10.0: Shifted after removing 5 demo cols
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {
@@ -349,6 +366,11 @@
                 PT_TRANSFER_DT_TM: patient.PT_TRANSFER_DT_TM || patient.pt_transfer_dt_tm || '',
                 OT_TRANSFER_ASSIST: patient.OT_TRANSFER_ASSIST || patient.ot_transfer_assist || '',
                 OT_TRANSFER_DT_TM: patient.OT_TRANSFER_DT_TM || patient.ot_transfer_dt_tm || '',
+                // Issue #24 - Transfer Type & Position Activity (v2.10.0)
+                TRANSFER_TYPE: patient.TRANSFER_TYPE || patient.transfer_type || '',
+                TRANSFER_TYPE_DT_TM: patient.TRANSFER_TYPE_DT_TM || patient.transfer_type_dt_tm || '',
+                POSITION_ACTIVITY: patient.POSITION_ACTIVITY || patient.position_activity || '',
+                POSITION_ACTIVITY_DT_TM: patient.POSITION_ACTIVITY_DT_TM || patient.position_activity_dt_tm || '',
                 AMBULATION_DISTANCE: patient.AMBULATION_DISTANCE || patient.ambulation_distance || '',
                 AMBULATION_DT_TM: patient.AMBULATION_DT_TM || patient.ambulation_dt_tm || '',
                 MORSE_SCORE: patient.MORSE_SCORE || patient.morse_score || '',
@@ -369,6 +391,9 @@
                 TOILETING_HISTORY: patient.toileting_history || patient.TOILETING_HISTORY || [],
                 PT_TRANSFER_HISTORY: patient.pt_transfer_history || patient.PT_TRANSFER_HISTORY || [],
                 OT_TRANSFER_HISTORY: patient.ot_transfer_history || patient.OT_TRANSFER_HISTORY || [],
+                // Issue #24 - Transfer Type & Position Activity History (v2.10.0)
+                TRANSFER_TYPE_HISTORY: patient.transfer_type_history || patient.TRANSFER_TYPE_HISTORY || [],
+                POSITION_ACTIVITY_HISTORY: patient.position_activity_history || patient.POSITION_ACTIVITY_HISTORY || [],
                 AMBULATION_HISTORY: patient.ambulation_history || patient.AMBULATION_HISTORY || [],
                 MORSE_HISTORY: patient.morse_history || patient.MORSE_HISTORY || [],
                 CALL_LIGHT_HISTORY: patient.call_light_history || patient.CALL_LIGHT_HISTORY || [],

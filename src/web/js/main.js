@@ -2479,26 +2479,22 @@
         console.log('🔍 Has CALL_LIGHT_IN_REACH?', data[0]?.CALL_LIGHT_IN_REACH);
 
         const columns = [
-            // Demographics (8 columns)
+            // Demographics (3 columns) - v2.10.0: Hidden Age, Gender, Class, Admitted, Status per clinician feedback
             { data: 'PATIENT_NAME', title: 'Patient', width: 160, renderer: patientNameRenderer, className: 'htMiddle htLeft' },
             { data: 'UNIT', title: 'Unit', width: 100, className: 'htMiddle htLeft' },
             { data: 'ROOM_BED', title: 'Room/Bed', width: 100, className: 'htMiddle htLeft' },
-            { data: 'AGE', title: 'Age', width: 60, className: 'htMiddle htCenter' },
-            { data: 'GENDER', title: 'Gender', width: 80, className: 'htMiddle htCenter' },
-            { data: 'PATIENT_CLASS', title: 'Class', width: 120, className: 'htMiddle htLeft' },
-            { data: 'ADMISSION_DATE', title: 'Admitted', width: 120, className: 'htMiddle htCenter' },
-            { data: 'STATUS', title: 'Status', width: 100, className: 'htMiddle htLeft' },
 
             // Clinical Events (11 columns - Issue #18: Reorganized with group headers)
             // Assessments Group (3 columns)
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
             { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, renderer: bmatLevelRenderer, className: 'htMiddle htCenter' },
             { data: 'MORSE_SCORE', title: 'Morse', width: 80, renderer: morseScoreRenderer, className: 'htMiddle htCenter' },
-            // Fall Prevention Group (2 columns) - v2.8.0: Removed Call Light, IV Sites, SCDs, Safety per clinician feedback
+            // Mobility Activity Group (5 columns) - v2.10.0: Reorganized per clinician feedback (Issue #24)
             { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
             { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
-            // Ambulation Group (1 column)
             { data: 'AMBULATION_DISTANCE', title: 'Amb Dist', width: 80, className: 'htMiddle htCenter' },
+            { data: 'TRANSFER_TYPE', title: 'Transfer Type', width: 100, className: 'htMiddle htLeft' },
+            { data: 'POSITION_ACTIVITY', title: 'Position', width: 120, className: 'htMiddle htLeft' },
             // PT/OT Group (2 columns)
             { data: 'PT_TRANSFER_ASSIST', title: 'PT Transfer', width: 100, className: 'htMiddle htLeft' },
             { data: 'OT_TRANSFER_ASSIST', title: 'OT Transfer', width: 100, className: 'htMiddle htLeft' }
@@ -2551,10 +2547,9 @@
             columns: columns,
             nestedHeaders: [
                 [
-                    { label: 'Demographics', colspan: 8 },
+                    { label: 'Demographics', colspan: 3 },
                     { label: 'Assessments', colspan: 3 },
-                    { label: 'Fall Prevention', colspan: 2 },
-                    { label: 'Ambulation', colspan: 1 },
+                    { label: 'Mobility Activity', colspan: 5 },
                     { label: 'PT / OT', colspan: 2 }
                 ],
                 columns.map(col => col.title)  // Column headers as second row
@@ -2584,9 +2579,9 @@
             // v1.33.0: Apply left/center alignment based on column
             cells: function(row, col) {
                 const cellProperties = {};
-                // Left-justified columns: 0-5 (Patient, Unit, Room/Bed, Alert, Screen, Time Zero)
-                // Center-justified columns: 6-15 (all others)
-                const alignment = (col <= 5) ? 'htLeft' : 'htCenter';
+                // Left-justified columns: 0-2 (Patient, Unit, Room/Bed) - v2.10.0: Removed Age, Gender, Class, Admitted, Status
+                // Center-justified columns: 3-12 (all clinical columns)
+                const alignment = (col <= 2) ? 'htLeft' : 'htCenter';
 
                 // Zebra striping
                 if (row % 2 === 0) {
@@ -2666,10 +2661,10 @@
             }
             });
 
-            // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7)
+            // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7, #24)
             app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
-                // Clinical event columns: 8-15 (Baseline, BMAT, Morse, Precautions, Toileting, Ambulation, PT, OT) - v2.8.0: Removed 4 columns
-                if (coords.col >= 8 && coords.col <= 15) {
+                // Clinical event columns: 3-12 (Baseline, BMAT, Morse, Precautions, Toileting, Amb Dist, Transfer Type, Position, PT, OT) - v2.10.0: Shifted after removing 5 demo cols
+                if (coords.col >= 3 && coords.col <= 12) {
                     console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
 
                     // Get metric template for this column
@@ -2907,10 +2902,9 @@
                 data: data,
                 nestedHeaders: [
                     [
-                        { label: 'Demographics', colspan: 8 },
+                        { label: 'Demographics', colspan: 3 },
                         { label: 'Assessments', colspan: 3 },
-                        { label: 'Fall Prevention', colspan: 2 },
-                        { label: 'Ambulation', colspan: 1 },
+                        { label: 'Mobility Activity', colspan: 5 },
                         { label: 'PT / OT', colspan: 2 }
                     ],
                     columns.map(col => col.title)
