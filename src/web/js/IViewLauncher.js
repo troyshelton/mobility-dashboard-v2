@@ -22,11 +22,17 @@ console.log('📊 [DEBUG] IViewLauncher.js script starting to load...');
     /**
      * iView Configuration - Band/Section mappings for clinical events
      *
-     * Update these values based on your Cerner environment's iView configuration
-     * To find correct values: Open iView in PowerChart and note the band/section names
+     * IMPORTANT (per uCern research):
+     * - Band name is auto-converted to lowercase by launchIView()
+     * - Section name must match EXACTLY as shown in iView UI
+     * - EventSet can be empty string '' (works per uCern thread)
+     *
+     * To find band names: Run CCL query on PREFDIR_GROUP/PREFDIR_DISPLAYNAME
+     * To find section names: Open iView in PowerChart and note exact names
      */
     const IVIEW_CONFIG = {
-        // Band name from screenshot: "Adult Systems Assessment"
+        // Band name from PREFDIR query: "Adult Systems Assessment"
+        // (will be auto-converted to lowercase: "adult systems assessment")
         defaultBand: 'Adult Systems Assessment',
 
         // Section mappings for each clinical event metric
@@ -34,50 +40,50 @@ console.log('📊 [DEBUG] IViewLauncher.js script starting to load...');
             // Morse Fall Risk Score - visible in screenshot as "Morse Fall Scale"
             morse: {
                 band: 'Adult Systems Assessment',
-                section: 'Morse Fall Scale',
-                eventSet: 'Morse Fall Scale'  // May need adjustment
+                section: 'Morse Fall Scale',  // Must match iView UI exactly
+                eventSet: ''  // Empty string works per uCern
             },
 
             // BMAT - visible in screenshot
             bmat: {
                 band: 'Adult Systems Assessment',
-                section: 'BMAT',
-                eventSet: 'BMAT'
+                section: 'BMAT',  // Must match iView UI exactly
+                eventSet: ''  // Empty string works per uCern
             },
 
             // Baseline Mobility - PLACEHOLDER (update after checking PowerChart)
             baseline: {
                 band: 'Adult Systems Assessment',
                 section: 'PLACEHOLDER_BASELINE',  // TODO: Find correct section name
-                eventSet: 'Baseline Mobility'
+                eventSet: ''
             },
 
             // Toileting Method - PLACEHOLDER (update after checking PowerChart)
             toileting: {
                 band: 'Adult Systems Assessment',
                 section: 'PLACEHOLDER_TOILETING',  // TODO: Find correct section name
-                eventSet: 'Toileting Offered ADL'
+                eventSet: ''
             },
 
             // Ambulation Distance - PLACEHOLDER (update after checking PowerChart)
             ambulation: {
                 band: 'Adult Systems Assessment',
                 section: 'PLACEHOLDER_AMBULATION',  // TODO: Find correct section name
-                eventSet: 'Ambulation Distance'
+                eventSet: ''
             },
 
             // PT Transfer - PLACEHOLDER (may be in different band - Rehab?)
             pt_transfer: {
                 band: 'Adult Systems Assessment',
                 section: 'PLACEHOLDER_PT',  // TODO: Find correct section name
-                eventSet: 'Transfer Bed to and From Chair Rehab'
+                eventSet: ''
             },
 
             // OT Transfer - PLACEHOLDER (may be in different band - Rehab?)
             ot_transfer: {
                 band: 'Adult Systems Assessment',
                 section: 'PLACEHOLDER_OT',  // TODO: Find correct section name
-                eventSet: 'Transfer Bed to and From Chair Rehab'
+                eventSet: ''
             }
         }
     };
@@ -92,10 +98,16 @@ console.log('📊 [DEBUG] IViewLauncher.js script starting to load...');
      * @param {number} encntrId - Patient encntr_id
      */
     function launchIView(bandName, sectionName, eventSetName, personId, encntrId) {
+        // Per uCern research: band name MUST be lowercase, eventSetName can be empty
+        // Section name must match exactly as shown in iView UI
+        const bandNameLower = bandName.toLowerCase();
+        const effectiveEventSet = eventSetName || '';  // Empty string works per uCern
+
         console.log('📊 LAUNCHING IVIEW via TASKDOC');
-        console.log('📊 Band:', bandName);
+        console.log('📊 Band (original):', bandName);
+        console.log('📊 Band (lowercase):', bandNameLower);
         console.log('📊 Section:', sectionName);
-        console.log('📊 Event Set:', eventSetName);
+        console.log('📊 Event Set:', effectiveEventSet || '(empty)');
         console.log('📊 Person ID:', personId);
         console.log('📊 Encounter ID:', encntrId);
 
@@ -105,8 +117,8 @@ console.log('📊 [DEBUG] IViewLauncher.js script starting to load...');
                 console.log('📊 DiscernObjectFactory available - creating TASKDOC object');
                 const taskObject = window.external.DiscernObjectFactory("TASKDOC");
 
-                console.log('📊 Launching iView...');
-                taskObject.LaunchIView(bandName, sectionName, eventSetName, personId, encntrId);
+                console.log('📊 Launching iView with lowercase band...');
+                taskObject.LaunchIView(bandNameLower, sectionName, effectiveEventSet, personId, encntrId);
                 console.log('📊 iView launch initiated');
             } catch (error) {
                 console.error('📊 Error launching iView:', error);
@@ -114,8 +126,8 @@ console.log('📊 [DEBUG] IViewLauncher.js script starting to load...');
             }
         } else {
             console.warn('📊 DiscernObjectFactory not available (not in PowerChart environment)');
-            console.log('📊 POC Mode: Would launch iView with:', { bandName, sectionName, eventSetName, personId, encntrId });
-            alert(`POC Mode: Would launch iView\n\nBand: ${bandName}\nSection: ${sectionName}\nEvent Set: ${eventSetName}\nPerson ID: ${personId}\nEncounter ID: ${encntrId}\n\n(iView launch only works in Cerner PowerChart environment)`);
+            console.log('📊 POC Mode: Would launch iView with:', { bandNameLower, sectionName, effectiveEventSet, personId, encntrId });
+            alert(`POC Mode: Would launch iView\n\nBand: ${bandNameLower}\nSection: ${sectionName}\nEvent Set: ${effectiveEventSet || '(empty)'}\nPerson ID: ${personId}\nEncounter ID: ${encntrId}\n\n(iView launch only works in Cerner PowerChart environment)`);
         }
     }
 
