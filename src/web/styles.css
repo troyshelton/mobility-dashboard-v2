@@ -329,6 +329,12 @@ body {
   height: 32px;
 }
 
+/* Override Handsontable read-only cell gray text color (htDimmed) */
+/* Default is #777 gray - change to black for better readability */
+.handsontable td.htDimmed {
+  color: #000 !important;
+}
+
 /* ========================================== */
 /* Patient Presence Indicator (Date Navigator Feature - v1.1.0-mobility) */
 /* ========================================== */
