@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.8.0-mobility
+**Version:** v2.9.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-13
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -27,7 +27,7 @@
 
 **Next Steps:**
 - 📊 Add remaining iView section names (Baseline, Toileting, Ambulation, PT, OT)
-- 🔧 Tag v2.8.0-mobility release
+- 🔧 Tag v2.9.0-mobility release
 - 🔧 Close GitHub issues #20, #21
 
 **Completed Work:**

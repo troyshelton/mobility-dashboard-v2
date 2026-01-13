@@ -7,6 +7,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.9.0-mobility] - 2026-01-13
+
+### Fixed (Issue #22)
+- **Handsontable Read-Only Font Color** - Override default gray text (#777) to black (#000)
+  - Added CSS rule for `.handsontable td.htDimmed` in styles.css
+  - Improves readability while keeping cells read-only
+  - Matches sepsis dashboard font color behavior
+
+---
+
 ## [2.8.0-mobility] - 2026-01-13
 
 ### Added (Issues #20, #21 - Clinician Feedback Enhancements)
