@@ -206,6 +206,24 @@ class SidePanelService {
         </div>
       ` : '';
 
+      // v2.8.0: Check for activity_id (Issue #21 - PowerForm link)
+      const activityId = entry.activity_id || entry.ACTIVITY_ID;
+      const hasActivityLink = activityId && this.currentPatient;
+
+      // Build value HTML - clickable link if PowerForm activity available
+      let valueHTML;
+      if (hasActivityLink) {
+        const personId = this.currentPatient.person_id || this.currentPatient.PERSON_ID;
+        const encntrId = this.currentPatient.encntr_id || this.currentPatient.ENCNTR_ID;
+        // PowerForm link: formId=0 (use activityId), chartMode=1 (view-only)
+        valueHTML = `<a href="javascript:void(0)" class="history-value-link"
+          onclick="PowerFormLauncher.launchPowerForm(${personId}, ${encntrId}, 0, ${activityId}, 1)"
+          title="Click to view PowerForm evaluation">
+          <i class="fas fa-external-link-alt" style="margin-right: 4px; font-size: 0.8em;"></i>${entry.value}</a>`;
+      } else {
+        valueHTML = entry.value;
+      }
+
       return `
         <div class="history-entry">
           <div class="history-datetime">
@@ -213,7 +231,7 @@ class SidePanelService {
             ${this._formatDateTime(entry.datetime)}
           </div>
           <div class="history-value">
-            ${entry.value}
+            ${valueHTML}
           </div>
           ${personnelHTML}
         </div>

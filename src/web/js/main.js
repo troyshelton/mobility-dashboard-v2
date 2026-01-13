@@ -2691,11 +2691,14 @@
                     console.log(`Historical data for ${metric.label}:`, historyData);
 
                     // Prepare patient info for panel
+                    // v2.8.0: Added person_id and encntr_id for PowerForm links (Issue #21)
                     const patientInfo = {
                         person_name: sourceData.PATIENT_NAME,
                         mrn: sourceData.MRN || 'N/A',
                         unit: sourceData.UNIT,
-                        roomBed: sourceData.ROOM_BED
+                        roomBed: sourceData.ROOM_BED,
+                        person_id: sourceData.PERSON_ID,
+                        encntr_id: sourceData.ENCNTR_ID
                     };
 
                     // Convert CCL datetime format to JavaScript Date objects
@@ -2732,6 +2735,10 @@
                         }
                         if (entry.PERFORMED_POSITION || entry.performed_position) {
                             result.performed_position = entry.PERFORMED_POSITION || entry.performed_position;
+                        }
+                        // v2.8.0: Include activity_id for PowerForm links (Issue #21)
+                        if (entry.ACTIVITY_ID || entry.activity_id) {
+                            result.activity_id = entry.ACTIVITY_ID || entry.activity_id;
                         }
                         return result;
                     });

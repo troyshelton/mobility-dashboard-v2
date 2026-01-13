@@ -10,8 +10,7 @@
      */
     const simulatorDefault = true; // Simulator mode enabled for local testing
 
-    // Simulator mode DISABLED for CERT - Ready for stakeholder demo (Issue #18)
-    // Column reorganization with professional group headers
+    // Simulator mode DISABLED for CERT deployment (Issue #21 - PT/OT Eval Links)
     window.SIMULATOR_CONFIG = {
         enabled: false  // DISABLED - using real CCL data
     };

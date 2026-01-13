@@ -795,18 +795,34 @@
                     DATETIME_DISPLAY: `${nowDisplay} 06:00`
                 }
             ],  // Multiple entries (documented throughout day)
+            // v2.8.0: Added ACTIVITY_ID for PowerForm link (Issue #21)
             pt_transfer_history: [
                 {
                     VALUE: 'Mod A',
                     COMMENT: '',
-                    DATETIME_DISPLAY: `${nowDisplay} 16:25`
+                    DATETIME_DISPLAY: `${nowDisplay} 16:25`,
+                    ACTIVITY_ID: 12345678  // Mock activity ID for PowerForm navigation
+                },
+                {
+                    VALUE: 'Min A',
+                    COMMENT: 'Good progress with transfers',
+                    DATETIME_DISPLAY: `${nowDisplay} 10:15`,
+                    ACTIVITY_ID: 12345677  // Previous eval
                 }
             ],  // PT assessments (periodic)
+            // v2.8.0: Added ACTIVITY_ID for PowerForm link (Issue #21)
             ot_transfer_history: [
                 {
                     VALUE: 'Max A',
                     COMMENT: '',
-                    DATETIME_DISPLAY: `${nowDisplay} 16:28`
+                    DATETIME_DISPLAY: `${nowDisplay} 16:28`,
+                    ACTIVITY_ID: 12345679  // Mock activity ID for PowerForm navigation
+                },
+                {
+                    VALUE: 'Mod A',
+                    COMMENT: 'Upper body strength improving',
+                    DATETIME_DISPLAY: `${nowDisplay} 09:30`,
+                    ACTIVITY_ID: 12345676  // Previous eval
                 }
             ],  // OT assessments (periodic)
             // v2.8.0: Added PERFORMED_BY and PERFORMED_POSITION for personnel tracking (Issue #20)

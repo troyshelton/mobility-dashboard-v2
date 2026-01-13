@@ -254,6 +254,34 @@
 }
 
 /* ============================================================================
+   PowerForm Links (v2.8.0 - Issue #21: PT/OT Eval Links)
+   ============================================================================ */
+.history-value-link {
+  color: #0066cc;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.history-value-link:hover {
+  color: #004499;
+  text-decoration: underline;
+}
+
+.history-value-link:active {
+  color: #003366;
+}
+
+.history-value-link i {
+  color: #5c9fd4;
+  transition: color 0.2s ease;
+}
+
+.history-value-link:hover i {
+  color: #0066cc;
+}
+
+/* ============================================================================
    History Footer (Entry Count)
    ============================================================================ */
 .history-footer {
