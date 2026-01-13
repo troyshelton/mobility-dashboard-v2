@@ -989,18 +989,18 @@
         "description": "Update CHANGELOG, README, CLAUDE.md; create PR; tag v2.8.0-mobility release; close Issue #20",
         "details": "",
         "testStrategy": "",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [],
         "priority": "high",
         "subtasks": [],
-        "updatedAt": "2026-01-13T16:34:37.066Z"
+        "updatedAt": "2026-01-13T16:37:41.067Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-01-13T16:34:37.067Z",
+      "lastModified": "2026-01-13T16:37:41.068Z",
       "taskCount": 23,
-      "completedCount": 20,
+      "completedCount": 21,
       "tags": [
         "master"
       ]
