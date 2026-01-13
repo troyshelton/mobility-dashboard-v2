@@ -3278,7 +3278,7 @@
         // Configure for message display: merge all columns, center text
         if (window.PatientListApp.state.handsontableInstance) {
             window.PatientListApp.state.handsontableInstance.updateSettings({
-                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 8 }],  // Merge all 8 columns
+                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 13 }],  // Merge all 13 columns
                 cells: function(row, col) {
                     return {
                         className: 'htCenter htMiddle',  // Center the message
@@ -3311,7 +3311,7 @@
 
             app.state.handsontableInstance.updateSettings({
                 data: messageData,
-                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 8 }],
+                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 13 }],
                 cells: function(row, col) {
                     return {
                         className: 'htCenter htMiddle',
@@ -3347,7 +3347,7 @@
             }];
             app.state.handsontableInstance.updateSettings({
                 data: messageData,
-                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 8 }],  // Merge all columns
+                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 13 }],  // Merge all columns
                 cells: function(row, col) {
                     return {
                         className: 'htCenter htMiddle',  // Center the message

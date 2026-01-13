@@ -10,9 +10,9 @@
      */
     const simulatorDefault = true; // Simulator mode enabled for local testing
 
-    // Simulator mode DISABLED for CERT deployment (Issue #24 - Transfer Type & Position Activity)
+    // Simulator mode ENABLED for local testing (Issue #26 - Message Span Fix)
     window.SIMULATOR_CONFIG = {
-        enabled: false  // DISABLED - using real CCL programs for CERT testing
+        enabled: true  // ENABLED - using mock data for local testing
     };
 
     console.log(`[Config] SIMULATOR_CONFIG initialized with enabled=${window.SIMULATOR_CONFIG.enabled} (simulator mode - using mock data)`);
