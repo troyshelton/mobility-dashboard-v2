@@ -224,8 +224,9 @@ Reply "approved" to deploy.
 ### v2.0.0-mobility: Side Panel Historical View (COMPLETE)
 
 **Branch:** feature/v2.0.0-side-panel
-**Issue:** [#3](https://github.com/troyshelton/mobility-dashboard-v2/issues/3) - Open
-**Status:** ✅ Implemented, deployed to CERT, validated
+**Issue:** [#3](https://github.com/troyshelton/mobility-dashboard-v2/issues/3) - Closed
+**PR:** [#4](https://github.com/troyshelton/mobility-dashboard-v2/pull/4) - Merged (2026-01-02)
+**Status:** ✅ Complete - Merged to main
 **Implementation Date:** 2026-01-02
 
 **✅ Implementation Complete:**
@@ -248,11 +249,6 @@ Reply "approved" to deploy.
 - ER Unit Dropdown - ER template placeholder removed
 - Patient Presence Indicator (Issue #2) - No longer needed
 - ~595 lines of code removed
-
-**📋 Next Steps:**
-- Create Pull Request for code review
-- Tag v2.0.0-mobility release
-- Stakeholder demonstration
 
 ### v1.1.0-mobility: Date Navigator (Archived as POC)
 
