@@ -270,19 +270,15 @@ Reply "approved" to deploy.
 - Outlook-style date controls, CCL date filtering, patient presence indicator
 - Tested locally + Azure CERT + CCL v04 compiled in Cerner CERT
 
-### Issue #2: Patient Presence Indicator (Low Priority)
+### Issue #2: Patient Presence Indicator (Closed)
 
-**Issue:** [#2](https://github.com/troyshelton/mobility-dashboard-v2/issues/2)
-**Status:** Phase 1 complete, marked low priority
+**Issue:** [#2](https://github.com/troyshelton/mobility-dashboard-v2/issues/2) - Closed (Won't Fix)
+**Status:** Closed - Feature no longer needed
 
-**Completed:**
-- Grayed-out rows for patients not admitted on selected date
-- Warning icon (⚠️), works with zebra striping
-- Direct DOM manipulation
-
-**Rationale for Low Priority:**
-- 3-day lookback (Issue #3) makes admission date edge cases rare
-- Still available if needed for future enhancements
+**Rationale for Closure:**
+- Designed to support Date Navigator (Issue #1), which was archived
+- Side Panel pattern (Issue #3) replaced global date navigation
+- Without date navigation, patient presence indicators unnecessary
 
 ### v1.0.0-mobility: Demographics Foundation (Complete)
 

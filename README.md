@@ -32,7 +32,7 @@
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
-- ✅ Issue #2 (Presence Indicator) - Removed (not needed with historical view)
+- ✅ Issue #2 (Presence Indicator) - Closed (won't fix, Date Navigator removed)
 - ✅ Issue #3 (Side Panel) - COMPLETE and deployed
 - ✅ Issues #5-#18 - All clinical events and column organization
 - ✅ Issues #20, #21 - iView and PowerForm links
