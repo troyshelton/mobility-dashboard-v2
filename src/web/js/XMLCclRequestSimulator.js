@@ -777,6 +777,8 @@
             TRANSFER_TYPE_DT_TM: `${nowDisplay} 13:13`,
             POSITION_ACTIVITY: 'Turn & positioned - left, Log roll',
             POSITION_ACTIVITY_DT_TM: `${nowDisplay} 12:59`,
+            // Issue #27 - Activity Orders (v2.11.0)
+            ACTIVITY_ORDER_COUNT: 5,
             ACTIVE_PRECAUTION_COUNT: 7,
             // Historical Arrays - 30-Day History (Issue #3, #5, #7, #8, #9, #10, #11, #16)
             bmat_history: generateHistoricalData.call(this, 3, 2, 6),  // 6 entries: levels 1-4 progression
@@ -876,6 +878,39 @@
                     DATETIME_DISPLAY: `${nowDisplay} 06:00`
                 }
             ],  // Patient positioning (turning/repositioning)
+            // Issue #27 - Activity Orders (v2.11.0)
+            activity_orders: [
+                {
+                    ORDER_NAME: 'Ambulate',
+                    ORDER_DETAIL: `${nowDisplay} 17:37:00 EST, Stop date ${nowDisplay} 17:37:00 EST`,
+                    DATETIME_DISPLAY: `${nowDisplay} 17:36`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    ORDER_NAME: 'Bedrest',
+                    ORDER_DETAIL: `${nowDisplay} 17:36:00 EST, Reason: Multiple fractures`,
+                    DATETIME_DISPLAY: `${nowDisplay} 17:36`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    ORDER_NAME: 'Up to Chair',
+                    ORDER_DETAIL: `${nowDisplay} 17:37:00 EST, Daily`,
+                    DATETIME_DISPLAY: `${nowDisplay} 17:36`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    ORDER_NAME: 'Up with Assistance',
+                    ORDER_DETAIL: `${nowDisplay} 17:37:00 EST`,
+                    DATETIME_DISPLAY: `${nowDisplay} 17:36`,
+                    ORDER_STATUS: 'Ordered'
+                },
+                {
+                    ORDER_NAME: 'Out of Bed',
+                    ORDER_DETAIL: `${nowDisplay} 17:37:00 EST, 3 days, Out of Bed with Assistance`,
+                    DATETIME_DISPLAY: `${nowDisplay} 17:36`,
+                    ORDER_STATUS: 'Ordered'
+                }
+            ],
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

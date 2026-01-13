@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.10.0-mobility
+**Version:** v2.11.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-13
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -9,20 +9,19 @@
 
 ## Current Status
 
-**Latest:** v2.10.0 Transfer Type & Patient Position Activity (Issue #24)
+**Latest:** v2.11.0 Activity Orders Column (Issues #26, #27)
 **Status:** ✅ CERT Validated - Pending Production Deployment
-**Issue:** #24 - Transfer Type & Position Activity
+**Issues:** #26 - Message Span Fix, #27 - Activity Orders Column
 
-**v2.10.0 Changes (2026-01-13):**
-- ✅ Added Transfer Type column (iView documentation)
-- ✅ Added Patient Position Activity column (iView documentation)
-- ✅ Reorganized columns under "Mobility Activity" group header
-- ✅ Hidden 5 demographic columns (Age, Gender, Class, Admitted, Status)
-- ✅ CCL v14 with uar_get_code_by pattern for event codes
+**v2.11.0 Changes (2026-01-13):**
+- ✅ Fixed "Select a patient list" message to span all columns (Issue #26)
+- ✅ Added Activity Orders column for patient mobility level (Issue #27)
+- ✅ CCL v15 with specific activity orders per Tina Stampler's list
+- ✅ Activity orders: Bedrest, Bedrest Care, Bedrest w/ BSC, Bedrest w/ BRP, Up to Chair, Up with Assistance, Ambulate, Out of Bed
 - ✅ CERT deployed and validated
 
-**Column Layout (13 columns):**
-| Demographics (3) | Assessments (3) | Mobility Activity (5) | PT/OT (2) |
+**Column Layout (14 columns):**
+| Demographics (3) | Assessments (3) | Mobility Activity (6) | PT/OT (2) |
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html

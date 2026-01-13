@@ -7,6 +7,36 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.11.0-mobility] - 2026-01-13
+
+### Fixed (Issue #26)
+- **Message Span Fix** - "Select a patient list" message now spans all columns
+  - Updated mergeCells colspan from 8 to 14 (3 locations in main.js)
+
+### Added (Issue #27 - Activity Orders Column)
+- **Activity Column** - Shows active Patient Care orders for patient activity level
+  - Orders: Bedrest (4 types), Up to Chair, Up with Assistance, Ambulate, Out of Bed
+  - Display: Count in cell (80px width, center aligned)
+  - Side Panel: Order list with name, detail, datetime, status
+  - **CCL v15:** Added SELECT 7 for specific activity orders per Tina Stampler
+  - **Source:** Clinician feedback - activity orders show what patient should be doing
+
+### Changed
+- **Column Layout** - Now 14 columns total
+  - Demographics (3): Patient, Unit, Room/Bed
+  - Assessments (3): Baseline, BMAT, Morse
+  - Mobility Activity (6): Activity, Precautions, Toileting, Amb Dist, Transfer Type, Position
+  - PT/OT (2): PT Transfer, OT Transfer
+- **PatientDataService.js** - Added activity_orders MetricTemplate, shifted all column indexes (+1)
+- **main.js** - Added Activity column, updated nestedHeaders (colspan 6), click handler range (3-13)
+- **XMLCclRequestSimulator.js** - Added activity orders mock data (5 orders)
+
+### Technical Notes
+- **Activity vs Precautions:** Activity shows general mobility orders (bedrest, ambulate, etc.); Precautions shows specific restrictions (weight bearing, hip precautions, spine restrictions)
+- **CCL Pattern:** Uses IN clause with 8 specific order names via uar_get_code_by()
+
+---
+
 ## [2.10.0-mobility] - 2026-01-13
 
 ### Added (Issue #24 - Transfer Type & Patient Position Activity)

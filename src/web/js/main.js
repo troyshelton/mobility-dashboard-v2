@@ -2489,7 +2489,8 @@
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
             { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, renderer: bmatLevelRenderer, className: 'htMiddle htCenter' },
             { data: 'MORSE_SCORE', title: 'Morse', width: 80, renderer: morseScoreRenderer, className: 'htMiddle htCenter' },
-            // Mobility Activity Group (5 columns) - v2.10.0: Reorganized per clinician feedback (Issue #24)
+            // Mobility Activity Group (6 columns) - v2.11.0: Added Activity Orders (Issue #27)
+            { data: 'ACTIVITY_ORDER_COUNT', title: 'Activity', width: 80, className: 'htMiddle htCenter' },
             { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
             { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
             { data: 'AMBULATION_DISTANCE', title: 'Amb Dist', width: 80, className: 'htMiddle htCenter' },
@@ -2549,7 +2550,7 @@
                 [
                     { label: 'Demographics', colspan: 3 },
                     { label: 'Assessments', colspan: 3 },
-                    { label: 'Mobility Activity', colspan: 5 },
+                    { label: 'Mobility Activity', colspan: 6 },
                     { label: 'PT / OT', colspan: 2 }
                 ],
                 columns.map(col => col.title)  // Column headers as second row
@@ -2663,8 +2664,8 @@
 
             // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7, #24)
             app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
-                // Clinical event columns: 3-12 (Baseline, BMAT, Morse, Precautions, Toileting, Amb Dist, Transfer Type, Position, PT, OT) - v2.10.0: Shifted after removing 5 demo cols
-                if (coords.col >= 3 && coords.col <= 12) {
+                // Clinical event columns: 3-13 (Baseline, BMAT, Morse, Activity, Precautions, Toileting, Amb Dist, Transfer Type, Position, PT, OT) - v2.11.0: Added Activity Orders
+                if (coords.col >= 3 && coords.col <= 13) {
                     console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
 
                     // Get metric template for this column
@@ -2904,7 +2905,7 @@
                     [
                         { label: 'Demographics', colspan: 3 },
                         { label: 'Assessments', colspan: 3 },
-                        { label: 'Mobility Activity', colspan: 5 },
+                        { label: 'Mobility Activity', colspan: 6 },
                         { label: 'PT / OT', colspan: 2 }
                     ],
                     columns.map(col => col.title)
@@ -3278,7 +3279,7 @@
         // Configure for message display: merge all columns, center text
         if (window.PatientListApp.state.handsontableInstance) {
             window.PatientListApp.state.handsontableInstance.updateSettings({
-                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 13 }],  // Merge all 13 columns
+                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 14 }],  // Merge all 13 columns
                 cells: function(row, col) {
                     return {
                         className: 'htCenter htMiddle',  // Center the message
@@ -3311,7 +3312,7 @@
 
             app.state.handsontableInstance.updateSettings({
                 data: messageData,
-                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 13 }],
+                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 14 }],
                 cells: function(row, col) {
                     return {
                         className: 'htCenter htMiddle',
@@ -3347,7 +3348,7 @@
             }];
             app.state.handsontableInstance.updateSettings({
                 data: messageData,
-                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 13 }],  // Merge all columns
+                mergeCells: [{ row: 0, col: 0, rowspan: 1, colspan: 14 }],  // Merge all columns
                 cells: function(row, col) {
                     return {
                         className: 'htCenter htMiddle',  // Center the message
