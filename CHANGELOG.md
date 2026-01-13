@@ -7,6 +7,41 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.8.0-mobility] - 2026-01-13
+
+### Added (Issues #20, #21 - Clinician Feedback Enhancements)
+
+#### Issue #20: Links to iView/Documentation
+- **IViewLauncher.js** - New service for launching Cerner Interactive View (iView)
+  - Uses TASKDOC DiscernObjectFactory pattern: `window.external.DiscernObjectFactory("TASKDOC")`
+  - LaunchIView API: `taskObject.LaunchIView(bandName, sectionName, eventSetName, personId, encntrId)`
+  - **Key Fix:** Band name MUST be lowercase (per uCern research)
+  - Section name must match exactly as shown in iView UI
+  - EventSetName can be empty string ""
+- **"Open in iView" Button** - Appears in side panel for configured metrics
+  - Shows for: Morse Fall Scale, BMAT
+  - Placeholder sections for: Baseline, Toileting, Ambulation, PT Transfer, OT Transfer
+  - Launches directly to correct band/section in Cerner iView
+- **IVIEW_CONFIG** - Configuration object mapping metrics to iView band/sections
+  - Band: "Adult Systems Assessment" (valid per PREFDIR query)
+  - Sections: "Morse Fall Scale", "BMAT" (match iView UI exactly)
+
+#### Issue #21: PT/OT Eval Links
+- **PowerForm Links in Side Panel** - Historical entries now clickable
+  - Links to original PowerForm document using activity_id
+  - Uses existing PowerFormLauncher.js with MPAGES_EVENT("POWERFORM")
+  - Pattern: `PowerFormLauncher.launchPowerForm(personId, encntrId, 0, activityId, 1)`
+  - formId=0 (use activityId), chartMode=1 (view-only mode)
+- **Activity ID Support** - CCL returns dcp_forms_activity_id for PT/OT history
+- **Personnel Display** - Shows who documented each entry (performed_by, performed_position)
+
+### Technical Notes
+- **iView Navigation Research:** Band name must be lowercase, section name case-sensitive
+- **uCern Reference:** Thread on LaunchIView parameter requirements
+- **Valid Band Names:** Queried from PREFDIR_GROUP/PREFDIR_DISPLAYNAME tables
+
+---
+
 ## [2.7.0-mobility] - 2026-01-03
 
 ### Changed (Issue #18 - Column Reorganization for Stakeholder Demo)

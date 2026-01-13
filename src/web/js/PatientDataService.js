@@ -36,49 +36,13 @@
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // Fall Prevention Interventions Group
-        call_light: {
-            key: 'call_light',
-            label: 'Call Light & Personal Items Within Reach',
-            currentField: 'call_light_in_reach',
-            historyField: 'call_light_history',
-            columnIndex: 11,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        iv_sites: {
-            key: 'iv_sites',
-            label: 'IV Sites Assessed',
-            currentField: 'iv_sites_assessed',
-            historyField: 'iv_sites_history',
-            columnIndex: 12,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        scds: {
-            key: 'scds',
-            label: 'SCDs Applied',
-            currentField: 'scds_applied',
-            historyField: 'scds_history',
-            columnIndex: 13,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
-        safety_needs: {
-            key: 'safety_needs',
-            label: 'Psychosocial and Safety Needs Addressed',
-            currentField: 'safety_needs_addressed',
-            historyField: 'safety_needs_history',
-            columnIndex: 14,
-            dataType: 'simple',
-            valueField: 'VALUE'
-        },
+        // Fall Prevention Group - v2.8.0: Removed Call Light, IV Sites, SCDs, Safety per clinician feedback
         activity_precautions: {
             key: 'activity_precautions',
             label: 'Activity Precautions',
             currentField: 'active_precaution_count',
             historyField: 'activity_precautions',
-            columnIndex: 15,
+            columnIndex: 11,
             dataType: 'complex',
             fieldMapping: {
                 primary: 'PRECAUTION_NAME',
@@ -92,19 +56,22 @@
             label: 'Toileting Method',
             currentField: 'toileting_method',
             historyField: 'toileting_history',
-            columnIndex: 16,
+            columnIndex: 12,
             dataType: 'simple',
             valueField: 'VALUE'
         },
-        // Ambulation Group
+        // Ambulation Group - v2.8.0: Added personnel tracking (Issue #20)
         ambulation: {
             key: 'ambulation',
             label: 'Ambulation Distance',
             currentField: 'ambulation_distance',
             historyField: 'ambulation_history',
-            columnIndex: 17,
+            columnIndex: 13,
             dataType: 'simple',
-            valueField: 'VALUE'
+            valueField: 'VALUE',
+            hasPersonnel: true,  // v2.8.0: Shows who documented (PT, OT, Nursing, Cardiac Rehab)
+            personnelField: 'PERFORMED_BY',
+            positionField: 'PERFORMED_POSITION'
         },
         // PT/OT Group
         pt_transfer: {
@@ -112,7 +79,7 @@
             label: 'PT Transfer (Bed to Chair)',
             currentField: 'pt_transfer_assist',
             historyField: 'pt_transfer_history',
-            columnIndex: 18,
+            columnIndex: 14,
             dataType: 'simple',
             valueField: 'VALUE'
         },
@@ -121,7 +88,7 @@
             label: 'OT Transfer (Bed to Chair)',
             currentField: 'ot_transfer_assist',
             historyField: 'ot_transfer_history',
-            columnIndex: 19,
+            columnIndex: 15,
             dataType: 'simple',
             valueField: 'VALUE'
         }
@@ -129,7 +96,7 @@
 
     /**
      * Get metric template by column index
-     * @param {number} columnIndex - Handsontable column index (8-19)
+     * @param {number} columnIndex - Handsontable column index (8-15)
      * @returns {Object|null} Metric template or null if not a metric column
      */
     function getMetricByColumnIndex(columnIndex) {

@@ -141,6 +141,30 @@ class SidePanelService {
   _renderPatientInfo(patient) {
     const infoDiv = this.panel.querySelector('.panel-patient-info');
 
+    // v2.8.0 Issue #20: Check if iView is configured for this metric
+    console.log('📊 [DEBUG] _renderPatientInfo called');
+    console.log('📊 [DEBUG] this.currentMetric:', this.currentMetric);
+    console.log('📊 [DEBUG] window.IViewLauncher exists:', !!window.IViewLauncher);
+    console.log('📊 [DEBUG] window.IViewLauncher:', window.IViewLauncher);
+
+    const iViewConfigured = window.IViewLauncher && window.IViewLauncher.isIViewConfigured(this.currentMetric);
+    console.log('📊 [DEBUG] iViewConfigured result:', iViewConfigured);
+
+    const personId = patient.person_id || patient.PERSON_ID;
+    const encntrId = patient.encntr_id || patient.ENCNTR_ID;
+    console.log('📊 [DEBUG] personId:', personId, 'encntrId:', encntrId);
+
+    // Build iView button HTML if configured
+    const iViewButtonHTML = iViewConfigured ? `
+      <div class="panel-iview-link">
+        <a href="javascript:void(0)" class="iview-link-btn"
+          onclick="IViewLauncher.launchIViewForMetric('${this.currentMetric}', ${personId}, ${encntrId})"
+          title="Open in Interactive View (iView)">
+          <i class="fas fa-external-link-square-alt"></i> Open in iView
+        </a>
+      </div>
+    ` : '';
+
     infoDiv.innerHTML = `
       <div class="patient-info-grid">
         <div class="patient-info-row">
@@ -156,6 +180,7 @@ class SidePanelService {
           <span class="patient-info-value">${patient.unit || patient.location || 'N/A'} ${patient.roomBed ? '- ' + patient.roomBed : ''}</span>
         </div>
       </div>
+      ${iViewButtonHTML}
     `;
   }
 
@@ -191,17 +216,52 @@ class SidePanelService {
       </div>
     ` : '';
 
-    const historyHTML = historyData.map(entry => `
-      <div class="history-entry">
-        <div class="history-datetime">
-          <i class="far fa-clock"></i>
-          ${this._formatDateTime(entry.datetime)}
+    const historyHTML = historyData.map(entry => {
+      // v2.8.0: Check for personnel info (Issue #20 - who documented ambulation)
+      const hasPersonnel = entry.performed_by || entry.PERFORMED_BY;
+      const performedBy = entry.performed_by || entry.PERFORMED_BY || '';
+      const performedPosition = entry.performed_position || entry.PERFORMED_POSITION || '';
+
+      // Build personnel display if available
+      const personnelHTML = hasPersonnel ? `
+        <div class="history-personnel">
+          <i class="fas fa-user-nurse"></i>
+          <span class="personnel-name">${performedBy}</span>
+          ${performedPosition ? `<span class="personnel-position">(${performedPosition})</span>` : ''}
         </div>
-        <div class="history-value">
-          ${entry.value}
+      ` : '';
+
+      // v2.8.0: Check for activity_id (Issue #21 - PowerForm link)
+      const activityId = entry.activity_id || entry.ACTIVITY_ID;
+      const hasActivityLink = activityId && this.currentPatient;
+
+      // Build value HTML - clickable link if PowerForm activity available
+      let valueHTML;
+      if (hasActivityLink) {
+        const personId = this.currentPatient.person_id || this.currentPatient.PERSON_ID;
+        const encntrId = this.currentPatient.encntr_id || this.currentPatient.ENCNTR_ID;
+        // PowerForm link: formId=0 (use activityId), chartMode=1 (view-only)
+        valueHTML = `<a href="javascript:void(0)" class="history-value-link"
+          onclick="PowerFormLauncher.launchPowerForm(${personId}, ${encntrId}, 0, ${activityId}, 1)"
+          title="Click to view PowerForm evaluation">
+          <i class="fas fa-external-link-alt" style="margin-right: 4px; font-size: 0.8em;"></i>${entry.value}</a>`;
+      } else {
+        valueHTML = entry.value;
+      }
+
+      return `
+        <div class="history-entry">
+          <div class="history-datetime">
+            <i class="far fa-clock"></i>
+            ${this._formatDateTime(entry.datetime)}
+          </div>
+          <div class="history-value">
+            ${valueHTML}
+          </div>
+          ${personnelHTML}
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     contentDiv.innerHTML = `
       ${sparklineHTML}

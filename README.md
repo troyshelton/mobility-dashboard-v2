@@ -1,44 +1,41 @@
 # Mobility Dashboard
 
-**Version:** v2.7.0-mobility
+**Version:** v2.8.0-mobility
 **Type:** Healthcare Production Dashboard
-**Last Updated:** 2026-01-03
+**Last Updated:** 2026-01-13
 **Source:** Based on er-tracking-dashboard-template v1.0.0
 
 ---
 
 ## Current Status
 
-**Latest:** PT/OT Transfer Assessments from PowerForm Discrete Grids
+**Latest:** v2.8.0 Clinician Feedback Enhancements (iView Links, PowerForm Links)
 **Status:** ✅ COMPLETE - Deployed to CERT and Validated
-**Issues:** #3, #5, #7, #8, #9, #10, #11 - All CLOSED
+**Issues:** #20 (iView Links), #21 (PT/OT Eval Links) - CLOSED
 
-**Implementation Complete (2026-01-02):**
-- ✅ CCL v10 with 10 clinical events + PowerForm discrete grid navigation
-- ✅ Side panel UI component (slide-in, backdrop, 3 close methods)
-- ✅ PT Transfer from PT Acute Evaluation (column 11)
-- ✅ OT Transfer from OT Acute Evaluation (column 12)
-- ✅ 4-level PowerForm hierarchy pattern (PowerForm → Section → Grid → Event)
-- ✅ Baseline Mobility from PowerForm (column 9)
-- ✅ Toileting Method from I-View documentation (column 10)
-- ✅ Automatic sparklines for numeric data
-- ✅ CERT validated with real PT/OT assessment data
+**v2.8.0 Implementation Complete (2026-01-13):**
+- ✅ **IViewLauncher.js** - TASKDOC DiscernObjectFactory pattern for iView navigation
+- ✅ **"Open in iView" Button** - Side panel links to Morse Fall Scale, BMAT sections
+- ✅ **PowerForm Links** - Historical PT/OT entries link to original PowerForm documents
+- ✅ **Personnel Display** - Shows who documented each entry
+- ✅ **Lowercase Band Name Fix** - Per uCern research (band MUST be lowercase)
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
-- **CCL:** v10 compiled in Cerner CERT
-- **Status:** Working with 10 clinical events + PowerForm discrete grids
+- **CCL:** v12 compiled in Cerner CERT
+- **Status:** Working with iView navigation and PowerForm links
 
 **Next Steps:**
-- 📊 Stakeholder demonstration of PT/OT Transfers
-- 🔧 Add PT/OT comments (v2.6.0 - requires ce_event_note pattern)
-- 🔧 Complete TLSO/LSO braces (pending CERT order placement)
-- 🚀 Plan v2.6.0 release
+- 📊 Add remaining iView section names (Baseline, Toileting, Ambulation, PT, OT)
+- 🔧 Tag v2.8.0-mobility release
+- 🔧 Close GitHub issues #20, #21
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
 - ✅ Issue #2 (Presence Indicator) - Removed (not needed with historical view)
 - ✅ Issue #3 (Side Panel) - COMPLETE and deployed
+- ✅ Issues #5-#18 - All clinical events and column organization
+- ✅ Issues #20, #21 - iView and PowerForm links
 
 ---
 

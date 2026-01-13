@@ -1,0 +1,925 @@
+
+Speaker 1 00:01 
+Is it the mobility on the little header on Turner? 
+
+Speaker 2 00:05 
+That should be on. 
+
+Speaker 1 00:06 
+Mine says for four or three forbidden. 
+
+Speaker 2 00:11 
+Oh, really? Can I see that, Tracy? 
+
+Speaker 1 00:14 
+Um, yeah, I mean how would I do that? 
+
+Speaker 2 00:19 
+Take a share, maybe? Yeah, thanks. 
+
+Speaker 1 00:22 
+pull up my screen. 
+
+Speaker 2 00:23 
+Okay, thank you. 
+
+Speaker 1 00:27 
+There we go. 
+
+Speaker 2 00:42 
+And Tracy, what position are you in? 
+
+Speaker 1 00:45 
+I'm an open heart manager. 
+
+Speaker 2 00:48 
+Um, but I mean, Cerner, is it nurse, nurse manager? 
+
+Speaker 1 00:52 
+I'm going to be manager. 
+
+Speaker 2 00:54 
+Okay. Is it shared? No, not yet. 
+
+Speaker 1 01:15 
+I don't know why it won't let me share. 
+
+Speaker 2 01:19 
+that I'm trying to log into right now. So just to make sure that we all have access still. Oh, it looks like it. Is it shared now? Oh, that's not it. Synapse? There is probably another mobility. 
+
+Speaker 1 01:39 
+I used, let me show you what I did. 
+
+Speaker 2 01:42 
+Please. 
+
+Speaker 1 01:44 
+I went here to mobility here. 
+
+Speaker 2 01:49 
+Oh, it's okay. So if you go to nori, oh, no worries. Let's go to a different one.
+
+Where do I go? I'm trying to see if you have it displaying maybe hidden somewhere. Do you have like a drop down arrow? Maybe? Can we go to patient maybe or view on the top left? Nope, not that one. Let's go try patient. No, I don't see it. Trying to look at is there and you don't have a patient. I'm just gonna go lock back in. 
+
+Speaker 1 02:41 
+Did anybody else have any luck? 
+
+Speaker 3 02:47 
+I'm still trying to get there. 
+
+Speaker 4 02:50 
+I have access, but my lists, like I'm not able to see any of the patients inpatient, just like our cardiac rehab lists in general. 
+
+Speaker 2 03:01 
+Was that Hannah? 
+
+Speaker 1 03:04 
+Yes, and where did you go? Where did you? Did you have mobility on your dashboard? 
+
+Speaker 4 03:08 
+Yeah, it's up at the top. It's a CMC Mobility M page. That's what I clicked on. 
+
+Speaker 1 03:13 
+I don't have that, I don't think. 
+
+Speaker 2 03:19 
+Yeah, I'm trying to look at your screen. How about the far right? There's some arrows down below here. That one now. Let's try the one with that one. I don't think it's been added to your position.
+
+I think Tracy, I think you're a nurse manager. Yes. But then Hannah, exercise physiologist, right? Yes, that's correct. Yeah, so it's been added to yours. So I'll let core team know, Tracy. 
+
+Speaker 1 03:58 
+John, did you guys have it? 
+
+Speaker 5 04:01 
+I tried everything I could think of. 
+
+Speaker 6 04:03 
+I don't have it either. 
+
+Speaker 3 04:06 
+I was entering nurse manager and I still didn't I don't have it. I'm trying to log back in and I had to reset to just nurse 
+
+Speaker 2 04:14 
+Okay, from using my not going to get to 
+
+Speaker 3 04:16 
+thing that we even associate with patients. 
+
+Speaker 2 04:21 
+So you can see the mobility on page, but you're not able to. 
+
+Speaker 3 04:25 
+I'm still working on getting there. I couldn't yesterday. I mean, you said that no doubt yesterday or I saw that I didn't get a chance to try it because I'd say it's just been crazy. 
+
+Speaker 2 04:36 
+How about you, Hannah? Can you share your screen so we can see? 
+
+Speaker 4 04:41 
+Yeah, give me just a second. 
+
+Speaker 2 04:42 
+Thank you. 
+
+Speaker 1 04:42 
+Thank you. Perry, do you have it? No. 
+
+Speaker 2 04:47 
+I think Carrie's a nurse manager though, so I think across the board, anyone in the nurse manager position probably won't work. 
+
+Speaker 4 04:58 
+OK, can you see my screen? 
+
+Speaker 2 04:59 
+Mm hmm. Yeah, so go back to select patient lists. So those are your 
+
+Speaker 4 05:08 
+Yeah, those are for our outpatient cardiac. We have classes. Okay. And I have one from ability, but it's one I developed a long time ago. 
+
+Speaker 2 05:15 
+Let's see what happens if you pick mobility or, sure. OK. 
+
+Speaker 4 05:23 
+But will I have access to the inpatient OHPC and open heart recovery? Because those are the floors that I need. 
+
+Speaker 2 05:31 
+Mm hmm. Yeah, so the answer would be yes, it's based on your patient list. So on your top left on your right, right below your task menu. Keep on going right there. Task. I mean, sorry, patient lists. The one right below. Yep. So these are your that's what's displaying. It's based on your patient list 8 930 11 o'clock.
+
+So if you wanted to create a new one, you go to the wrench and then you create a new patient list. Are you familiar with building a patient list Hannah? 
+
+Speaker 4 06:06 
+I've done it before. I did one with mobility, so that was easier for me to see when I was working as a mobility person on Open Heart OHDC, but I have not missed with it in a very long time. 
+
+Speaker 2 06:19 
+So you do have an OHR right there. So can you go back to the wrench? And then and then just add it. Okay, can you move one of those over first and then yeah, remove, you know, slide to the left and then yep, and then that one. Say okay.
+
+Now go back to the end page. Refresh probably. And then you should see. So there's one patient in there. 
+
+Speaker 4 06:55 
+And again, my settings may have been messed up because I played around with this to try and figure it out on my own. So I may just need to go back in and recreate that list. 
+
+Speaker 2 07:06 
+That's correct. That's correct.
+
+Okay. Okay, Barry, my dog's in the background. Um, but in regards to that, I mean, it appears like it's working for you. Um, Tina, if I don't mind, if you don't mind, would you be able to log in and I know you, you charted on some patients, right? Nope, I can't hear you, Tina. 
+
+Speaker 1 07:43 
+We can't hear you, Tina, if you're talking to us. 
+
+Speaker 5 07:45 
+I am talking away didn't realize I was with me. Yes, I will log in. I'm just trying to do a million things at once. And let me find here where my cert is that I'm sorry, I gotta log in. 
+
+Speaker 2 08:01 
+No problem. 
+
+Speaker 5 08:14 
+So since I was late, what did everybody think of the, of what you've built so far? 
+
+Speaker 2 08:21 
+We haven't had a chance to test it yet, Tina. Core team is in the process of adding, I thought they were done, but nurse manager position hasn't been added.
+
+I don't think so. John, Jonathan, Tracy, wasn't able to see it based on what I saw on their screen. So if you, Tina, what is your position? 
+
+Speaker 5 08:51 
+Oh, well, I go to my experience and change the different positions, so I don't know which one it was on. I'll have to look to see which one it was on, which they can do inside of CERT as well. 
+
+Speaker 2 09:05 
+so they can go from nurse manager to nurse. 
+
+Speaker 3 09:07 
+They should be able to. Oh yeah, I'm in it now. I just didn't know that's why I wouldn't let me in yesterday. 
+
+Speaker 2 09:15 
+That makes sense. So it's just more of a role, the nurse manager. Yeah, and they're all in the nurse position. Okay. 
+
+Speaker 5 09:27 
+When you're like, I've got a bunch just because of the position I was in before, I've got everybody listed. Not everybody has all of these on there, but they should have a regular nurse to nurse manager that's on here.
+
+And I think I leave mine defaulted to nurse, okay
+
+Speaker 2 09:48 
+So what I did is, based on those of us that are on this meeting, I just went in to check your current position, so whatever you're on, that's what I added or requested. 
+
+Speaker 5 10:09 
+So I really liked it. 
+
+Speaker 6 10:11 
+end of the cert domain or are they under pride? 
+
+Speaker 5 10:14 
+So you can't go into prod it has to be third 
+
+Speaker 6 10:17 
+That's what I'm saying, that's what I was wondering if people are trying to underserve. 
+
+Speaker 2 10:21 
+Mm-hmm. Yeah Should be should be certain only Yeah, I quit 
+
+Speaker 5 10:29 
+No, I did. If you wanted me to go over what I liked about it, all the things that you did. So I love the baseline being here. This was one thing that everybody wanted to be able to have a visual of what the baseline was.
+
+And when you touch it, it opens up from the side to give you what their baseline is exactly. Level four is no limitation with walking. Then this is your most current BMAT score, and then it has other scores on here as well. You can even put a nice little graph. It shows the track and trending of what their mobility of people, what they are marking them anyway for it. So I did like that, and of course you can come down to see much more. He put it at 30 days, you can see all that. That's a lot to be able to review. 
+
+Speaker 2 11:26 
+But is that is that too much should it be 714 or what do you guys? 
+
+Speaker 5 11:33 
+That's up to what they want to see. To me, what you see on the screen here is fine, but I didn't realize till later, I was like, wow, there's all, every one of them that are on here in the past 30 days. 
+
+Speaker 2 11:44 
+Yeah, and I did that just to let you know it is dynamic it could I purposely did it to 30 days So then I can make sure that all the data is Visible and I can see trends But it's whatever you guys want. I as long as you can see the data and test it and do your work really
+
+Speaker 1 12:07 
+are all the tools like that is like ambulation like that too? Yep. Wonderful. Yeah. 
+
+Speaker 5 12:14 
+He fixed it to where I think all of these do it. 
+
+Speaker 2 12:18 
+They're all 30. 
+
+Speaker 5 12:18 
+they've been valued like some of these have only been valued once. 
+
+Speaker 1 12:24 
+Does it say who walked them or just says they walked? We don't know who. 
+
+Speaker 2 12:30 
+it doesn't display. That's fine. Yeah. I can. I'm pulling the data so I can. 
+
+Speaker 1 12:38 
+Well, I didn't know if that was pulling from me and like cardiac rehab and fiscal like all ambulation probably. 
+
+Speaker 5 12:45 
+It's whoever shares that DTA with us and I don't think PT shares that DTA with us. you 
+
+Speaker 1 12:55 
+They PT does to like how far they ambulate in our charts. 
+
+Speaker 5 13:00 
+They do, but I don't think it's the same DTA. 
+
+Speaker 1 13:04 
+It's the same box we chart in. 
+
+Speaker 5 13:07 
+is that I don't remember if it is the same field because they fill it out in a power form and we fill it out somewhere else. I couldn't remember if they aligned those or not. 
+
+Speaker 4 13:20 
+I'm 
+
+Speaker 6 13:20 
+I mean, it looks the same in the chart. I don't know if they chart in a different area, but it goes to the same place. 
+
+Speaker 5 13:26 
+then it would be the same here you wouldn't when you click this you wouldn't know who was the last one that documented on it 
+
+Speaker 1 13:34 
+out if it's not too hard but I don't know what everybody else wants. It's just so we can know quickly if it's physical therapy or our staff or cardiac rehab or whoever I guess. 
+
+Speaker 2 13:44 
+Yeah, easily, but I can easily do it. 
+
+Speaker 6 13:50 
+I truly, is the data supposed to already be flowing or is it just on these easy test patient? 
+
+Speaker 2 13:55 
+Oh, anybody. 
+
+Speaker 6 13:58 
+because it's not shown on mine. I mean, I have the mobility dashboard in page insert, so. 
+
+Speaker 3 14:03 
+Yeah, I didn't see anyone. 
+
+Speaker 5 14:04 
+documented on your patients on these fields recently. 
+
+Speaker 6 14:08 
+I think so. I'm pretty sure. I mean I've looked under CP, MI, open heart, and nobody has anything. 
+
+Speaker 5 14:16 
+Yeah, but when you remember when you look at this, if they've not documented in the past 30 days on those fields, it's not going to show up here. Right.
+
+And so when you're looking like I've got here, like CP, I've got them here too. I've got to go back over here and establish relationships, you're not going to see anything. Then you go back to the mobility page. 
+
+Speaker 6 14:46 
+I might have forgot to establish the relationship. 
+
+Speaker 5 14:50 
+So there's nothing really documented on here, but I think that's probably because nothing for 30 days. Correct. 
+
+Speaker 1 14:59 
+They don't have B-Mats and stuff? Why wouldn't they have B-Mats? 
+
+Speaker 2 15:03 
+So these are, if you look at- 
+
+Speaker 5 15:05 
+these are real patient names. This was real patient data that was pulled over when they copy to make cert, they do a real copy of a current day. And the day it does it pulls real patients. I've never agreed with this.
+
+I think this is terrible because patient's data is very visible in the cert domain. 
+
+Speaker 2 15:27 
+Well, what they should be doing is scrubbing the patient. So this data is crucial for us to test, but we don't need to know the name. You don't need patient data in here.
+
+So yeah, it should have been, you know, ZZZ tests. But you can tell like these, or these ones are more, I charted on a lot of these ones. But if you go back to those, that list, those are like from February, March timeframe. So unless you go in and chart on a real patient, you're not going to see any, any charting for, uh, because it's, it's looking for 30 days only. So can you, can you quickly chart Tina on one of those patients? So then we can, well, well, you can do this one too. That's fine. Thank you. So what I wanted to do is like
+
+Speaker 6 16:28 
+confusion on on mine. I mean, I have access under the nurse manager. So I don't know if everybody on here knows how to access third or not. If that might be part of the problem. 
+
+Speaker 1 16:40 
+No, we're supposed to have that CMC mobility, right? 
+
+Speaker 3 16:44 
+Mm hmm. You, you gotta 
+
+Speaker 6 16:46 
+Yeah, you're supposed to go under the search sign on. 
+
+Speaker 5 16:51 
+Yeah, see the pink bar, that's how I know I'm in the cert domain. 
+
+Speaker 6 16:56 
+But in order to do that, that's at the very beginning of your sign on to Cerner. And you change it from prod to SERP, C-E-R-T, all caps, where it says prod, all caps.
+
+It goes C-E-R-T, all caps. And then you use your same username and login as you do for Cerner. 
+
+Speaker 5 17:12 
+Yeah, if you look like here where it says third, I have a link that takes me directly in here, but that is one way like Carrie said was to do that. I have it bookmarked on my thing here.
+
+I have Cerner cert that takes me directly there. 
+
+Speaker 6 17:33 
+I'm not fancy like that, I don't know how to do that. 
+
+Speaker 5 17:36 
+Well, I was in here every single day. 
+
+Speaker 6 17:40 
+but it's a pain, it's a pain to change that every time. So you have to teach me how to do that. Oh, here. 
+
+Speaker 5 17:46 
+Yeah, no, you need that on there. I'll put that in the chat box so you can do that. So when you're in here, hit your favorites at the top and it will bookmark it for you. Like if I'm in here and I'm going to put this, paste it in here for it. Paste it and then hit enter. And then just hit your favorites for it. I don't want to do it again. Thank you.
+
+You're welcome. Anything to cut down on shortcuts? So I did this one. Where was the other ones that we were pulling stuff from? It was more scale, right? 
+
+Speaker 2 18:42 
+Morse. Yeah. caregiver for scale. 
+
+Speaker 5 18:49 
+I'm just going all the way down. 
+
+Speaker 2 18:57 
+I didn't do the score. 
+
+Speaker 5 19:00 
+abcuz 
+
+Speaker 1 19:05 
+Ah. 
+
+Speaker 5 19:12 
+Do you want to accept this? 
+
+Speaker 3 19:14 
+Oh, it didn't. It didn't do it. Yeah, I've been working on that and I couldn't figure out why. Yeah, there it goes. 
+
+Speaker 5 19:21 
+Well, it did it twice instead of there, and then you go back to the mobility page, refresh. 
+
+Speaker 1 19:33 
+Bye-bye. 
+
+Speaker 2 19:38 
+Did I refresh? 
+
+Speaker 5 19:44 
+From there and back to where's mine ZZ 
+
+Speaker 2 19:49 
+That should have worked out. Can you click on it? Oh, it did? 
+
+Speaker 1 19:54 
+It just took you a second. 
+
+Speaker 5 19:56 
+in a room that has terrible service altogether and everything's delayed, always. Okay, I thought it was- Even though I'm supposed to be directly connected to it, it always does this.
+
+But yeah, you can see here where I did some documentation. 
+
+Speaker 2 20:10 
+OK. And then can you claim a BMAT score? Oh, is that new? That's why. I'm on entry. OK. 
+
+Speaker 5 20:20 
+Yeah, maybe I should have went on ahead and done it on this one. 
+
+Speaker 3 20:24 
+Well, I was typing in another Morris and it said it gave me a blast of a box that says the value of 104 Morris is outside the defines critical limits, which you said at 51 you want to accept it. 
+
+Speaker 2 20:38 
+Yeah. If we're testing, go ahead. Yes. 
+
+Speaker 3 20:41 
+I just didn't know why I said, well, it gave me a score of 100. If I'm in with someone's chart, is there an easy way to get back to the mobility page?
+
+If I click on ZZ Smoker and go and chart something, is there an easy way to go back to it or do I have to go back up to the top and click on the toolbar again? 
+
+Speaker 5 21:22 
+have to go back to the top because it's up on the tool bar. 
+
+Speaker 3 21:25 
+That wasn't the answer I was wanting, Tina. I thought you would give me some easy slick way like you did the day with all that stuff. 
+
+Speaker 5 21:30 
+No, because this isn't embedded inside of Millennium, it's more up in the top, like the dashboards are all up here. 
+
+Speaker 3 21:40 
+Yeah, crossed over the score. 
+
+Speaker 5 21:45 
+I'm not patient enough. So here you can see where I changed it to four. 
+
+Speaker 2 21:54 
+Mm-hmm, and then the more square to 85. 
+
+Speaker 5 22:04 
+And then I thought, and I know it's a lot, but do you all want anything on it? If the patient's on bed, whereas they're supposed to be doing range of motion, is that valuable or does it matter? Thank you.
+
+I mean, because this truly is for moving. It's not necessarily what you're doing in the bed, but if you're a patient at the BMAT level of one, your ambulation distance is not going to get updated for a while, and maybe that's just a correlation. You're not going to have anything ambulation here because they're at a BMAT of one.
+
+I did not add anything to PT and OT because I didn't have their switching to their position. Well, I don't know, I might have had it and not paid attention to it. 
+
+Speaker 3 23:02 
+So I would just call light for on the 
+
+Speaker 5 23:06 
+Your call lights in place for your fall prevention. I think that's. 
+
+Speaker 2 23:13 
+You do you is this something that you guys want I think it's a caregiver rounding, right? Yeah 
+
+Speaker 3 23:22 
+That's where it's pulling from, that's what I was wondering. 
+
+Speaker 2 23:24 
+Thank you. 
+
+Speaker 3 23:30 
+Because on the IVs, I've typed in yes, but it doesn't say anything under IV. Is that just pulling from somewhere else on the Moore scale? Is it one of those specific IVs? 
+
+Speaker 2 23:39 
+No, I think it's at. I think what I just use is your caregiver rounding right here. So it's IV sites assessed. And I believe right there. 
+
+Speaker 3 23:49 
+Because I didn't put anything in there. I just put something in the more scale. It said yes for IVs. I didn't know they pulled from there. 
+
+Speaker 2 23:55 
+No, caregiver. 
+
+Speaker 5 24:03 
+Yeah, that's where it's coming from, because that's where I just documented. So if they're assessed, it does say that they've got an IV site from there. 
+
+Speaker 2 24:23 
+And I think, uh, it's court. I mean, do we? 
+
+Speaker 3 24:26 
+Do we need all that on there? I'm just asking everybody. I mean, the call light, the IV site, the SCDs, what's safety pulling from? What's that mean? 
+
+Speaker 2 24:40 
+It's from the caregiver as well, safety needs addressed. 
+
+Speaker 3 24:45 
+I mean. 
+
+Speaker 2 24:47 
+and recycle social and safety. 
+
+Speaker 3 24:49 
+What's everybody think? I don't know. 
+
+Speaker 5 24:51 
+I 
+
+Speaker 3 24:54 
+I mean, I think the last 
+
+Speaker 5 24:55 
+you have on there if it's not valuable then take it off because I think you're gonna find more things you're gonna want to add. 
+
+Speaker 3 25:02 
+Hell, I mean, I'm not going to have these sites, I know they're. 
+
+Speaker 5 25:06 
+Yeah, but does Tracy and Christy need to know that they've got that? 
+
+Speaker 1 25:10 
+It's not gonna change, we gotta get him up anyway. 
+
+Speaker 3 25:13 
+Right. I mean, it's not. I don't think on there. 
+
+Speaker 1 25:16 
+I'm not sure call light is beneficial for this part. 
+
+Speaker 3 25:21 
+No. 
+
+Speaker 5 25:24 
+So if you wanted, if you all don't feel like all of this, I think we did ask him to put it on here for some reason or another, but if it's not providing value, he can take that off and make sure whatever provides value to you all on here. 
+
+Speaker 3 25:46 
+I think all the stuff under the assessments need to be there. 
+
+Speaker 1 25:49 
+scale is what we need but we don't I don't think we need the interventions in my opinion. Thank you. 
+
+Speaker 2 25:55 
+Well, the, so those interventions are from, I believe, from Banner Health. Um, and I just, uh, what do you call it? Localize it to arm event codes. Toileting is. 
+
+Speaker 1 26:08 
+Maybe toilet tank because that's part of activity. 
+
+Speaker 2 26:11 
+That is a new request. Courtney just asked that a week or two ago. 
+
+Speaker 1 26:18 
+Let's talk for you. 
+
+Speaker 2 26:19 
+If you hover over or click that one, you'll see you get all those choices. Oh, look at all the choices. 
+
+Speaker 5 26:25 
+voices that can come over. 
+
+Speaker 2 26:32 
+So that's a multi-stake. What are you looking at? 
+
+Speaker 5 26:36 
+This is the toiling method. 
+
+Speaker 3 26:40 
+Are you on the mobility webpage? Yeah. 
+
+Speaker 5 26:44 
+and you clicked on toileting? Toileting here. 
+
+Speaker 1 26:48 
+I don't see it all, but I think you have a document in there or something. 
+
+Speaker 3 26:56 
+I don't see anything in there. I don't know what I'm supposed to see. 
+
+Speaker 2 27:02 
+Can you see Tina's screen? 
+
+Speaker 3 27:05 
+No, I got, I got minimized right now. Let me go. Okay. 
+
+Speaker 5 27:10 
+Oh, that's because John doesn't have two screens. He only has one, so he can only see what you do. 
+
+Speaker 3 27:19 
+I'm a simple man. 
+
+Speaker 5 27:23 
+But I had documented in caregiver rounding, bedside commode under the toileting, and it populated over here. And then several days ago, there was a lot of things that were, because it's multi-selection. 
+
+Speaker 3 27:40 
+That's good. 
+
+Speaker 2 27:41 
+Right. 
+
+Speaker 5 27:44 
+So you could leave the toileting under the fall preventions. Is there something missing that you guys wanted to see, that there is under the documentation here? Like, I don't know. Not trying to add more, but what if there was something else? Thank you.
+
+Center equipment, here's your orthopedic equipment. Do you want them to know if they're using? Thank you. I guess it doesn't really say that they're using a walker. This is all the orthopedic stuff. This wouldn't be what you would want. Thank you.
+
+Anything here, here's your assistive device, would that be beneficial to have that on there? Here's a mobility level, surfaces, ability, I guess that's just a free text, would that be beneficial to know somebody's using any of these transfer ties, device things? 
+
+Speaker 3 29:38 
+Well, I mean, because we'll be looking at this after the fact. So hopefully they use the transfer whatever they needed to use. 
+
+Speaker 5 29:50 
+Does it help, though, like PT, O, T, and O? It took us three people to get them up. Well, yeah, yeah. 
+
+Speaker 3 30:01 
+That's a hand question. 
+
+Speaker 4 30:07 
+Repeat that again. 
+
+Speaker 5 30:09 
+Um so we were looking at the mobility page and there's several things that they don't isn't really providing a lot of value so we're going to take those off and so I was looking at some of the other nursing documentation what else would be valuable for anybody was looking at um the patients stand and pivoted they use the transfer board to get them up or there was one person left three person left they had to use the hoya would this be more beneficial to have this on there so everyone knows it takes a lot to get this patient up. 
+
+Speaker 4 30:49 
+Yeah, I like that preferably because it helps us know if we need to bring another person with us to walk a patient. 
+
+Speaker 5 31:01 
+What about these mobility level surfaces? I'm sorry, I'm not actually really know what all this is. 
+
+Speaker 4 31:11 
+Yeah, I'm not familiar with those, but I mean, I don't think it's necessary for my standpoint, but I don't know about the inpatient nursing units. 
+
+Speaker 1 31:21 
+I don't know half of more. 
+
+Speaker 5 31:26 
+We'll stick to the transfer type then. Would that be okay, Troy? I know you did a lot of build on those other things. But sometimes you don't know till you see it. For sure. Valuable. 
+
+Speaker 2 31:38 
+not. Yeah, piece of cake. I can swap it out. 
+
+Speaker 5 31:43 
+Thank you. 
+
+Speaker 6 31:45 
+What about coloring, Troy? You know, we like our colors, but the VMAT scores, if there's a way to put those in the color zones that the VMAT is. 
+
+Speaker 2 31:59 
+Sure. Yep, I had that in there. I'm like, I'll just remove it for now. So I did the same thing for sepsis, right? There's some coloring involved. So that was for B-mat, Kerry. 
+
+Speaker 5 32:16 
+Yeah. 
+
+Speaker 2 32:17 
+So one through four, I mean, light, just change the colors for those. You guys, you have any preferences? 
+
+Speaker 6 32:26 
+Yeah. Or even the, you know, even the more Morse too.
+
+I mean, if it was color coded to indicate that there are potential high file risk and things like that, that, you know, you know, automatically to bring More people with you or different assistive devices or things like that as well. 
+
+Speaker 2 32:45 
+Yeah, I mean, we use sepsis, right, we just use like the traffic lights, right? Red, yellow, green kind of thing. I can think of something like that. I'll look at the... 
+
+Speaker 6 33:01 
+Yeah, I would have to actually look at the beam at Zone colors. I can't remember exactly what they are right off my head, but 
+
+Speaker 2 33:09 
+Is it in any of the, the C-L-O? I. 
+
+Speaker 5 33:12 
+No, it's not, but I think the colors are that education that I sent you. I think it's listed in one of the PowerPoint slides. 
+
+Speaker 6 33:22 
+It should be yes. 
+
+Speaker 2 33:23 
+Oh, okay. So for both, B-mat and Morse? 
+
+Speaker 5 33:27 
+The Morris is probably not, I think the BMAT I think is in that PowerPoint, but the Morris when we're looking in iView, see how that turned red, should we use the same here? 
+
+Speaker 6 33:47 
+I think so. Thanks. 
+
+Speaker 2 33:49 
+Yeah. Okay, so it's just if it's a critical value to make it turn red. Yeah, that's what that is. Okay.
+
+Yeah, I'll just match it up. Whatever. This is let me take a picture of this one. Okay, I think that's the only color for this though, right? I don't think there's a
+
+Speaker 5 34:13 
+I believe so, and I think the criticals like here, the low, oh, it doesn't have a normal, high is 25, critical height would turn red, 51 and greater. 
+
+Speaker 2 34:26 
+Let me just take a picture of that one, too. I mean, really, it's just critical height. 51 or greater, make it red. So I don't think PMAT has that, huh? 
+
+Speaker 5 34:40 
+No, it's not listed here, it's not colored in here. 
+
+Speaker 2 34:44 
+Because it's called parse. I removed everything extra right. So if you expand that column, 222, you will see this has moved to level 2. So I'm just looking for level x, 1, 2, 3, 4.
+
+And that's what's displaying or the value. And that's why you don't see it, because that's a string. It's a sentence, right? Yeah. Would it be useful, too, to be able to, like, if you went to the Morse score right, if you click on it, and then it opens up that, would it be nice to be able to go to iView and go to that, wherever the Morse score is? And it'll just take you to the chart. 
+
+Speaker 5 35:46 
+Wow, that makes it very convenient. Do you guys want that to link instead of having to close this out? Touching the patient, going down to iView, he's offering to take you. That's what I was asking for, right? I think so.
+
+I didn't catch that. But to get back to the mobility, once you're in the chart, though, I think to get back to the mobility page, you still have to do that. 
+
+Speaker 2 36:13 
+Right. So this one, if you were to, let's say I made a link to whatever toileting method, that would take you to the caregiver rounds, I believe, in iview.
+
+So then you, you already had the patient in context, and you go in iview, you can chart. I noticed that that PTOT eval, right? If you wanted to, I could do that a link. And it can open up a brand new one as well. And take or maybe if you want to see the mod A, open up the mod A and go to and review that charting. Because there's a lot of charting in those eval power forms. So you may want to see that grid, the power grid that they chart in. So that could be where the mod A, where Tina's cursor is, they can open up the power form for you. Or you can go to P, you know, maybe the very top is a brand new note. So whoever wants to document can document on a new power form. 
+
+Speaker 5 37:17 
+You know, PT may want that, but then they would know that they'd have to know that now everybody has access to that power form very easily to document on. 
+
+Speaker 1 37:31 
+Because right now 
+
+Speaker 5 37:32 
+I don't think nurses have access to their their forms unless you unless you go to all and you filter it all I don't got it got it Okay, and I don't see any reason why they wouldn't like it because I'm not going to come in here and open up that big Monster form and fill it out if I'm a nurse I'm gonna close it and say that's not for me to fill out But I think they might like the note being able to access a note right from here instead of Gotta go into the patient chart. I gotta hit documentation.
+
+I gotta pull the note. I gotta pull all of that They may want all of that in there
+
+Speaker 2 38:10 
+Yeah. So I mean, pretty much all that stuff. I already know where the data is. I can send you back. Baseline, right?
+
+Caregiver rounds, PTO, the ambulation. I can take you back to the iView. So if that helps. 
+
+Speaker 5 38:31 
+I mean, what if I amulated somebody 300 feet, and I see here, well, and I'm giving a report. I don't know if the nurses will ever come here to show for report.
+
+Well, I missed my documentation. If it was here, it would jump it right to it. 
+
+Speaker 2 38:48 
+Mm-hmm it could when they could just quickly chart 300 save it refresh the screen it's there Thank you. 
+
+Speaker 5 39:01 
+So you guys want that he needs a yes or no. 
+
+Speaker 3 39:12 
+Sounds good. 
+
+Speaker 1 39:13 
+I mean, it looks good. I just feel like we keep on asking for stuff. 
+
+Speaker 5 39:18 
+Well, we're used to asking and people saying no. He is saying yes. 
+
+Speaker 1 39:25 
+Bye. 
+
+Speaker 2 39:26 
+Um, well, if you can go to the severe sepsis right there, right next to mobility, Tina. So this is the next, this is the latest and greatest, if you can just pick a patient. I think your screen's a little bit better, but, um, there's the traffic lights, right? But I added a QSOFA score.
+
+This is actually for carry. I'm going to need your help on this carry, but there's a new QSOFA score. Um, but point being is if you pick, click on power form or power plan, Tina, um, or, or lactate, sorry, it's already been charted. Do lactate. The one that's gray or empty. Does it open now? 
+
+Speaker 1 40:18 
+Bye now. 
+
+Speaker 2 40:22 
+Yes, click order to abbreviate it. So it's probably in your list. 
+
+Speaker 5 40:33 
+I mean, look, everything's coming up all over the wall at risk for Paul Paul. That's just to Oh, look, he here portrait. It took me here to drive you. 
+
+Speaker 6 40:55 
+No, it's it's it's I don't I think you've got too much to vote but maybe yeah, I think I know when you're in pride 
+
+Speaker 2 41:01 
+Yeah, that's wrong. Yeah. 
+
+Speaker 5 41:04 
+in prod to let me get out of prod. And just a patient in prod to know this is I can't start this one.
+
+Okay. But it's not this to what is this one? This is my Alright, so everything else close out. Let me close that out too. And that one boy. What have I done here? Oh, it did here. I have an antibiotic whenever I got click, click happy came up on a different screen. Yep, exactly. Let me have too many screens. Let me pull this out so I can see. All right, that's better. Here's the order screen did come up. It just came up behind something else. 
+
+Speaker 2 41:57 
+Anyways, in regards to iView, the power form, the power plan, I can take you directly to that screen so then you don't have to then select the patient, go to iView, or I'll take you directly where the information is so it's easier for you to chart if you want. 
+
+Speaker 6 42:20 
+And so if nursing's looking at it, basically they can go in there and they can order or do whatever from the physician directly right from there if needed to be on the sepsis dashboard. So he would link it a lot the same to directly where you would chart for the mobility dashboard. Makes it really nice. 
+
+Speaker 2 42:43 
+And I don't think I have been able to because it's already charted. 
+
+Speaker 6 42:46 
+Because that one's already, yeah, that one's already. 
+
+Speaker 2 42:48 
+Mm hmm. So, um, but I did. 
+
+Speaker 5 42:51 
+see like if this was broken it brought up the order to order the. 
+
+Speaker 2 42:56 
+Mm hmm. Yep. Putting the provider and then There it is. 
+
+Speaker 5 43:13 
+You can make a lot of magic happen, Troy. 
+
+Speaker 2 43:16 
+Yeah, I have some tools behind the scenes. What else is there? Yeah, I mean, I think you can go to screening. See that? That's a new feature. If you go to screen column, I think if you click on it or click to opens, so this is what I mentioned to me. So it goes straight into it. It could be a brand new one. It could be that current one, and then you can see past charting. You can see, especially PT and OT eval, that is huge. So it's nice to say, okay, what's mod A, what's min A, right? Or max A, you can easily, and that's probably for PT, OT. I don't know about nursing. I don't know if they really care about all that data that they chart.
+
+But this is multidisciplinary. So while I'm here, right? Next month, I'm gone. So whatever you guys like, I'll do it now, and then it's not that difficult to make change. So I can add this. It's choosing, and I'll add it within the next day or so, and then I'll test it and see what you guys think. But I think for my notes, I have get the personnel who charted it. So if you see a yes or whatever answer ablation, you'll see if it's PT, OT, and nursing. Range of motion. Did you want me to add that? 
+
+Speaker 5 44:53 
+Is that valuable to you guys or no? Doesn't seem like it's valuable, so we'll leave that off. If there got a BMAT level of one, they'll just know. 
+
+Speaker 2 45:10 
+Okay. Uh, you mentioned bed rest. 
+
+Speaker 5 45:14 
+So that was part with it, if it was BMAT level one with bed rest, we want the range of motion, so I don't think they'll need that. 
+
+Speaker 2 45:22 
+Okay. So that's a no.
+
+Cleaning up the interventions, keep toileting, remove the other ones, add transfer type, add code, the beam added more score, critical value is red, and then links to what your documentation is. That's all I have. 
+
+Speaker 5 45:50 
+Yep, seems like that's a lot that we've asked to change. 
+
+Speaker 2 45:56 
+it's if I didn't have sepsis and I didn't have this it would probably but I'm just gonna copy sepsis stuff and apply it to here so we're good I'll get it done with the next two days all right and then if it looks good anything else I need to send this eventually once I get your approvals I'll need to send it back to EAC for this proof of concept to be the same thing with sepsis the great good thing is sepsis is you know pioneered so there's no reason why this custom end page can't be approved
+
+Speaker 5 46:38 
+Well, and when it gets to EAC, I can at least help talk about why they don't need to put BMAT on the CLO and stop that work. 
+
+Speaker 2 46:47 
+Okay. Yeah. I don't know where it is, but yeah, it's somewhere. I don't either. 
+
+Speaker 5 46:52 
+but it's not valuable just to throw out a BMAT score on the CLO, when you have all the components what you just showed, I think is what makes it valuable to them. 
+
+Speaker 2 47:06 
+Okay, perfect. Well, whenever, let me finish those things, I'll get it to then by Thursday. If you can test it, approve it. If that's a good to mute new one next week, we'll go to you and see if, can you, can you attend that meeting, Tina? Yeah, I'll make sure I'm there.
+
+Thank you, please. And then, yeah, I can turn it on right after that. Trying to think of anything else. I think that's it. It'd be really nice to pilot it, right? Even go live, big billy fan alike. And then if there's anything that you notice that is missing that needs to be modified, right? In production, then we can make the change. At least it's already there and you're using it. 
+
+Speaker 5 47:54 
+Thank you, guys. Thank you, Troy. I think they'll be very excited to see this before the end of the month. 
+
+Speaker 2 48:02 
+Yeah, definitely. So we have plenty of time. So hopefully next week, we can, we can, we can plan for it. But thank you. Yeah, I'm good. Thanks a lot. Yeah. 
+
+Speaker 6 48:13 
+Quick question for you. Everybody else can get off.
+
+I just got a question about the SEP system. Have we got the, my experiences fixed on that yet? Have we made it anywhere with that? Getting approval to spread. 
+
+Speaker 2 48:27 
+Oh, wow. 
+
+Speaker 6 48:28 
+where me and Casey had to go out to the ER nurse and back and forth. 
+
+Speaker 2 48:32 
+Yeah, so you know what, this is, that's a sticky one. 
+
+Speaker 6 48:36 
+and approved, sorry. 
+
+Speaker 2 48:37 
+Well, it's already there. You know what, are you are you working with Tammy and them to carry with, you know, the North? Because they made a position. I don't even know the name of it. But I just know that they there was a special one. It's not really specific to sepsis. But apparently, they have access to their nurses have access to both the first end and power chart applications. But they said they had to create a new one, a new position. But I don't know the new position. I it's probably a good time for me to talk to them and find out what the position is core has to know because they're the ones who developed a position.
+
+So let me reach out. I think it's Tammy Corley. Yeah, because the
+
+Speaker 6 49:33 
+The nurse managers should have access and then also just the bedside nurses should have access as well to see the dashboard so that they can check on their patients and see where they're at on the dashboard once they move to inpatient and once we move it to inpatient for sure. 
+
+Speaker 2 49:47 
+For sure. I mean, once impatient, right, they're not going to have that issue because it'll be, it'll fall on an underneath power chart by default.
+
+But I think it's when they toggle back and forth. And then, so let me ask Tammy. Because that's how I heard about that new position. And then, Carrie, you saw that Q sofa, right? 
+
+Speaker 6 50:13 
+Yes. 
+
+Speaker 2 50:15 
+I don't know how it's supposed to work. What's, well, I do, but I don't know if it's the best way. Are you familiar with the QSOFA? I know we don't really use it here.
+
+I know other sites do, but I just don't know how they implement it. What's the best? Cause when you go in there and I get the score, right? Respiratory, you know, cystic blood pressures. What is it? The glaucoma, right? Yeah. And GCS. Oh, Glasgow. What is it? I'm just pulling the, I'm just, I'm looking for, I'm looking at the six hour mark from time zero. And I'm pulling the last value, but that value might be better now. And that's what it looks like within the six hours. I mean, should I be looking like for the worst scores and, or, or, yeah, so I'm like. 
+
+Speaker 6 51:13 
+Who's requesting that the Q7 be added? 
+
+Speaker 2 51:16 
+Dr. Crawford. 
+
+Speaker 6 51:22 
+Just wonder if he's trying to pre plan for CMS changes or what he's trying to plan to do on that. I'm not sure. 
+
+Speaker 2 51:29 
+Oh, you weren't, were you there on the last call last month? No, I wasn't. Okay. So it's not necessary, he, he wants to do a combination and, you know, for, you know, step one for... Yeah. 
+
+Speaker 6 51:43 
+Step one versus step three guidelines. 
+
+Speaker 2 51:46 
+Right, but I think it was it. Was it Dr. Dave? Is it Seidler? Is that how you pronounce it? He was like, No, I don't you know, he didn't like it at all, to move over to step three. But we, the reason why Dr. Crawford proposed it or is because for private payers, they look at step three, QSOFA scores. And I guess apparently we, we submit way too much. And we've been getting declined.
+
+So what he was hoping for is a combination of, we'll continue to do step three, but we'll just add a QSOFA score so that we can see it and see whether or not it's, should we actually, you know, I mean, submit it. Right. For, you know, for private payers. So it was, it's not that we're changing. We're still set one, but it's just a visual to say, Okay, you know, have you really considered it? Is it really something that, you know, is this patient really based on QSOFA scores? So that's what it is for. I was gonna just play around and kind of see what it would look like if I, you know, got the last charted value within a six hour range, maybe pull in the, the worst scores, right. And then the third one, maybe worse score, but only within a one hour block. Because, I mean, what happened if they're, you know what I mean? They're having a bowel movement or something, right, you know, and it's causing their, their scores to go high. You know what I mean? 
+
+Speaker 6 53:23 
+Right. Yeah. 
+
+Speaker 2 53:24 
+you know, bearing down, right? You know, that just because of one, does that really signify that they're septic, right?
+
+So right, I was trying to say, I and I, what I've saw, what I've seen online, is it's, it really depends. Some is using the last charted values, some are using the worst values, and it's kind of vague or kind of open.
+
+Right. So yeah, I think
+
+Speaker 6 53:50 
+that that would be. Yeah, I don't know. I'd have to think about that one a second too. I mean, I mean, I see the value, like you said, I see the value in it, but I'm not sure if that's where it needs to be housed or not, you know, too. I'm not sure if that's exactly where it needs to be housed at either. So I'm not sure. I'm gonna have to think about that in a second. 
+
+Speaker 2 54:10 
+Oh, yeah, no, please, please. And then, are we meeting tomorrow? 
+
+Speaker 6 54:17 
+Ah, you know, I think so. 
+
+Speaker 2 54:19 
+Okay, because that'd be a good time. I'm pretty sure that we are. Okay, yeah, we can talk about it there.
+
+I heard back from Dr. Crawford and then see what they think. I might make some changes to maybe have three types of QSOFA scores maybe if I have time so that we can see the differences. Okay. Because I'm not sure about this because some of them look like they're okay. 
+
+Speaker 6 54:46 
+All right. All right, thanks, Karen. Sounds good. All right, thank you. 
+
+Speaker 2 54:50 
+Thanks for watching! 

@@ -100,9 +100,12 @@
                 { "personId": 22345006, "personName": "Miller, Linda B", "encntrId": 22345006, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         } else {
-            // Demo Patient List A - Simplified to 1 patient for testing
+            // Demo Patient List A - v2.8.0: Multiple patients to test BMAT/Morse color coding
             mockPatients = [
-                { "personId": 12345001, "personName": "Test Patient (Today)", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 }
+                { "personId": 12345001, "personName": "BMAT Level 1 (Red)", "encntrId": 12345001, "priority": 0, "activeInd": 1, "filterInd": 0 },
+                { "personId": 12345002, "personName": "BMAT Level 2 (Orange)", "encntrId": 12345002, "priority": 0, "activeInd": 1, "filterInd": 0 },
+                { "personId": 12345003, "personName": "BMAT Level 3 (Gray)", "encntrId": 12345003, "priority": 0, "activeInd": 1, "filterInd": 0 },
+                { "personId": 12345004, "personName": "BMAT Level 4 (Green)", "encntrId": 12345004, "priority": 0, "activeInd": 1, "filterInd": 0 }
             ];
         }
 
@@ -729,7 +732,11 @@
         };
 
         // Mock patient demographics
-        const patients = encounterIds.map(encId => ({
+        // v2.8.0: Vary BMAT levels to test color coding (Issue #20)
+        const bmatLevels = ['1', '2', '3', '4', '1', '2']; // Cycle through levels
+        const morseScores = ['15', '35', '45', '55']; // Vary Morse: 15=green, 35/45=orange, 55=red
+
+        const patients = encounterIds.map((encId, index) => ({
             PERSON_ID: 23224083,
             ENCNTR_ID: parseFloat(encId),
             PATIENT_NAME: 'MEADOWS, VIRGINIA L',
@@ -743,7 +750,7 @@
             FIN: '3010394309',
             MRN: '20212659',
             // Clinical events - Current Values (date-specific)
-            MORSE_SCORE: clinicalEvents.morse_score,
+            MORSE_SCORE: morseScores[index % morseScores.length],
             MORSE_EVENT_DT_TM: clinicalEvents.morse_event_dt_tm,
             CALL_LIGHT_IN_REACH: clinicalEvents.call_light_in_reach,
             CALL_LIGHT_DT_TM: clinicalEvents.call_light_dt_tm,
@@ -753,7 +760,7 @@
             SCDS_DT_TM: clinicalEvents.scds_dt_tm,
             SAFETY_NEEDS_ADDRESSED: clinicalEvents.safety_needs_addressed,
             SAFETY_NEEDS_DT_TM: clinicalEvents.safety_needs_dt_tm,
-            BMAT_LEVEL: '3',
+            BMAT_LEVEL: bmatLevels[index % bmatLevels.length],
             BMAT_DT_TM: `${nowDisplay} 09:00`,
             BASELINE_LEVEL: '4',
             BASELINE_DT_TM: `${nowDisplay} 08:00`,
@@ -788,34 +795,57 @@
                     DATETIME_DISPLAY: `${nowDisplay} 06:00`
                 }
             ],  // Multiple entries (documented throughout day)
+            // v2.8.0: Added ACTIVITY_ID for PowerForm link (Issue #21)
             pt_transfer_history: [
                 {
                     VALUE: 'Mod A',
                     COMMENT: '',
-                    DATETIME_DISPLAY: `${nowDisplay} 16:25`
+                    DATETIME_DISPLAY: `${nowDisplay} 16:25`,
+                    ACTIVITY_ID: 12345678  // Mock activity ID for PowerForm navigation
+                },
+                {
+                    VALUE: 'Min A',
+                    COMMENT: 'Good progress with transfers',
+                    DATETIME_DISPLAY: `${nowDisplay} 10:15`,
+                    ACTIVITY_ID: 12345677  // Previous eval
                 }
             ],  // PT assessments (periodic)
+            // v2.8.0: Added ACTIVITY_ID for PowerForm link (Issue #21)
             ot_transfer_history: [
                 {
                     VALUE: 'Max A',
                     COMMENT: '',
-                    DATETIME_DISPLAY: `${nowDisplay} 16:28`
+                    DATETIME_DISPLAY: `${nowDisplay} 16:28`,
+                    ACTIVITY_ID: 12345679  // Mock activity ID for PowerForm navigation
+                },
+                {
+                    VALUE: 'Mod A',
+                    COMMENT: 'Upper body strength improving',
+                    DATETIME_DISPLAY: `${nowDisplay} 09:30`,
+                    ACTIVITY_ID: 12345676  // Previous eval
                 }
             ],  // OT assessments (periodic)
+            // v2.8.0: Added PERFORMED_BY and PERFORMED_POSITION for personnel tracking (Issue #20)
             ambulation_history: [
                 {
                     VALUE: '100',
-                    DATETIME_DISPLAY: `${nowDisplay} 10:15`
+                    DATETIME_DISPLAY: `${nowDisplay} 10:15`,
+                    PERFORMED_BY: 'Smith, Jennifer RN',
+                    PERFORMED_POSITION: 'Registered Nurse'
                 },
                 {
                     VALUE: '75',
-                    DATETIME_DISPLAY: `${nowDisplay} 12:00`
+                    DATETIME_DISPLAY: `${nowDisplay} 12:00`,
+                    PERFORMED_BY: 'Johnson, Michael PT',
+                    PERFORMED_POSITION: 'Physical Therapist'
                 },
                 {
                     VALUE: '50',
-                    DATETIME_DISPLAY: `${nowDisplay} 13:00`
+                    DATETIME_DISPLAY: `${nowDisplay} 13:00`,
+                    PERFORMED_BY: 'Davis, Sarah',
+                    PERFORMED_POSITION: 'Cardiac Rehab Specialist'
                 }
-            ],  // Ambulation distances (feet) - numeric with sparkline
+            ],  // Ambulation distances (feet) - numeric with sparkline + personnel
             activity_precautions: [
                 {
                     PRECAUTION_NAME: 'Weight Bearing Status, Lower Extremity',

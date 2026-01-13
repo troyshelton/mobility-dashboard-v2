@@ -2383,6 +2383,92 @@
             return td;
         }
 
+        /**
+         * BMAT Level Renderer - v2.8.0 Issue #20
+         * Color codes BMAT levels 1-4 for visual risk identification
+         * Colors from clinician-approved illness severity scale:
+         *   Level 1 (most dependent) = Red
+         *   Level 2 (dependent) = Orange/Yellow
+         *   Level 3 (needs assistance) = Gray
+         *   Level 4 (independent) = Green
+         */
+        function bmatLevelRenderer(instance, td, row, col, prop, value, cellProperties) {
+            // v2.8.0: BMAT color coding (Issue #20)
+            // Clear cell first
+            td.innerHTML = '';
+
+            if (value === null || value === undefined || value === '') {
+                return td;
+            }
+
+            // Parse the level number (handle "1", "2", "3", "4" or "(Level 1)", etc.)
+            const levelMatch = String(value).match(/(\d)/);
+            const level = levelMatch ? parseInt(levelMatch[1]) : null;
+
+            // Color mapping based on illness severity scale
+            let color;
+            switch (level) {
+                case 1:
+                    color = '#dc3545'; // Red - most dependent/unstable
+                    break;
+                case 2:
+                    color = '#fd7e14'; // Orange - dependent/watch
+                    break;
+                case 3:
+                    color = '#6c757d'; // Gray - needs assistance/stable
+                    break;
+                case 4:
+                    color = '#28a745'; // Green - independent/discharging
+                    break;
+                default:
+                    color = '#000000'; // Black - unknown level
+            }
+
+            // Use span with inline styles to override Handsontable CSS
+            td.innerHTML = `<span style="color: ${color} !important; font-weight: 600;">${value}</span>`;
+            td.style.textAlign = 'center';
+            td.style.verticalAlign = 'middle';
+
+            return td;
+        }
+
+        /**
+         * Morse Fall Risk Score Renderer - v2.8.0 Issue #20
+         * Color codes Morse score using standard 3-level risk scale:
+         *   0-24 = Green (low risk)
+         *   25-50 = Orange (moderate risk)
+         *   51+ = Red (high risk)
+         */
+        function morseScoreRenderer(instance, td, row, col, prop, value, cellProperties) {
+            // v2.8.0: Morse color coding (Issue #20)
+            td.innerHTML = '';
+
+            if (value === null || value === undefined || value === '') {
+                return td;
+            }
+
+            // Parse score as number
+            const score = parseInt(value, 10);
+
+            // Color based on standard Morse Fall Scale risk levels
+            let color;
+            if (score >= 51) {
+                color = '#dc3545'; // Red - high risk
+            } else if (score >= 25) {
+                color = '#fd7e14'; // Orange - moderate risk
+            } else {
+                color = '#28a745'; // Green - low risk
+            }
+
+            // Use span with inline styles (bold for moderate/high risk)
+            const fontWeight = (score >= 25) ? '600' : 'normal';
+            td.innerHTML = `<span style="color: ${color} !important; font-weight: ${fontWeight};">${value}</span>`;
+            td.style.textAlign = 'center';
+            td.style.verticalAlign = 'middle';
+
+            return td;
+        }
+
         // Define columns for sepsis dashboard structure (16 columns - Priority hidden pending requestor input)
         // v1.33.0: Left-justified columns for text fields, center for icons/values
         console.log('Defining demographics + clinical event columns for Mobility Dashboard...');
@@ -2406,13 +2492,9 @@
             // Clinical Events (11 columns - Issue #18: Reorganized with group headers)
             // Assessments Group (3 columns)
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
-            { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, className: 'htMiddle htCenter' },
-            { data: 'MORSE_SCORE', title: 'Morse', width: 80, className: 'htMiddle htCenter' },
-            // Fall Prevention Interventions Group (6 columns)
-            { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
-            { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
-            { data: 'SCDS_APPLIED', title: 'SCDs', width: 70, className: 'htMiddle htCenter' },
-            { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' },
+            { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, renderer: bmatLevelRenderer, className: 'htMiddle htCenter' },
+            { data: 'MORSE_SCORE', title: 'Morse', width: 80, renderer: morseScoreRenderer, className: 'htMiddle htCenter' },
+            // Fall Prevention Group (2 columns) - v2.8.0: Removed Call Light, IV Sites, SCDs, Safety per clinician feedback
             { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
             { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
             // Ambulation Group (1 column)
@@ -2471,7 +2553,7 @@
                 [
                     { label: 'Demographics', colspan: 8 },
                     { label: 'Assessments', colspan: 3 },
-                    { label: 'Fall Prevention Interventions', colspan: 6 },
+                    { label: 'Fall Prevention', colspan: 2 },
                     { label: 'Ambulation', colspan: 1 },
                     { label: 'PT / OT', colspan: 2 }
                 ],
@@ -2586,8 +2668,8 @@
 
             // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7)
             app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
-                // Clinical event columns: 8-19 (BMAT, Baseline, Toileting, PT, OT, Ambulation, Morse, Call Light, IV Sites, SCDs, Safety, Precautions)
-                if (coords.col >= 8 && coords.col <= 19) {
+                // Clinical event columns: 8-15 (Baseline, BMAT, Morse, Precautions, Toileting, Ambulation, PT, OT) - v2.8.0: Removed 4 columns
+                if (coords.col >= 8 && coords.col <= 15) {
                     console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
 
                     // Get metric template for this column
@@ -2609,11 +2691,14 @@
                     console.log(`Historical data for ${metric.label}:`, historyData);
 
                     // Prepare patient info for panel
+                    // v2.8.0: Added person_id and encntr_id for PowerForm links (Issue #21)
                     const patientInfo = {
                         person_name: sourceData.PATIENT_NAME,
                         mrn: sourceData.MRN || 'N/A',
                         unit: sourceData.UNIT,
-                        roomBed: sourceData.ROOM_BED
+                        roomBed: sourceData.ROOM_BED,
+                        person_id: sourceData.PERSON_ID,
+                        encntr_id: sourceData.ENCNTR_ID
                     };
 
                     // Convert CCL datetime format to JavaScript Date objects
@@ -2643,7 +2728,19 @@
                             value = entry.VALUE || entry.value || '';
                         }
 
-                        return { datetime, value };
+                        // v2.8.0: Include personnel info if available (Issue #20)
+                        const result = { datetime, value };
+                        if (entry.PERFORMED_BY || entry.performed_by) {
+                            result.performed_by = entry.PERFORMED_BY || entry.performed_by;
+                        }
+                        if (entry.PERFORMED_POSITION || entry.performed_position) {
+                            result.performed_position = entry.PERFORMED_POSITION || entry.performed_position;
+                        }
+                        // v2.8.0: Include activity_id for PowerForm links (Issue #21)
+                        if (entry.ACTIVITY_ID || entry.activity_id) {
+                            result.activity_id = entry.ACTIVITY_ID || entry.activity_id;
+                        }
+                        return result;
                     });
 
                     // Get lookback period from CCL response (default 30 if not available)
@@ -2812,7 +2909,7 @@
                     [
                         { label: 'Demographics', colspan: 8 },
                         { label: 'Assessments', colspan: 3 },
-                        { label: 'Fall Prevention Interventions', colspan: 6 },
+                        { label: 'Fall Prevention', colspan: 2 },
                         { label: 'Ambulation', colspan: 1 },
                         { label: 'PT / OT', colspan: 2 }
                     ],

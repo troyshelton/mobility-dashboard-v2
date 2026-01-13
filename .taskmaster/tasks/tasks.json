@@ -679,7 +679,7 @@
         "description": "Create PR for code review and merge to main",
         "details": "",
         "testStrategy": "",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [],
         "priority": "high",
         "subtasks": [
@@ -874,13 +874,133 @@
           }
         ],
         "updatedAt": "2026-01-02T17:12:34.782Z"
+      },
+      {
+        "id": "14",
+        "title": "v2.8.0: Setup & GitHub Issue (Issue #20)",
+        "description": "Create GitHub issue and feature branch for clinician feedback enhancements",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T01:20:39.740Z"
+      },
+      {
+        "id": "15",
+        "title": "v2.8.0: Remove Unused Intervention Columns",
+        "description": "Remove Call Light, IV Sites, SCDs, Safety columns from dashboard - not valuable for mobility context per clinician feedback",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T01:25:43.435Z"
+      },
+      {
+        "id": "16",
+        "title": "v2.8.0: Add Transfer Type Column",
+        "description": "Replace removed interventions with Transfer Type column showing stand/pivot, transfer board, Hoyer, 1/2/3-person lift - helps staff know resources needed",
+        "details": "",
+        "testStrategy": "",
+        "status": "deferred",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T01:50:06.326Z"
+      },
+      {
+        "id": "17",
+        "title": "v2.8.0: Add Personnel Who Charted",
+        "description": "Show who documented each value (PT, OT, Nursing, Cardiac Rehab) for ambulation and other fields - helps identify discipline responsible",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T01:48:51.652Z"
+      },
+      {
+        "id": "18",
+        "title": "v2.8.0: Add BMAT Color Coding",
+        "description": "Color code BMAT levels 1-4 using colors from BMAT training PowerPoint for visual risk identification",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T02:03:33.809Z"
+      },
+      {
+        "id": "19",
+        "title": "v2.8.0: Add Morse Score Color Coding",
+        "description": "Color code Morse Fall Scale - critical value (>=51) turns red to match iView behavior",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T02:07:49.515Z"
+      },
+      {
+        "id": "20",
+        "title": "v2.8.0: Add Links to iView/Documentation",
+        "description": "Click on any clinical value to jump directly to iView documentation location for quick charting without manual navigation",
+        "details": "Button works, opens iView. Need to tune band/section/eventSet names for correct navigation.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T16:34:02.414Z"
+      },
+      {
+        "id": "21",
+        "title": "v2.8.0: Add PT/OT Eval Links",
+        "description": "Add links to open PT/OT evaluation power forms directly from dashboard; include option to create new note",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T03:08:29.116Z"
+      },
+      {
+        "id": "22",
+        "title": "v2.8.0: CERT Deployment & Validation",
+        "description": "Deploy changes to Azure CERT, compile CCL in Cerner CERT, validate with clinicians",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T16:34:36.985Z"
+      },
+      {
+        "id": "23",
+        "title": "v2.8.0: Documentation Sync & Release",
+        "description": "Update CHANGELOG, README, CLAUDE.md; create PR; tag v2.8.0-mobility release; close Issue #20",
+        "details": "",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [],
+        "updatedAt": "2026-01-13T16:34:37.066Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-01-02T17:12:34.782Z",
-      "taskCount": 13,
-      "completedCount": 11,
+      "lastModified": "2026-01-13T16:34:37.067Z",
+      "taskCount": 23,
+      "completedCount": 20,
       "tags": [
         "master"
       ]
