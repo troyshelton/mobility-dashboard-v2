@@ -699,21 +699,21 @@ az storage blob upload-batch \
 
 **CERT URL:** [TBD - get from Azure portal]
 
-### Production Environment
+### Production Environment (Citrix I: Drive)
 
 **⚠️ DEPLOYMENT VERIFICATION REQUIRED** (see workflow above)
 **⚠️ CODE REVIEW REQUIRED** (see workflow above)
 
-```bash
-# Deploy to Production (AFTER PR approval and CERT validation)
-az storage blob upload-batch \
-  --source /Users/troyshelton/Projects/vandalia/mobility-dashboard/src/web \
-  --destination '$web/mobility-dashboard/src' \
-  --account-name ihazurestorageprod \
-  --overwrite
+**Production Path:** `I:\custom\mpages\mobility_dashboard`
+
+```
+# Deploy to Production (AFTER approvals and CERT validation)
+# Copy src/web contents to Citrix I: drive:
+Source:      /Users/troyshelton/Projects/vandalia/mobility-dashboard/src/web/*
+Destination: I:\custom\mpages\mobility_dashboard\
 ```
 
-**Production URL:** [TBD - get from Azure portal]
+**Note:** Production deployment is to Citrix I: drive (standalone MPage pattern), NOT Azure. Azure is for CERT testing only.
 
 **See:** `AZURE_DEPLOYMENT.md` for detailed deployment procedures
 
