@@ -2408,11 +2408,7 @@
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
             { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, className: 'htMiddle htCenter' },
             { data: 'MORSE_SCORE', title: 'Morse', width: 80, className: 'htMiddle htCenter' },
-            // Fall Prevention Interventions Group (6 columns)
-            { data: 'CALL_LIGHT_IN_REACH', title: 'Call Light', width: 90, className: 'htMiddle htCenter' },
-            { data: 'IV_SITES_ASSESSED', title: 'IV Sites', width: 80, className: 'htMiddle htCenter' },
-            { data: 'SCDS_APPLIED', title: 'SCDs', width: 70, className: 'htMiddle htCenter' },
-            { data: 'SAFETY_NEEDS_ADDRESSED', title: 'Safety', width: 80, className: 'htMiddle htCenter' },
+            // Fall Prevention Group (2 columns) - v2.8.0: Removed Call Light, IV Sites, SCDs, Safety per clinician feedback
             { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
             { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
             // Ambulation Group (1 column)
@@ -2471,7 +2467,7 @@
                 [
                     { label: 'Demographics', colspan: 8 },
                     { label: 'Assessments', colspan: 3 },
-                    { label: 'Fall Prevention Interventions', colspan: 6 },
+                    { label: 'Fall Prevention', colspan: 2 },
                     { label: 'Ambulation', colspan: 1 },
                     { label: 'PT / OT', colspan: 2 }
                 ],
@@ -2586,8 +2582,8 @@
 
             // Clinical Event Click Handler - Side Panel Historical View (Issue #3, #5, #7)
             app.state.handsontableInstance.addHook('afterOnCellMouseDown', function(event, coords, TD) {
-                // Clinical event columns: 8-19 (BMAT, Baseline, Toileting, PT, OT, Ambulation, Morse, Call Light, IV Sites, SCDs, Safety, Precautions)
-                if (coords.col >= 8 && coords.col <= 19) {
+                // Clinical event columns: 8-15 (Baseline, BMAT, Morse, Precautions, Toileting, Ambulation, PT, OT) - v2.8.0: Removed 4 columns
+                if (coords.col >= 8 && coords.col <= 15) {
                     console.log('Clinical event cell clicked:', { row: coords.row, col: coords.col });
 
                     // Get metric template for this column
@@ -2812,7 +2808,7 @@
                     [
                         { label: 'Demographics', colspan: 8 },
                         { label: 'Assessments', colspan: 3 },
-                        { label: 'Fall Prevention Interventions', colspan: 6 },
+                        { label: 'Fall Prevention', colspan: 2 },
                         { label: 'Ambulation', colspan: 1 },
                         { label: 'PT / OT', colspan: 2 }
                     ],

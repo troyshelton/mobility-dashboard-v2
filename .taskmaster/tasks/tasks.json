@@ -881,11 +881,11 @@
         "description": "Create GitHub issue and feature branch for clinician feedback enhancements",
         "details": "",
         "testStrategy": "",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [],
         "priority": "high",
         "subtasks": [],
-        "updatedAt": "2026-01-13T01:20:11.933Z"
+        "updatedAt": "2026-01-13T01:20:39.740Z"
       },
       {
         "id": "15",
@@ -893,10 +893,11 @@
         "description": "Remove Call Light, IV Sites, SCDs, Safety columns from dashboard - not valuable for mobility context per clinician feedback",
         "details": "",
         "testStrategy": "",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [],
         "priority": "high",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2026-01-13T01:21:12.825Z"
       },
       {
         "id": "16",
@@ -989,9 +990,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-01-13T01:20:11.936Z",
+      "lastModified": "2026-01-13T01:21:12.826Z",
       "taskCount": 23,
-      "completedCount": 11,
+      "completedCount": 12,
       "tags": [
         "master"
       ]
