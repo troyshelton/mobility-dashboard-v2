@@ -9,26 +9,26 @@
 
 ## Current Status
 
-**Latest:** v2.8.0 Clinician Feedback Enhancements (iView Links, PowerForm Links)
-**Status:** ✅ COMPLETE - Deployed to CERT and Validated
-**Issues:** #20 (iView Links), #21 (PT/OT Eval Links) - CLOSED
+**Latest:** v2.9.0 Handsontable Font Color Fix
+**Status:** ✅ CERT Validated - Pending Production Deployment
+**Issue:** #22 (Font Color Fix) - CLOSED
 
-**v2.8.0 Implementation Complete (2026-01-13):**
-- ✅ **IViewLauncher.js** - TASKDOC DiscernObjectFactory pattern for iView navigation
-- ✅ **"Open in iView" Button** - Side panel links to Morse Fall Scale, BMAT sections
-- ✅ **PowerForm Links** - Historical PT/OT entries link to original PowerForm documents
-- ✅ **Personnel Display** - Shows who documented each entry
-- ✅ **Lowercase Band Name Fix** - Per uCern research (band MUST be lowercase)
+**v2.9.0 Change (2026-01-13):**
+- ✅ Override Handsontable read-only gray text (#777) to black (#000)
+- ✅ CERT deployed and validated
+
+**⏳ PENDING: Production Deployment**
+```
+Source:      src/web/*
+Destination: I:\custom\mpages\mobility_dashboard\
+Method:      Manual copy via Citrix
+Changed:     styles.css only
+```
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
 - **CCL:** v12 compiled in Cerner CERT
-- **Status:** Working with iView navigation and PowerForm links
-
-**Next Steps:**
-- 📊 Add remaining iView section names (Baseline, Toileting, Ambulation, PT, OT)
-- 🔧 Tag v2.9.0-mobility release
-- 🔧 Close GitHub issues #20, #21
+- **Status:** v2.9.0 deployed and validated
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
