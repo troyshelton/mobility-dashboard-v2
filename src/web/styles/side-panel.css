@@ -282,6 +282,47 @@
 }
 
 /* ============================================================================
+   iView Links (v2.8.0 - Issue #20: Links to iView/Documentation)
+   ============================================================================ */
+.panel-iview-link {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #bbdefb;
+}
+
+.iview-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  background-color: #1976d2;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.iview-link-btn:hover {
+  background-color: #1565c0;
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.iview-link-btn:active {
+  background-color: #0d47a1;
+  transform: translateY(1px);
+}
+
+.iview-link-btn i {
+  font-size: 0.9em;
+}
+
+/* ============================================================================
    History Footer (Entry Count)
    ============================================================================ */
 .history-footer {

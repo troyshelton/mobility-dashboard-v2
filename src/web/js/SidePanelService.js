@@ -141,6 +141,30 @@ class SidePanelService {
   _renderPatientInfo(patient) {
     const infoDiv = this.panel.querySelector('.panel-patient-info');
 
+    // v2.8.0 Issue #20: Check if iView is configured for this metric
+    console.log('📊 [DEBUG] _renderPatientInfo called');
+    console.log('📊 [DEBUG] this.currentMetric:', this.currentMetric);
+    console.log('📊 [DEBUG] window.IViewLauncher exists:', !!window.IViewLauncher);
+    console.log('📊 [DEBUG] window.IViewLauncher:', window.IViewLauncher);
+
+    const iViewConfigured = window.IViewLauncher && window.IViewLauncher.isIViewConfigured(this.currentMetric);
+    console.log('📊 [DEBUG] iViewConfigured result:', iViewConfigured);
+
+    const personId = patient.person_id || patient.PERSON_ID;
+    const encntrId = patient.encntr_id || patient.ENCNTR_ID;
+    console.log('📊 [DEBUG] personId:', personId, 'encntrId:', encntrId);
+
+    // Build iView button HTML if configured
+    const iViewButtonHTML = iViewConfigured ? `
+      <div class="panel-iview-link">
+        <a href="javascript:void(0)" class="iview-link-btn"
+          onclick="IViewLauncher.launchIViewForMetric('${this.currentMetric}', ${personId}, ${encntrId})"
+          title="Open in Interactive View (iView)">
+          <i class="fas fa-external-link-square-alt"></i> Open in iView
+        </a>
+      </div>
+    ` : '';
+
     infoDiv.innerHTML = `
       <div class="patient-info-grid">
         <div class="patient-info-row">
@@ -156,6 +180,7 @@ class SidePanelService {
           <span class="patient-info-value">${patient.unit || patient.location || 'N/A'} ${patient.roomBed ? '- ' + patient.roomBed : ''}</span>
         </div>
       </div>
+      ${iViewButtonHTML}
     `;
   }
 
