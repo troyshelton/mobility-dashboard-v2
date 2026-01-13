@@ -71,7 +71,7 @@ I will follow them without exception.
 I'm about to deploy to Azure CERT:
 
 Source:      /Users/troyshelton/Projects/vandalia/mobility-dashboard/src/web
-Destination: $web/mobility-dashboard/src
+Destination: $web/camc-mobility-mpage/src
 Account:     ihazurestoragedev
 
 ⚠️ CRITICAL: Is this the correct destination?
@@ -684,7 +684,7 @@ git commit -m "docs: update CLAUDE.md with project-specific content"
 # Deploy to CERT
 az storage blob upload-batch \
   --source /Users/troyshelton/Projects/vandalia/mobility-dashboard/src/web \
-  --destination '$web/mobility-dashboard/src' \
+  --destination '$web/camc-mobility-mpage/src' \
   --account-name ihazurestoragedev \
   --overwrite
 ```
