@@ -12,7 +12,7 @@
 
     // Simulator mode DISABLED for CERT deployment (Issue #27 - Activity Orders)
     window.SIMULATOR_CONFIG = {
-        enabled: false  // DISABLED - using real CCL programs for CERT testing
+        enabled: false  // DISABLED - deploying to CERT (Issue #31)
     };
 
     console.log(`[Config] SIMULATOR_CONFIG initialized with enabled=${window.SIMULATOR_CONFIG.enabled} (simulator mode - using mock data)`);

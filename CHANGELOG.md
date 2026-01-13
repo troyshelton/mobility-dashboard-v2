@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.11.1-mobility] - 2026-01-13
+
+### Fixed (Issue #31)
+- **Baseline Column Alignment** - Assessment columns now properly centered
+  - Fixed `cells()` function alignment logic in main.js (2 locations)
+  - Changed from `col <= 5` to `col <= 2 || col >= 12`
+  - Left-aligned: Demographics (0-2) and PT/OT (12-13)
+  - Centered: Assessments and Mobility Activity (3-11)
+
+---
+
 ## [2.11.0-mobility] - 2026-01-13
 
 ### Fixed (Issue #26)
