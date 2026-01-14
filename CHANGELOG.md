@@ -7,6 +7,31 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.12.0-mobility] - 2026-01-13
+
+### Fixed (Issue #32 - Duplicate Orders)
+- **Activity Orders Deduplication** - Fixed recurring orders showing all scheduled instances
+  - Patient MCCLUNG showed 279 "Up to Chair" orders instead of 2 unique orders
+  - **Root Cause:** CCL SELECT 7 returned every scheduled instance of recurring orders
+  - **Fix:** Added `HEAD o.order_mnemonic` pattern to deduplicate by order name
+  - Changed ORDER BY to include `o.order_mnemonic` for proper grouping
+  - Result: Shows unique order types only (e.g., 2 orders instead of 279)
+
+- **Precautions Deduplication** - Applied same fix for consistency
+  - SELECT 4 now uses `HEAD o.order_mnemonic` pattern
+  - Prevents potential duplicate precautions from recurring orders
+
+### Added
+- **Tippy.js Tooltips** - Quick preview on hover for Activity and Precautions columns
+  - Simple alphabetical bullet list of order/precaution names
+  - Click cell for full details in side panel
+
+### Technical Notes
+- **CCL v16:** Uses `HEAD o.order_mnemonic` in SELECT 4 and SELECT 7 for deduplication
+- **Pattern:** ORDER BY encntr_id, order_mnemonic, orig_order_dt_tm DESC + HEAD o.order_mnemonic
+
+---
+
 ## [2.11.1-mobility] - 2026-01-13
 
 ### Fixed (Issue #31)
