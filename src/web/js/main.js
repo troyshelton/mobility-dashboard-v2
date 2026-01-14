@@ -309,6 +309,29 @@
     }
 
     /**
+     * Create standardized Mobility Dashboard tooltip using Tippy.js (Issue #32)
+     * @param {HTMLElement} element - Element to attach tooltip to
+     * @param {string} content - HTML content for tooltip
+     * @param {object} options - Optional Tippy.js overrides
+     * @returns {object|null} Tippy instance or null if tippy unavailable
+     */
+    function createMobilityTooltip(element, content, options = {}) {
+        if (!element || typeof tippy === 'undefined') {
+            console.log('[Tooltip] createMobilityTooltip: element or tippy not available');
+            return null;
+        }
+
+        return tippy(element, {
+            content: content,
+            onShow: function(instance) {
+                // Hide all other tooltips to prevent overlap
+                tippy.hideAll({ exclude: instance });
+            },
+            ...options
+        });
+    }
+
+    /**
      * Main application initialization function
      */
     async function initializeApp() {
@@ -2469,6 +2492,92 @@
             return td;
         }
 
+        /**
+         * Activity Orders Renderer with Tippy.js tooltip (Issue #32)
+         * Shows count with tooltip listing all activity orders on hover
+         */
+        function activityOrdersRenderer(instance, td, row, col, prop, value, cellProperties) {
+            const rowData = instance.getSourceDataAtRow(row);
+            const count = value || 0;
+            const orders = rowData?.ACTIVITY_ORDERS || rowData?.activity_orders || [];
+
+            // Create container
+            const container = document.createElement('div');
+            container.style.cursor = orders.length > 0 ? 'pointer' : 'default';
+            container.textContent = count;
+
+            // Build tooltip if there are orders - Simple name list format (Issue #32)
+            if (orders.length > 0) {
+                // Sort alphabetically by order name
+                const sortedOrders = [...orders].sort((a, b) =>
+                    (a.ORDER_NAME || '').localeCompare(b.ORDER_NAME || ''));
+
+                let tooltipHTML = '<div style="font-size: 12px;">';
+                tooltipHTML += '<div style="font-weight: 600; margin-bottom: 4px;">Activity Orders:</div>';
+
+                sortedOrders.forEach(order => {
+                    tooltipHTML += `<div>• ${order.ORDER_NAME || 'Unknown'}</div>`;
+                });
+
+                tooltipHTML += '</div>';
+
+                // Clear and add container
+                td.innerHTML = '';
+                td.appendChild(container);
+
+                // Attach tooltip
+                createMobilityTooltip(container, tooltipHTML);
+            } else {
+                td.innerHTML = '';
+                td.appendChild(container);
+            }
+
+            return td;
+        }
+
+        /**
+         * Precautions Renderer with Tippy.js tooltip (Issue #32)
+         * Shows count with tooltip listing all precautions on hover
+         */
+        function precautionsRenderer(instance, td, row, col, prop, value, cellProperties) {
+            const rowData = instance.getSourceDataAtRow(row);
+            const count = value || 0;
+            const precautions = rowData?.ACTIVITY_PRECAUTIONS || rowData?.activity_precautions || [];
+
+            // Create container
+            const container = document.createElement('div');
+            container.style.cursor = precautions.length > 0 ? 'pointer' : 'default';
+            container.textContent = count;
+
+            // Build tooltip if there are precautions - Simple name list format (Issue #32)
+            if (precautions.length > 0) {
+                // Sort alphabetically by precaution name
+                const sortedPrecautions = [...precautions].sort((a, b) =>
+                    (a.PRECAUTION_NAME || '').localeCompare(b.PRECAUTION_NAME || ''));
+
+                let tooltipHTML = '<div style="font-size: 12px;">';
+                tooltipHTML += '<div style="font-weight: 600; margin-bottom: 4px;">Precautions:</div>';
+
+                sortedPrecautions.forEach(prec => {
+                    tooltipHTML += `<div>• ${prec.PRECAUTION_NAME || 'Unknown'}</div>`;
+                });
+
+                tooltipHTML += '</div>';
+
+                // Clear and add container
+                td.innerHTML = '';
+                td.appendChild(container);
+
+                // Attach tooltip
+                createMobilityTooltip(container, tooltipHTML);
+            } else {
+                td.innerHTML = '';
+                td.appendChild(container);
+            }
+
+            return td;
+        }
+
         // Define columns for sepsis dashboard structure (16 columns - Priority hidden pending requestor input)
         // v1.33.0: Left-justified columns for text fields, center for icons/values
         console.log('Defining demographics + clinical event columns for Mobility Dashboard...');
@@ -2489,9 +2598,9 @@
             { data: 'BASELINE_LEVEL', title: 'Baseline', width: 80, className: 'htMiddle htCenter' },
             { data: 'BMAT_LEVEL', title: 'BMAT', width: 70, renderer: bmatLevelRenderer, className: 'htMiddle htCenter' },
             { data: 'MORSE_SCORE', title: 'Morse', width: 80, renderer: morseScoreRenderer, className: 'htMiddle htCenter' },
-            // Mobility Activity Group (6 columns) - v2.11.0: Added Activity Orders (Issue #27)
-            { data: 'ACTIVITY_ORDER_COUNT', title: 'Activity', width: 80, className: 'htMiddle htCenter' },
-            { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, className: 'htMiddle htCenter' },
+            // Mobility Activity Group (6 columns) - v2.11.0: Added Activity Orders (Issue #27), v2.12.0: Tooltips (Issue #32)
+            { data: 'ACTIVITY_ORDER_COUNT', title: 'Activity', width: 80, renderer: activityOrdersRenderer, className: 'htMiddle htCenter' },
+            { data: 'ACTIVE_PRECAUTION_COUNT', title: 'Precautions', width: 100, renderer: precautionsRenderer, className: 'htMiddle htCenter' },
             { data: 'TOILETING_METHOD', title: 'Toileting', width: 100, className: 'htMiddle htLeft' },
             { data: 'AMBULATION_DISTANCE', title: 'Amb Dist', width: 80, className: 'htMiddle htCenter' },
             { data: 'TRANSFER_TYPE', title: 'Transfer Type', width: 100, className: 'htMiddle htLeft' },

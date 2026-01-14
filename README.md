@@ -1,6 +1,6 @@
 # Mobility Dashboard
 
-**Version:** v2.11.1-mobility
+**Version:** v2.12.0-mobility
 **Type:** Healthcare Production Dashboard
 **Last Updated:** 2026-01-13
 **Source:** Based on er-tracking-dashboard-template v1.0.0
@@ -9,15 +9,15 @@
 
 ## Current Status
 
-**Latest:** v2.11.0 Activity Orders Column (Issues #26, #27)
+**Latest:** v2.12.0 Duplicate Orders Fix + Tooltips (Issue #32)
 **Status:** ✅ CERT Validated - Pending Production Deployment
-**Issues:** #26 - Message Span Fix, #27 - Activity Orders Column
+**Issues:** #32 - Duplicate Orders Fix, Tooltips for Activity/Precautions
 
-**v2.11.0 Changes (2026-01-13):**
-- ✅ Fixed "Select a patient list" message to span all columns (Issue #26)
-- ✅ Added Activity Orders column for patient mobility level (Issue #27)
-- ✅ CCL v15 with specific activity orders per Tina Stampler's list
-- ✅ Activity orders: Bedrest, Bedrest Care, Bedrest w/ BSC, Bedrest w/ BRP, Up to Chair, Up with Assistance, Ambulate, Out of Bed
+**v2.12.0 Changes (2026-01-13):**
+- ✅ Fixed duplicate Activity Orders (279 → 2 for recurring orders)
+- ✅ Fixed duplicate Precautions (same deduplication pattern)
+- ✅ Added Tippy.js tooltips for Activity and Precautions columns
+- ✅ CCL v16 with HEAD o.order_mnemonic deduplication pattern
 - ✅ CERT deployed and validated
 
 **Column Layout (14 columns):**
@@ -25,8 +25,8 @@
 
 **CERT Environment:**
 - **URL:** https://ihazurestoragedev.z13.web.core.windows.net/camc-mobility-mpage/src/index.html
-- **CCL:** v14 compiled in Cerner CERT
-- **Status:** v2.9.0 deployed and validated
+- **CCL:** v16 compiled in Cerner CERT
+- **Status:** v2.12.0 deployed and validated
 
 **Completed Work:**
 - ✅ Issue #1 (Date Navigator) - Archived as POC → [POC Catalog](/Users/troyshelton/Projects/POC-CATALOG.md)
